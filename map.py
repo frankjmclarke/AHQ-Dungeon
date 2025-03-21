@@ -1,69 +1,34 @@
-import random
+﻿import random
 import math
 
-# ---------- Utility Functions ----------
-
+# Utility: Check if two ranges overlap.
 def overlap_range(a_start, a_end, b_start, b_end):
-    """Return True if the ranges [a_start, a_end] and [b_start, b_end] overlap."""
     return not (a_end <= b_start or b_end <= a_start)
 
-# ---------- Data Classes ----------
+# --- Data Classes ---
 
 class Room:
     def __init__(self, room_id, x, y, width, height):
         self.id = room_id
-        self.x = x          # top-left x-coordinate
-        self.y = y          # top-left y-coordinate
+        self.x = x      # top-left x
+        self.y = y      # top-left y
         self.width = width
         self.height = height
-        # Doors will be stored as (x, y) positions (for simplicity)
-        self.doors = []     
+        self.doors = [] # list of (x, y) door centers
 
     @property
-    def center(self):
-        return (self.x + self.width/2, self.y + self.height/2)
-
     def right(self):
         return self.x + self.width
 
+    @property
     def bottom(self):
         return self.y + self.height
-
-    def intersects(self, other):
-        # Check for bounding-box intersection (rooms are assumed axis-aligned)
-        if (self.x < other.x + other.width and self.x + self.width > other.x and
-            self.y < other.y + other.height and self.y + self.height > other.y):
-            return True
-        return False
-
-    def is_adjacent_horizontal(self, other):
-        """Returns True if self and other share a vertical wall."""
-        # Check if self is to the left of other and they touch
-        if math.isclose(self.right(), other.x, abs_tol=1e-5):
-            # They must have some vertical overlap
-            if overlap_range(self.y, self.bottom(), other.y, other.bottom()):
-                return True
-        # Or self is to the right of other.
-        if math.isclose(other.right(), self.x, abs_tol=1e-5):
-            if overlap_range(self.y, self.bottom(), other.y, other.bottom()):
-                return True
-        return False
-
-    def is_adjacent_vertical(self, other):
-        """Returns True if self and other share a horizontal wall."""
-        if math.isclose(self.bottom(), other.y, abs_tol=1e-5):
-            if overlap_range(self.x, self.right(), other.x, other.right()):
-                return True
-        if math.isclose(other.bottom(), self.y, abs_tol=1e-5):
-            if overlap_range(self.x, self.right(), other.x, other.right()):
-                return True
-        return False
 
 class Corridor:
     def __init__(self, corridor_id, x, y, width, height, room_a_id, room_b_id):
         self.id = corridor_id
-        self.x = x          # top-left x-coordinate
-        self.y = y          # top-left y-coordinate
+        self.x = x  # top-left x
+        self.y = y  # top-left y
         self.width = width
         self.height = height
         self.room_a_id = room_a_id
@@ -71,229 +36,164 @@ class Corridor:
 
 class MapLayout:
     def __init__(self, width, height):
-        self.width = width      # overall canvas width
-        self.height = height    # overall canvas height
-        self.rooms = []         # list of Room objects
-        self.corridors = []     # list of Corridor objects
+        self.width = width
+        self.height = height
+        self.rooms = []      # list of Room objects
+        self.corridors = []  # list of Corridor objects
 
     def render_svg(self, filename="map.svg"):
-        """Renders the layout as an SVG file."""
-        svg_elements = []
-        # SVG header
-        svg_elements.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{self.width}" height="{self.height}">')
-        
-        # Draw rooms (with a fill and stroke)
+        svg = []
+        svg.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{self.width}" height="{self.height}">')
         for room in self.rooms:
-            svg_elements.append(
-                f'<rect x="{room.x}" y="{room.y}" width="{room.width}" height="{room.height}" fill="none" stroke="black" stroke-width="2" />'
-            )
-            # Optionally, add room id label at the center.
-            cx, cy = room.center
-            svg_elements.append(f'<text x="{cx}" y="{cy}" font-size="10" text-anchor="middle" fill="red">{room.id}</text>')
-        
-        # Draw corridors (in a different stroke color)
-        for corr in self.corridors:
-            svg_elements.append(
-                f'<rect x="{corr.x}" y="{corr.y}" width="{corr.width}" height="{corr.height}" fill="none" stroke="blue" stroke-width="2" />'
-            )
-        
-        # Draw doors (small circles)
-        door_radius = 2
-        for room in self.rooms:
+            svg.append(f'<rect x="{room.x}" y="{room.y}" width="{room.width}" height="{room.height}" fill="none" stroke="black" stroke-width="2" />')
+            # Draw door centers as green circles.
             for (dx, dy) in room.doors:
-                svg_elements.append(
-                    f'<circle cx="{dx}" cy="{dy}" r="{door_radius}" fill="green" />'
-                )
-        
-        svg_elements.append('</svg>')
-        
-        # Write to file
+                svg.append(f'<circle cx="{dx}" cy="{dy}" r="2" fill="green" />')
+        for corr in self.corridors:
+            svg.append(f'<rect x="{corr.x}" y="{corr.y}" width="{corr.width}" height="{corr.height}" fill="none" stroke="blue" stroke-width="2" />')
+        svg.append('</svg>')
         with open(filename, "w") as f:
-            f.write("\n".join(svg_elements))
+            f.write("\n".join(svg))
         print(f"SVG map rendered to {filename}")
 
-# ---------- MST Helper (Union-Find) ----------
-
-class UnionFind:
-    def __init__(self, elements):
-        self.parent = {e: e for e in elements}
-    
-    def find(self, a):
-        while self.parent[a] != a:
-            a = self.parent[a]
-        return a
-    
-    def union(self, a, b):
-        root_a = self.find(a)
-        root_b = self.find(b)
-        if root_a == root_b:
-            return False
-        self.parent[root_b] = root_a
-        return True
-
-# ---------- Map Generator ----------
+# --- Map Generator ---
 
 class MapGenerator:
-    def __init__(self, map_width, map_height, room_configs, corridor_thickness=1, num_rooms=10, seed=None):
-        """
-        room_configs: list of tuples (room_width, room_height)
-        corridor_thickness: thickness (in units) for corridors (and door marker alignment)
-        num_rooms: number of rooms to attempt placing
-        """
+    def __init__(self, map_width, map_height, room_configs, corridor_thickness=20, num_rooms=10, seed=None):
         self.map_width = map_width
         self.map_height = map_height
-        self.room_configs = room_configs
-        self.corridor_thickness = corridor_thickness
+        self.room_configs = room_configs  # list of (width, height) tuples
+        self.corridor_thickness = corridor_thickness  # T
         self.num_rooms = num_rooms
         if seed is not None:
             random.seed(seed)
         self.layout = MapLayout(map_width, map_height)
         self.next_id = 1
+        # Overlap for corridor: how much to extend the corridor rectangle into a room.
+        self.epsilon = 1.0
 
-    def generate_room_id(self):
-        room_id = self.next_id
+    def gen_room_id(self):
+        id_ = self.next_id
         self.next_id += 1
-        return room_id
-
-    def try_place_room(self, room_width, room_height, max_attempts=100):
-        """Try to place a room of given dimensions without overlapping existing rooms."""
-        for _ in range(max_attempts):
-            x = random.randint(0, self.map_width - room_width)
-            y = random.randint(0, self.map_height - room_height)
-            new_room = Room(self.generate_room_id(), x, y, room_width, room_height)
-            if any(new_room.intersects(other) for other in self.layout.rooms):
-                continue
-            return new_room
-        return None
+        return id_
 
     def place_rooms(self):
-        placed = 0
+        count = 0
         attempts = 0
-        while placed < self.num_rooms and attempts < self.num_rooms * 100:
-            room_size = random.choice(self.room_configs)
-            room = self.try_place_room(room_size[0], room_size[1])
-            if room is not None:
-                self.layout.rooms.append(room)
-                placed += 1
+        while count < self.num_rooms and attempts < self.num_rooms * 100:
+            w, h = random.choice(self.room_configs)
+            x = random.randint(0, self.map_width - w)
+            y = random.randint(0, self.map_height - h)
+            new_room = Room(self.gen_room_id(), x, y, w, h)
+            if any(self.rooms_intersect(new_room, r) for r in self.layout.rooms):
+                attempts += 1
+                continue
+            self.layout.rooms.append(new_room)
+            count += 1
             attempts += 1
-        print(f"Placed {placed} rooms after {attempts} attempts.")
+        print(f"Placed {len(self.layout.rooms)} rooms.")
 
-    def build_possible_edges(self):
-        """Build list of possible edges between rooms that are horizontally or vertically aligned."""
-        edges = []
+    def rooms_intersect(self, r1, r2):
+        return not (r1.x >= r2.right or r1.right <= r2.x or r1.y >= r2.bottom or r1.bottom <= r2.y)
+
+    # For simplicity, we connect each room to its nearest neighbor.
+    def connect_rooms(self):
         rooms = self.layout.rooms
-        n = len(rooms)
-        for i in range(n):
-            for j in range(i+1, n):
-                room_a = rooms[i]
-                room_b = rooms[j]
-                # Check horizontal alignment: vertical ranges overlap.
-                if overlap_range(room_a.y, room_a.y+room_a.height, room_b.y, room_b.y+room_b.height):
-                    # Use horizontal distance between centers as weight.
-                    weight = abs((room_b.center[0]) - (room_a.center[0]))
-                    edges.append((weight, room_a, room_b, 'horizontal'))
-                # Check vertical alignment: horizontal ranges overlap.
-                elif overlap_range(room_a.x, room_a.x+room_a.width, room_b.x, room_b.x+room_b.width):
-                    weight = abs((room_b.center[1]) - (room_a.center[1]))
-                    edges.append((weight, room_a, room_b, 'vertical'))
-        return edges
+        connected = set()
+        for i, room in enumerate(rooms):
+            # Find the closest room that is not yet connected.
+            dmin = float('inf')
+            best = None
+            for j, other in enumerate(rooms):
+                if room == other:
+                    continue
+                d = math.hypot(room.center[0] - other.center[0], room.center[1] - other.center[1])
+                if d < dmin:
+                    dmin = d
+                    best = other
+            if best:
+                self.add_connection(room, best)
+                connected.add((room.id, best.id))
+        print(f"Connected {len(connected)} room pairs.")
 
-    def build_mst(self):
-        """Use a simple Kruskal algorithm to connect rooms based on possible edges."""
-        edges = self.build_possible_edges()
-        # Sort edges by weight
-        edges.sort(key=lambda e: e[0])
-        uf = UnionFind(self.layout.rooms)
-        mst_edges = []
-        for weight, room_a, room_b, orientation in edges:
-            if uf.union(room_a, room_b):
-                mst_edges.append((room_a, room_b, orientation))
-        return mst_edges
-
-    def add_connection(self, room_a, room_b, orientation):
-        """Connect two rooms. If they are adjacent, add a door; otherwise, add a corridor with doors on both ends."""
-        # For horizontal connections:
-        if orientation == 'horizontal':
-            # Determine left and right rooms (by x-coordinate)
+    def add_connection(self, room_a, room_b):
+        T = self.corridor_thickness
+        safe = T / 2.0  # door must be in [edge + safe, edge_opposite - safe]
+        # Decide whether connection is horizontal or vertical based on centers.
+        ax, ay = room_a.x, room_a.y
+        bx, by = room_b.x, room_b.y
+        if abs(room_a.center[0] - room_b.center[0]) >= abs(room_a.center[1] - room_b.center[1]):
+            # Connect horizontally.
+            # Order left/right.
             if room_a.x < room_b.x:
                 left, right = room_a, room_b
             else:
                 left, right = room_b, room_a
-            gap = right.x - left.right()
-            # If gap is zero, rooms share a wall: add door at the shared wall.
-            door_y = int(max(left.y, right.y) + min(left.height, right.height) / 2)
-            if math.isclose(gap, 0, abs_tol=1e-5):
-                door_x = left.right()  # shared wall
-                left.doors.append((door_x, door_y))
-                right.doors.append((door_x, door_y))
+            # Allowed vertical range for door in left room is [left.y + safe, left.bottom - safe]
+            # And similarly for right.
+            low = max(left.y + safe, right.y + safe)
+            high = min(left.bottom - safe, right.bottom - safe)
+            door_y = random.uniform(low, high) if high > low else (low + high)/2.0
+            # Place door on left wall of right room and on right wall of left room.
+            door_x_left = left.right
+            door_x_right = right.x
+            left.doors.append((door_x_left, door_y))
+            right.doors.append((door_x_right, door_y))
+            # If there is a gap, draw corridor that overlaps into each room by epsilon.
+            gap = right.x - left.right
+            if gap > 0:
+                corr_x = left.right - self.epsilon
+                corr_width = gap + 2 * self.epsilon
             else:
-                # Rooms are separated by a gap: add door on right side of left room and left side of right room,
-                # then create a corridor that spans the gap.
-                door_left = (left.right(), door_y)
-                door_right = (right.x, door_y)
-                left.doors.append(door_left)
-                right.doors.append(door_right)
-                # Corridor rectangle: horizontal corridor from door_left to door_right with fixed thickness.
-                corridor_x = left.right()
-                corridor_y = door_y - self.corridor_thickness//2
-                corridor_width = gap
-                corridor_height = self.corridor_thickness
-                corridor = Corridor(self.generate_room_id(), corridor_x, corridor_y, corridor_width, corridor_height, left.id, right.id)
-                self.layout.corridors.append(corridor)
-        elif orientation == 'vertical':
-            # Determine top and bottom rooms (by y-coordinate)
+                corr_x = left.right
+                corr_width = 0
+            corr_y = door_y - T/2.0
+            self.layout.corridors.append(Corridor(self.gen_room_id(), corr_x, corr_y, corr_width, T, left.id, right.id))
+        else:
+            # Connect vertically.
             if room_a.y < room_b.y:
                 top, bottom = room_a, room_b
             else:
                 top, bottom = room_b, room_a
-            gap = bottom.y - top.bottom()
-            door_x = int(max(top.x, bottom.x) + min(top.width, bottom.width) / 2)
-            if math.isclose(gap, 0, abs_tol=1e-5):
-                door_y = top.bottom()  # shared wall
-                top.doors.append((door_x, door_y))
-                bottom.doors.append((door_x, door_y))
+            low = max(top.x + safe, bottom.x + safe)
+            high = min(top.x + top.width - safe, bottom.x + bottom.width - safe)
+            door_x = random.uniform(low, high) if high > low else (low + high)/2.0
+            door_y_top = top.bottom
+            door_y_bottom = bottom.y
+            top.doors.append((door_x, door_y_top))
+            bottom.doors.append((door_x, door_y_bottom))
+            gap = bottom.y - top.bottom
+            if gap > 0:
+                corr_y = top.bottom - self.epsilon
+                corr_height = gap + 2 * self.epsilon
             else:
-                door_top = (door_x, top.bottom())
-                door_bottom = (door_x, bottom.y)
-                top.doors.append(door_top)
-                bottom.doors.append(door_bottom)
-                # Corridor rectangle: vertical corridor from door_top to door_bottom.
-                corridor_y = top.bottom()
-                corridor_x = door_x - self.corridor_thickness//2
-                corridor_height = gap
-                corridor_width = self.corridor_thickness
-                corridor = Corridor(self.generate_room_id(), corridor_x, corridor_y, corridor_width, corridor_height, top.id, bottom.id)
-                self.layout.corridors.append(corridor)
-
-    def connect_rooms(self):
-        mst_edges = self.build_mst()
-        for room_a, room_b, orientation in mst_edges:
-            self.add_connection(room_a, room_b, orientation)
-        print(f"Connected {len(mst_edges)} pairs of rooms (MST).")
+                corr_y = top.bottom
+                corr_height = 0
+            corr_x = door_x - T/2.0
+            self.layout.corridors.append(Corridor(self.gen_room_id(), corr_x, corr_y, T, corr_height, top.id, bottom.id))
 
     def generate_map(self):
         self.place_rooms()
         if len(self.layout.rooms) < 2:
-            print("Not enough rooms placed to build connections.")
+            print("Not enough rooms.")
             return self.layout
         self.connect_rooms()
         return self.layout
 
-# ---------- Main (Example Usage) ----------
+    @property
+    def layout(self):
+        return self._layout
 
+    @layout.setter
+    def layout(self, val):
+        self._layout = val
+
+# --- Main Usage ---
 if __name__ == "__main__":
-    # Define overall map dimensions (in arbitrary units)
     MAP_WIDTH = 500
     MAP_HEIGHT = 500
-
-    # Room configurations: a list of possible room sizes (width, height)
-    room_configs = [(100, 50), (50, 50), (50, 50), (30, 60)]
-    # Corridor thickness (fixed) 
-    corridor_thickness = 20  # e.g., 6 units thick
-
-    # Create the map generator with a desired number of rooms
-    generator = MapGenerator(MAP_WIDTH, MAP_HEIGHT, room_configs, corridor_thickness, num_rooms=10, seed=42)
+    room_configs = [(40, 40), (60, 30), (50, 50), (30, 60)]
+    # corridor_thickness=20 → door centers must be in [room_edge+10, room_edge_opposite-10]
+    generator = MapGenerator(MAP_WIDTH, MAP_HEIGHT, room_configs, corridor_thickness=20, num_rooms=10, seed=59)
     layout = generator.generate_map()
-
-    # Render to an SVG file that can be printed.
     layout.render_svg("generated_map.svg")
