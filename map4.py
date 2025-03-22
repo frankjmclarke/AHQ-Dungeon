@@ -1,4 +1,5 @@
 ﻿import random
+import math
 
 class SpatialGrid:
     def __init__(self, cell_size=50):
@@ -31,83 +32,92 @@ def rects_overlap(r1, r2):
     x2, y2, w2, h2 = r2
     return not (x1 + w1 <= x2 or x2 + w2 <= x1 or y1 + h1 <= y2 or y2 + h2 <= y1)
 
-def place_child(parent_rect, child_size, allowed_segments):
-    px, py, pw, ph = parent_rect
-    cw, ch = child_size
-    order = random.choice(["HV", "VH"])
-    if order == "HV":
-        h_dir = random.choice(["R", "L"])
-        v_dir = random.choice(["D", "U"])
-        h_len, h_thick = random.choice(allowed_segments)
-        v_len, v_thick = random.choice(allowed_segments)
-        if h_dir == "R":
-            parent_attach = (px + pw, py + ph/2)
-            h_seg_rect = (px + pw, parent_attach[1] - h_thick/2, h_len, h_thick)
-            intermediate = (px + pw + h_len, parent_attach[1])
-        else:
-            parent_attach = (px, py + ph/2)
-            h_seg_rect = (px - h_len, parent_attach[1] - h_thick/2, h_len, h_thick)
-            intermediate = (px - h_len, parent_attach[1])
-        if v_dir == "D":
-            v_seg_rect = (intermediate[0] - v_thick/2, intermediate[1], v_thick, v_len)
-            child_x = intermediate[0] - cw/2
-            child_y = intermediate[1] + v_len
-        else:
-            v_seg_rect = (intermediate[0] - v_thick/2, intermediate[1] - v_len, v_thick, v_len)
-            child_x = intermediate[0] - cw/2
-            child_y = intermediate[1] - v_len - ch
-        child_rect = (child_x, child_y, cw, ch)
-        return child_rect, [h_seg_rect, v_seg_rect]
-    else:
-        v_dir = random.choice(["D", "U"])
-        h_dir = random.choice(["R", "L"])
-        v_len, v_thick = random.choice(allowed_segments)
-        h_len, h_thick = random.choice(allowed_segments)
-        if v_dir == "D":
-            parent_attach = (px + pw/2, py + ph)
-            v_seg_rect = (parent_attach[0] - v_thick/2, py + ph, v_thick, v_len)
-            intermediate = (parent_attach[0], py + ph + v_len)
-        else:
-            parent_attach = (px + pw/2, py)
-            v_seg_rect = (parent_attach[0] - v_thick/2, py - v_len, v_thick, v_len)
-            intermediate = (parent_attach[0], py - v_len)
-        if h_dir == "R":
-            h_seg_rect = (intermediate[0], intermediate[1] - h_thick/2, h_len, h_thick)
-            child_x = intermediate[0] + h_len
-            child_y = intermediate[1] - ch/2
-        else:
-            h_seg_rect = (intermediate[0] - h_len, intermediate[1] - h_thick/2, h_len, h_thick)
-            child_x = intermediate[0] - h_len - cw
-            child_y = intermediate[1] - ch/2
-        child_rect = (child_x, child_y, cw, ch)
-        return child_rect, [v_seg_rect, h_seg_rect]
+def try_place_all(parent_rect, child_size, allowed_segments, grid):
+    best = None
+    min_cost = float('inf')
+    for order in ["HV", "VH"]:
+        for h_dir in ["R", "L"]:
+            for v_dir in ["D", "U"]:
+                for h_len, h_thick in allowed_segments:
+                    for v_len, v_thick in allowed_segments:
+                        if order == "HV":
+                            if h_dir == "R":
+                                parent_attach = (parent_rect[0] + parent_rect[2], parent_rect[1] + parent_rect[3]/2)
+                                h_seg_rect = (parent_attach[0], parent_attach[1] - h_thick/2, h_len, h_thick)
+                                intermediate = (parent_attach[0] + h_len, parent_attach[1])
+                            else:
+                                parent_attach = (parent_rect[0], parent_rect[1] + parent_rect[3]/2)
+                                h_seg_rect = (parent_attach[0] - h_len, parent_attach[1] - h_thick/2, h_len, h_thick)
+                                intermediate = (parent_attach[0] - h_len, parent_attach[1])
+                            if v_dir == "D":
+                                v_seg_rect = (intermediate[0] - v_thick/2, intermediate[1], v_thick, v_len)
+                                child_x = intermediate[0] - child_size[0]/2
+                                child_y = intermediate[1] + v_len
+                            else:
+                                v_seg_rect = (intermediate[0] - v_thick/2, intermediate[1] - v_len, v_thick, v_len)
+                                child_x = intermediate[0] - child_size[0]/2
+                                child_y = intermediate[1] - v_len - child_size[1]
+                            child_rect = (child_x, child_y, *child_size)
+                            segs = [h_seg_rect, v_seg_rect]
+                        else:
+                            if v_dir == "D":
+                                parent_attach = (parent_rect[0] + parent_rect[2]/2, parent_rect[1] + parent_rect[3])
+                                v_seg_rect = (parent_attach[0] - v_thick/2, parent_rect[1] + parent_rect[3], v_thick, v_len)
+                                intermediate = (parent_attach[0], parent_rect[1] + parent_rect[3] + v_len)
+                            else:
+                                parent_attach = (parent_rect[0] + parent_rect[2]/2, parent_rect[1])
+                                v_seg_rect = (parent_attach[0] - v_thick/2, parent_rect[1] - v_len, v_thick, v_len)
+                                intermediate = (parent_attach[0], parent_rect[1] - v_len)
+                            if h_dir == "R":
+                                h_seg_rect = (intermediate[0], intermediate[1] - h_thick/2, h_len, h_thick)
+                                child_x = intermediate[0] + h_len
+                                child_y = intermediate[1] - child_size[1]/2
+                            else:
+                                h_seg_rect = (intermediate[0] - h_len, intermediate[1] - h_thick/2, h_len, h_thick)
+                                child_x = intermediate[0] - h_len - child_size[0]
+                                child_y = intermediate[1] - child_size[1]/2
+                            child_rect = (child_x, child_y, *child_size)
+                            segs = [v_seg_rect, h_seg_rect]
+
+                        if grid.check_no_overlap(child_rect) and all(grid.check_no_overlap(s) for s in segs):
+                            cost = h_len + v_len
+                            if cost < min_cost:
+                                best = (child_rect, segs)
+                                min_cost = cost
+    return best
 
 def generate_tree_layout(num_nodes, node_sizes, segments):
     nodes = {}
     edges = []
     grid = SpatialGrid()
     root_size = random.choice(node_sizes)
-    root_pos = (400, 400)
-    root_rect = (*root_pos, *root_size)
+    center = (500, 500)
+    root_rect = (*center, *root_size)
     nodes[0] = {'rect': root_rect, 'parent': None}
     grid.add(root_rect)
+    depths = {0: 0}
+    angle_index = 0
+    golden_angle = math.radians(137.5)
+    spacing = 150
 
     for i in range(1, num_nodes):
         parent = random.randint(0, i - 1)
+        depth = depths[parent] + 1
+        angle = angle_index * golden_angle
+        radius = spacing * depth
+        offset_x = math.cos(angle) * radius
+        offset_y = math.sin(angle) * radius
         parent_rect = nodes[parent]['rect']
+        shifted_parent = (parent_rect[0] + offset_x, parent_rect[1] + offset_y, parent_rect[2], parent_rect[3])
         child_size = random.choice(node_sizes)
 
-        success = False
-        for _ in range(10):  # Retry strategy for multiple placements
-            child_rect, segs = place_child(parent_rect, child_size, segments)
-            if grid.check_no_overlap(child_rect) and all(grid.check_no_overlap(s) for s in segs):
-                success = True
-                break
-
-        if not success:
+        result = try_place_all(shifted_parent, child_size, segments, grid)
+        if not result:
             return None, None
-
+        child_rect, segs = result
         nodes[i] = {'rect': child_rect, 'parent': parent}
+        depths[i] = depth
+        angle_index += 1
         grid.add(child_rect)
         for seg in segs:
             grid.add(seg)
@@ -143,7 +153,7 @@ if __name__ == '__main__':
     node_sizes = [(20, 20), (30, 20), (20, 30), (40, 30), (30, 40)]
     segments = [(30, 10), (40, 10), (50, 10), (150, 10)]
     for attempt in range(100):
-        nodes, edges = generate_tree_layout(10, node_sizes, segments)
+        nodes, edges = generate_tree_layout(30, node_sizes, segments)
         if nodes:
             with open("mst_output.svg", "w") as f:
                 f.write(generate_svg(nodes, edges))
