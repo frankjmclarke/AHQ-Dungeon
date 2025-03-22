@@ -1,5 +1,6 @@
 ﻿MAX_DEPTH = 50  # Maximum recursion depth
 DEFAULT_DICE = "1D12"  # Global default dice; if no block-specific notation is provided
+VERBOSE = False  # Global verbosity flag
 
 import os
 import re
@@ -84,7 +85,7 @@ def parse_named_block(lines):
     name = lines[0].strip().lower()
     stack = []
     current = []
-    parsed_tables = []  # Will be a list of tuples: (dice_notation, table)
+    parsed_tables = []  # List of tuples: (dice_notation, table)
     dice_notation = None
     for line in lines[1:]:
         if line.strip().startswith("("):
@@ -119,15 +120,14 @@ def parse_named_block(lines):
             roll_notation = "2D12"
         else:
             roll_notation = notation if notation is not None else DEFAULT_DICE
-        print(f"Using dice notation '{roll_notation}' for block '{name}'")
+        debug_print(f"Using dice notation '{roll_notation}' for block '{name}'")
         has_composite = any("&" in entry for (r, entry) in outer)
         attempts = 0
         entry = None
         while attempts < 10:
             roll, rolls = roll_dice(roll_notation)
             entry = next((c for r, c in outer if r == roll), None)
-            print(f"  → [Nested roll in {name}]: Rolled {roll} (rolls: {rolls}) resulting in: {entry}")
-            # Only check entry.strip() if entry is not None.
+            debug_print(f"  → [Nested roll in {name}]: Rolled {roll} (rolls: {rolls}) resulting in: {entry}")
             if entry is not None and has_composite and entry.strip().lower() == name:
                 attempts += 1
                 continue
@@ -148,7 +148,6 @@ def parse_named_block(lines):
                     output.append(part)
             return "\n".join(output)
         return entry if entry is not None else ""
-
     return name, resolve_nested
 
 def load_tables():
@@ -174,12 +173,24 @@ def parse_tab_file(filename):
                     table.append((roll, content))
     return table
 
+# --- Helper printing functions ---
+def debug_print(msg):
+    if VERBOSE:
+        print(msg)
+
+def final_print(indent, msg):
+    # In non-verbose mode, print without any leading spaces.
+    if VERBOSE:
+        print(f"{indent}→ Output: {msg}")
+    else:
+        print(f"{msg}")
+
 resolved_stack = set()
 
 def process_and_resolve_text(text, tables, named_rules, depth, parent_table=None, current_named=None):
-    indent = "  " * depth
+    indent = "  " * depth if VERBOSE else ""
     if depth > MAX_DEPTH:
-        print(indent + "[Maximum recursion depth reached]")
+        debug_print(indent + "[Maximum recursion depth reached]")
         return
     lines = text.splitlines()
     for line in lines:
@@ -188,27 +199,27 @@ def process_and_resolve_text(text, tables, named_rules, depth, parent_table=None
         if match_full:
             name_candidate = match_full.group(1).lower()
             if name_candidate in named_rules:
-                print(f"{indent}→ Resolving named block: {line}")
+                debug_print(f"{indent}→ Resolving named block: {line}")
                 result = named_rules[name_candidate]()
                 process_and_resolve_text(result, tables, named_rules, depth + 1, parent_table, current_named=name_candidate)
                 continue
         if line.lower() in named_rules:
             if current_named is not None and line.lower() == current_named:
-                print(f"{indent}→ Output: {line}")
+                final_print(indent, line)
             else:
                 if line.lower() in resolved_stack:
-                    print(f"{indent}→ [Cycle detected: {line}]")
+                    debug_print(f"{indent}→ [Cycle detected: {line}]")
                 else:
                     resolved_stack.add(line.lower())
-                    print(f"{indent}→ Resolving named block: {line}")
+                    debug_print(f"{indent}→ Resolving named block: {line}")
                     result = named_rules[line.lower()]()
                     process_and_resolve_text(result, tables, named_rules, depth + 1, parent_table, current_named=line.lower())
                     resolved_stack.remove(line.lower())
             continue
         if line.startswith('"') and line.endswith('"'):
-            print(f"{indent}→ Output: {line[1:-1]}")
+            final_print(indent, line[1:-1])
         else:
-            print(f"{indent}→ Output: {line}")
+            final_print(indent, line)
         matches = re.findall(r'([A-Za-z0-9_\-]+)\(\)', line)
         for match in matches:
             match_lower = match.lower()
@@ -225,20 +236,20 @@ def process_and_resolve_text(text, tables, named_rules, depth, parent_table=None
             resolved_stack.remove(match_lower)
 
 def resolve_table(name, tables, named_rules={}, depth=0):
-    indent = "  " * depth
+    indent = "  " * depth if VERBOSE else ""
     name = name.lower()
     if name not in tables:
-        print(f"{indent}[Table not found: {name}]")
+        debug_print(f"{indent}[Table not found: {name}]")
         return
     table = tables[name]
     roll, rolls = roll_dice(DEFAULT_DICE)
     entry = next((content for r, content in table if r == roll), None)
-    print(f"{indent}Rolled {roll} on {name}: {entry} (rolls: {rolls})")
+    debug_print(f"{indent}Rolled {roll} on {name}: {entry} (rolls: {rolls})")
     if not entry:
-        print(f"{indent}[No entry for roll {roll}]")
+        debug_print(f"{indent}[No entry for roll {roll}]")
         return
     if entry.startswith('"') and entry.endswith('"'):
-        print(f"{indent}→ Output: {entry[1:-1]}")
+        final_print(indent, entry[1:-1])
         return
     if entry.startswith('[[') and entry.endswith(']]'):
         inner = entry[2:-2]
@@ -249,8 +260,13 @@ def resolve_table(name, tables, named_rules={}, depth=0):
     process_and_resolve_text(entry, tables, named_rules, depth, parent_table=name, current_named=None)
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python map.py <TableName> [<TableName> ...]")
+    global VERBOSE
+    params = sys.argv[1:]
+    if "-verbose" in params:
+        VERBOSE = True
+        params.remove("-verbose")
+    if len(params) < 1:
+        print("Usage: python map.py <TableName> [<TableName> ...] [-verbose]")
         return
     tables = load_tables()
     named_rules = {}
@@ -258,17 +274,19 @@ def main():
     for name, block_lines in raw_blocks.items():
         key, fn = parse_named_block(block_lines)
         named_rules[key] = fn
-    # Process each command-line parameter as an individual table to resolve.
-    for user_input in sys.argv[1:]:
+    for user_input in params:
         normalized = user_input.lower().replace("-", "").replace("_", "")
         candidates = [k for k in tables if k.replace("-", "").replace("_", "") == normalized]
         if not candidates:
             print(f"[Table '{user_input}' not found. Available: {', '.join(tables.keys())}]")
         else:
             table_name = candidates[0]
-            print(f"\n--- Resolving table '{user_input}' ---")
+            if VERBOSE:
+                print(f"\n--- Resolving table '{user_input}' ---")
             resolve_table(table_name, tables, named_rules)
-        print("\n" + "="*50 + "\n")
+            if VERBOSE:
+                print("\n" + "="*50 + "\n")
+    # In non-verbose mode, no extra header, separator, or indentations are printed.
 
 if __name__ == "__main__":
     main()
