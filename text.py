@@ -114,7 +114,7 @@ def parse_named_block(lines):
             return ""
         # Use the first mini-table (outer table) from the block.
         notation, outer = parsed_tables[0]
-        # If the block is "spell" and no dice notation was found, force "2D12"
+        # For example, if the block is "spell" and no notation was found, force "2D12"
         if name == "spell" and (notation is None):
             roll_notation = "2D12"
         else:
@@ -127,7 +127,8 @@ def parse_named_block(lines):
             roll, rolls = roll_dice(roll_notation)
             entry = next((c for r, c in outer if r == roll), None)
             print(f"  → [Nested roll in {name}]: Rolled {roll} (rolls: {rolls}) resulting in: {entry}")
-            if has_composite and entry.strip().lower() == name:
+            # Only check entry.strip() if entry is not None.
+            if entry is not None and has_composite and entry.strip().lower() == name:
                 attempts += 1
                 continue
             break
@@ -147,6 +148,7 @@ def parse_named_block(lines):
                     output.append(part)
             return "\n".join(output)
         return entry if entry is not None else ""
+
     return name, resolve_nested
 
 def load_tables():
@@ -248,22 +250,25 @@ def resolve_table(name, tables, named_rules={}, depth=0):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python text.py <TableName>")
+        print("Usage: python map.py <TableName> [<TableName> ...]")
         return
-    user_input = sys.argv[1].lower()
     tables = load_tables()
     named_rules = {}
     raw_blocks = extract_named_blocks()
     for name, block_lines in raw_blocks.items():
         key, fn = parse_named_block(block_lines)
         named_rules[key] = fn
-    normalized = user_input.replace("-", "").replace("_", "")
-    candidates = [k for k in tables if k.replace("-", "").replace("_", "") == normalized]
-    if not candidates:
-        print(f"[Table '{user_input}' not found. Available: {', '.join(tables.keys())}]")
-        return
-    table_name = candidates[0]
-    resolve_table(table_name, tables, named_rules)
+    # Process each command-line parameter as an individual table to resolve.
+    for user_input in sys.argv[1:]:
+        normalized = user_input.lower().replace("-", "").replace("_", "")
+        candidates = [k for k in tables if k.replace("-", "").replace("_", "") == normalized]
+        if not candidates:
+            print(f"[Table '{user_input}' not found. Available: {', '.join(tables.keys())}]")
+        else:
+            table_name = candidates[0]
+            print(f"\n--- Resolving table '{user_input}' ---")
+            resolve_table(table_name, tables, named_rules)
+        print("\n" + "="*50 + "\n")
 
 if __name__ == "__main__":
     main()
