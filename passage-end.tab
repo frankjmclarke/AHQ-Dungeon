@@ -1,0 +1,11 @@
+Passage-End
+(   2D12
+    2-3     T-Junction
+    4-8     Dead-End
+    9-11    Right-Turn
+   12-14    T-Junction
+   15-17    Left-Turn
+   18-19    Stairs-Down
+   20-22    Stairs-Out
+   23-24    T-Junction
+)

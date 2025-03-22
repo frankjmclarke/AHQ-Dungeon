@@ -1,0 +1,6 @@
+Room-Doors
+(   1D12
+    1-4     None
+    5-8     Door1
+    9-12    Door2
+)
