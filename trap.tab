@@ -1,0 +1,57 @@
+
+Room-Trap
+(   1D12
+    1-1     "Pit Trap (Spot 5)"
+    2-2     "Crossfire (Spot 8, Disarm 6)" & Crossfire()
+    3-3     "Portcullis (Spot 6, Disarm 11)"
+    4-4     "Blocks (Spot 7, Disarm 11)"
+    5-5     "Gas (Spot 10, Disarm 7)" & Gas()
+    6-6     "Mantrap (Spot 7, Disarm 6, 4 DD, Leg)"
+    7-7     "Magic (Spot 9, Disarm 7)" & Magic()
+    8-8     "Fireball (Spot 8, Disarm 9)"
+    9-12    "Alarm (Spot 7, Disarm 7)" & Wandering-Monsters()
+)
+
+Chest-Trap
+(   1D12
+    1-1     "Crossfire (Spot 8, Disarm 6)" & Crossfire()
+    2-2     "Poison Dart (Spot 9, Disarm 8)"
+    3-3     "Gas (Spot 10, Disarm 7)" & Gas()
+    4-4     "Mantrap (Spot 7, Disarm 6, 4DD, Hand)"
+    5-5     &
+            (    1D12
+                 1-7     "Spike (Spot 6, Disarm 7, 3 DD)"
+                 8-12    "Spike (Spot 6, Disarm 7, 3 DD, Poisend)"
+            )
+    6-6     "Shock (Spot 8, Disarm 11)"
+    7-7     "Magic (Spot 9, Disarm 7)" & Magic()
+    8-8     "Fireball (Spot 8, Disarm 9)"
+    9-9     "Mindstealer (Spot 6, Disarm 10)"
+    10-10   "Guillotine (Spot 6, Disarm 8, 2 DD, Hand)"
+    11-12   "Alarm (Spot 7, Disarm 7)" & Wandering-Monsters()
+)
+
+Crossfire
+(   1D12
+    1-4     "(3 Damage Dice)"
+    5-8     "(6 Damage Dice)"
+    9-12    "(9 Damage Dice)"
+)
+
+Gas
+(   1D12
+    1-6     "Mild Poison"
+    7-8     "Nausea"
+    9-10    "Madness"
+    11-11   "Strong Poison (8 DD)"
+    12-12   "Deadly Poison"
+)
+
+Magic
+(   1D12
+    1-2     "Inferno of Doom"
+    3-4     "Ligthning Bold"
+    5-8     "Choke"
+    9-10    "Flames of Death"
+    11-12   "Fireball"
+)

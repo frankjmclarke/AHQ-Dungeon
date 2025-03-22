@@ -1,0 +1,60 @@
+
+Bright-Spell
+(   1D12
+    1-1     "Open Window"
+    2-2     "Inferno of Doom"
+    3-3     "Courage"
+    4-4     "Still Air"
+    5-5     "Power of the Phoenix"
+    6-6     "Swift Wind"
+    7-7     "Flight"
+    8-8     "Flaming Hand of Destruction"
+    9-9     "The Bright Key"
+    10-10   "Flames of the Phoenix"
+    11-11   "Flames of Death"
+    12-12   "Dragon Armour"
+)
+
+Light-Spell
+(   1D12
+    1-1     "Power of Life"
+    2-2     "Strenght of Life"
+    3-3     "Cloak of Protection"
+    4-4     "Blinding Light"
+    5-5     "Escape"
+    6-6     "Restore Life"
+    7-7     "Regeneration"
+    8-8     "Remove of Venom"
+    9-9     "Dagger of Banishment"
+    10-10   "Sleep og Ages"
+    11-11   "Light of Learning"
+    12-12   "Banish Fear"
+)
+
+Amethyst-Spell
+(   1D10
+    1-1     "Fire of Judgement"
+    2-2     "Fortitude"
+    3-3     "Soul Steel"
+    4-4     "Alter Allegiance"
+    5-5     "Spirit Control"
+    6-6     "Sleep"
+    7-7     "Rout"
+    8-8     "Disillusion"
+    9-9     "Soul Share"
+    10-10   "Spasm"
+)
+
+Jade-Spell
+(   1D10
+    1-1     "The Green Eye"
+    2-2     "The Jade Shroud"
+    3-3     "The Cloak of Dainne"
+    4-4     "The Pool of Many Places"
+    5-5     "The Jade Casket"
+    6-6     "The Emerald Fountain"
+    7-7     "Hand of Decay"
+    8-8     "The Thousand Cuts"
+    9-9     "Mist of Speed"
+    10-10   "The Emerald Waterfall"
+)

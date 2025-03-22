@@ -1,0 +1,210 @@
+Hidden-Treasure
+(   2D12
+    2-6     "Hidden Treasure:" & "1 Dungeon-Counter"
+    7-16    Nothing
+   17-23    "Hidden Treasure:" & Gold-Treasure()
+   24-24    "Hidden Treasure:" & Magic-Treasure()
+)
+
+Gold-Treasure
+(   1D12
+    1-1     "5 Gold Crowns"
+    2-2     "10 Gold Crowns"
+    3-3     "15 Gold Crowns"
+    4-4     "20 Gold Crowns"
+    5-5     "25 Gold Crowns"
+    6-6     "30 Gold Crowns"
+    7-7     "35 Gold Crowns"
+    8-8     "40 Gold Crowns"
+    9-9     "45 Gold Crowns"
+    10-10   "50 Gold Crowns"
+    11-11   "55 Gold Crowns"
+    12-12   "60 Gold Crowns"
+)
+
+Magic-Treasure
+(   2D12
+    2-2     Dawnstone()
+    3-4     Amulet()
+    5-6     Magic-Wand()
+    7-8     Magic-Ring()
+    9-10    Shield-or-Helm()
+   11-11    Magic-Weapon()
+   12-13    Magical-Scroll()
+   14-16    Magic-Potion()
+   17-17    Arrows-or-Bolts()
+   18-19    Magic-Bow()
+   20-21    Magic-Sword()
+   22-24    Magic-Armour()
+)
+
+Dawnstone
+(   1D12
+    1-1     "Dawnstone (1 Fate Point)"
+    2-2     "Dawnstone (2 Fate Points)"
+    3-3     "Dawnstone (3 Fate Points)"
+    4-4     "Dawnstone (4 Fate Points)"
+    5-5     "Dawnstone (5 Fate Points)"
+    6-6     "Dawnstone (6 Fate Points)"
+    7-7     "Dawnstone (7 Fate Points)"
+    8-8     "Dawnstone (8 Fate Points)"
+    9-9     "Dawnstone (9 Fate Points)"
+    10-10   "Dawnstone (10 Fate Points)"
+    11-11   "Dawnstone (11 Fate Points)"
+    12-12   "Dawnstone (12 Fate Points)"
+)
+
+Amulet
+(   1D6
+    1-3     "Amulet of Iron"
+    4-6     "Amulet of Protection"
+)
+
+Magic-Wand
+(   1D12
+    1-12    "Magic Wand:" & Spell() & Charges()
+)
+
+Magic-Ring
+(   1D12
+    1-3     "Magic Ring of Protection (Level 1)"
+    4-5     "Magic Ring of Protection (Level 2)"
+    6-6     "Magic Ring of Protection (Level 3)"
+    7-9     "Magic Ring of Magic Protection (Level 1)"
+    10-11   "Magic Ring of Magic Protection (Level 2)"
+    12-12   "Magic Ring of Magic Protection (Level 3)"
+)
+
+Shield-or-Helm
+(   1D12
+    1-6     "Magical Shield (Sp 0, BS -1, T +1)"
+    7-8     "Magical Greatshield (Sp -1, BS -2, T +2)"
+    9-9     "Dwarven Shield (Sp 0, BS -2, T +2)"
+    10-11   "Magical Helm (Sp 0, BS 0, T +1)"
+    12-12   "Dwarven Helm (Sp 0, BS -1, T +2)"
+)
+
+Magic-Weapon
+(   1D12
+    1-3     "Magic Dagger (ST/DD 1-4/1 5/2 6/3 7/4 8/5 9/6 10/7 11/8 12/9)"
+    4-5     "Magic Spear (ST/DD 3-4/2 5/3 6/4 7/5 8/6 9/7 10/8 11/9 12/10)"
+    6-8     "Magic Axe (ST/DD 3-4/3 5/4 6/5 7/6 8/7 9/8 10/9 11/10 12/11)"
+    9-9     "Magic War-Axe (ST/DD 3-4/4 5/5 6/6 7/7 8/8 9/9 10/10 11/11 12/12)"
+    10-10   "Magic Halberd (ST/DD 3-4/2 5/3 6/4 7/5 8/6 9/7 10/8 11/9 12/10)"
+    11-11   "Magic Double-Handed Sword (ST/DD 6/6 7/7 8/8 9/9 10/10 11/11 12/12)"
+    12-12   "Magic Double-Handed Axe (ST/DD 6/6 7/7 8/8 9/9 10/10 11/11 12/12)"
+)
+
+Magical-Scroll
+(   1D12
+    1-12    "Magical Scroll" &
+            (   1D12
+                1-6     Spell()
+                7-9     Spell() & Spell()
+                10-11   Spell() & Spell() & Spell()
+                12-12   Spell() & Spell() & Spell() & Spell()
+            )
+)
+
+Magic-Potion
+(   1D12
+    1-6     "Magic Strength Potion"
+    7-12    "Magic Healing Potion"
+)
+
+Arrows-or-Bolts
+(   1D12
+    1-4     "4 Magic Arrows of Death (+1 DD)"
+    5-5     "2 Magic Bolts of Death (+1 DD)"
+    6-7     "2 Magic Arrow of True Flight (always Hit)"
+    8-8     "1 Magic Bolt of True Flight (always Hit)"
+    9-11    "4 Magic Arrows of Assassin (Critical Hit on 10-12)"
+    12-12   "2 Magic Bolts of Assassin (Critical Hit on 10-12)"
+)
+
+Magic-Bow
+(   1D12
+    1-4     "Magic Short Bow (R 28, DD 4)"
+    5-7     "Magic Bow (R 40, DD 4)"
+    8-9     "Magic Long Bow (R 48, DD 5)"
+    10-11   "Magic Cross Bow (R 48, DD 5)"
+    12-12   "Elven Power Bow (R 48, DD 6)"
+)
+
+Magic-Sword
+(   1D12
+    1-3     "Magic Sword (WS +1, S 0)"
+    4-6     "Magic Sword (WS 0, S +1)"
+    7-8     "Magic Sword (WS +1, S +1)"
+    9-9     "Magic Sword (WS +2, S +1)"
+    10-10   "Magic Sword (WS +1, S +2)"
+    11-11   "Magic Sword (WS +2, S +2)"
+    12-12   "Rune Sword (WS +2, S +2)"
+)
+            
+Magic-Armour
+(   2D12
+    2-6     "Magic Leather Armour (Sp 0, BS -1, T +1)"
+    7-10    "Magic Leather Armour (Sp -1, BS -1, T +2)"
+    11-13   "Magic Chain Armour (Sp -2, BS -1, T +3)"
+    14-15   "Magic Chain Armour (Sp -1, BS -1, T +2)"
+    16-17   "Magic Chain Armour (Sp 0, BS 0, T +1)"
+    18-19   "Magic Plate Armour (Sp -2, BS -2, T +4)"
+    20-20   "Magic Mithril Armour (Sp 0, BS 0, T +3)"
+    21-21   "Magic Enchanted Armour (Sp 0, BS 0, T +5)"
+    22-22   "Magic Dwarven Armour (Sp -2, BS -2, T +5)"
+    23-24   "Magic Elven Armour (Sp -1, BS 0, T +4)"
+)
+
+Treasure-Chest
+(   1D12
+    1-1     "Treasure Chest:" & "Treasure Map"
+    2-2     "Treasure Chest:" & "6 Arrows and 20 Gold Crowns"
+    3-3     "Treasure Chest:" & "10 Feet Rope and 30 Gold Crowns"
+    4-4     "Treasure Chest:" & "2 Flasks Greek Fire"
+    5-5     "Treasure Chest:" & "50 Gold Crowns"
+    6-6     "Treasure Chest:" & "100 Gold Crowns"
+    7-7     "Treasure Chest:" & "150 Gold Crowns"
+    8-8     "Treasure Chest:" & "Screech Bug and 50 Gold Crowns"
+    9-9     "Treasure Chest:" & "Rat Poison and 50 Gold Crowns"
+   10-10    "Treasure Chest:" & "200 Gold Crowns"
+   11-11    "Treasure Chest:" & Magic-Potion() & "and 50 Gold Crowns"
+   12-12    "Treasure Chest:" & Magic-Treasure()
+)
+
+Spell
+(   2D12
+    2-3     "Inferno of Doom"
+    4-4     "Power of the Phoenix"
+    5-5     "Swift Wind"
+    6-6     "Still Air"
+    7-8     "Lightning Bold"
+    9-10    "Choke"
+    11-11   "Flames of Death"
+    12-12   "Flames of the Phoenix"
+    13-13   "Open Window"
+    14-14   "Dragon Armour"
+    15-15   "Flaming Skull of Terror"
+    16-17   "Fireball"
+    18-19   "Courage"
+    20-21   "Flight"
+    22-22   "Flaming Hand of Destruction"
+    23-24   "The Bright Key"
+)
+
+Charges
+(   1D12
+    1-1     "(1 Charge)"
+    2-2     "(2 Charges)"
+    3-3     "(3 Charges)"
+    4-4     "(4 Charges)"
+    5-5     "(5 Charges)"
+    6-6     "(6 Charges)"
+    7-7     "(7 Charges)"
+    8-8     "(8 Charges)"
+    9-9     "(9 Charges)"
+    10-10   "(10 Charges)"
+    11-11   "(11 Charges)"
+    12-12   "(12 Charges)"
+)
+

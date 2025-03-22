@@ -1,0 +1,78 @@
+Passage-Length
+(   1D12
+    1-2     Section1
+    3-8     Section2
+    9-12    Section3
+)
+
+Passage-End
+(   2D12
+    2-3     T-Junction
+    4-8     Dead-End
+    9-11    Right-Turn
+   12-14    T-Junction
+   15-17    Left-Turn
+   18-19    Stairs-Down
+   20-22    Stairs-Out
+   23-24    T-Junction
+)
+
+Passage-Feature
+(   2D12
+    2-4     Wandering-Monsters
+    5-15    Nothing
+   16-19    Door1
+   20-21    Door2
+   22-24    Wandering-Monsters
+)
+
+Room-Type
+(   1D12
+    1-6     Normal
+    7-8     Hazard
+    9-10    Lair
+   11-12    Quest
+)
+
+Room-Doors
+(   1D12
+    1-4     None
+    5-8     Door1
+    9-12    Door2
+)
+    
+Secret-Doors
+(   1D12
+    1-1     None ;"1-Dungeon-Counter"
+    2-6     None
+    7-12    Door1
+)
+
+Room-or-Passage
+(   1D6
+    1-3     Room
+    4-6     Passage
+)
+
+Normal
+(   1D12
+    1-12    Room-Furnish() & Hidden-Treasure()
+)
+
+Hazard
+(   1D12
+    1-12    Hazards-Matrix() & Hidden-Treasure()
+)
+
+Lair
+(   1D12
+    1-12    Chest & Lairs-Matrix() & Treasure-Chest() & Hidden-Treasure()
+)
+
+Quest
+(   1D12
+    1-12    Stairs_and_Chest & "Stairs Down" & Quest-Rooms-Matrix() & Treasure-Chest() & Hidden-Treasure()
+)
+
+
+

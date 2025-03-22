@@ -1,0 +1,84 @@
+if ROOM-FURNISH
+
+Room-Furnish
+(   1D12
+    1-6     Nothing
+    7-7     Weapons-Rack()
+    8-8     Cupboard()
+    9-9     Table()
+    10-10   Fireplace()
+    11-11   Bookcase()
+    12-12   Rack()
+)
+
+else
+
+Room-Furnish
+(   1D12
+    1-12    Nothing
+)
+
+endif
+
+Table
+(   1D12
+    1-12    Table & "Table"
+)
+
+Rack
+(   1D12
+    1-12    Rack & "Rack"
+)
+
+Fireplace
+(   1D12
+    1-12    Fireplace & "Fireplace"
+)
+
+Cupboard
+(   1D12
+    1-1     Cupboard & "Cupboard: Rat bits Hero (WS -1)"
+    2-9     Cupboard & "Cupboard"
+    10-11   Cupboard & "Cupboard: 25 Gold Crowns"
+    12-12   Cupboard & "Cupboard: Haeling Potion"
+)
+
+Weapons-Rack
+(   1D12
+    1-2     Weapons-Rack & "Weapons Rack"
+    3-4     Weapons-Rack & "Weapons Rack:" & "1 Spear"
+    5-5     Weapons-Rack & "Weapons Rack:" & "3 Spears"
+    6-7     Weapons-Rack & "Weapons Rack:" & "6 Arrows"
+    8-8     Weapons-Rack & "Weapons Rack:" & "12 Arrows"
+    9-10    Weapons-Rack & "Weapons Rack:" & "1 Sword"
+    11-11   Weapons-Rack & "Weapons Rack:" & "1 Axe"
+    12-12   Weapons-Rack & "Weapons Rack:" &
+            (   1D12
+                1-2     Nothing
+                3-4     "1 Spear"
+                5-5     "3 Spears"
+                6-7     "6 Arrows"
+                8-8     "12 Arrows"
+                9-10    "1 Sword" 
+                11-11   "1 Axe"
+                12-12   "1 Halberd"
+            ) &
+            (   1D12
+                1-2     Nothing
+                3-4     "1 Spear"
+                5-5     "3 Spears"
+                6-7     "6 Arrows"
+                8-8     "12 Arrows"
+                9-10    "1 Sword" 
+                11-11   "1 Axe"
+                12-12   "1 Halberd"
+            )
+)
+
+Bookcase
+(   1D12
+    1-10    Bookcase
+    11-11   Bookcase & "Bookcase:" & "Spell Book containing:" & Spell() & Spell() & Spell() & Spell()
+    12-12   Bookcase & "Bookcase:" & "Teasure Map"
+)
+

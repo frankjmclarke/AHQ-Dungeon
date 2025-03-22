@@ -1,0 +1,54 @@
+Wandering-Monsters
+(   1D12
+    1-2     "2 Skaven Warriors (20 Gold Crowns)"
+    3-4     "1 Skaven Sentry (20 Gold Crowns)"
+    5-6     "3 Skaven Warriors (30 Gold Crowns)"
+    7-8     "1 Skaven Warrior, 1 Skaven Champion (30 Gold Crowns)"
+    9-9     "4 Skaven Warriors (40 Gold Crowns)"
+    10-10   "2 Skaven Warriors, 1 Skaven Champion (40 Gold Crowns)"
+    11-11   "3 Skaven Warriors, 1 Skaven Sentry (50 Gold Crowns)"
+    12-12   "4 Skaven Warriors, 1 Skaven Champion (60 Gold Crowns)"
+)
+
+Lairs-Matrix
+(   1D12
+    1-1     "4 Skaven Warriors (40 Gold Crowns)"
+    2-2     "2 Skaven Warriors, 1 Champion (40 Gold Crowns)"
+    3-3     "5 Skaven Warriors (50 Gold Crowns)"
+    4-4     "3 Skaven Warriors, 1 Sentry (50 Gold Crowns)"
+    5-5     "6 Skaven Warriors (60 Gold Crowns)"
+    6-6     "4 Skaven Warriors, 1 Skaven Champion (60 Gold Crowns)"
+    7-7     "2 Skaven Warriors, 2 Skaven Champions (60 Gold Crowns)"
+    8-8     "1 Skaven Warlord (60 Gold Crowns)"
+    9-9     "6 Skaven Warriors, 1 Skaven Champion (80 Gold Crowns)" & Specialist-Skaven()
+    10-10   "6 Skaven Warriors, 1 Skaven Champion (80 Gold Crowns)" & Specialist-Skaven()
+    11-11   "2 Skaven Warriors, 1 Skaven Warlord (80 Gold Crowns)" & Specialist-Skaven()
+    12-12   "4 Skaven Warriors, 1 Skaven Sentry, 2 Skaven Champions (100 Gold Crowns)" & Specialist-Skaven()
+)
+
+Quest-Rooms-Matrix
+(   1D12
+    1-1     "2 Skaven Champions, 1 Skaven Warlord (100 Gold Crowns)"
+    2-2     "6 Skaven Warriors, 2 Skaven Champions (100 Gold Crowns)"
+    3-3     "8 Skaven Warriors, 1 Skaven Champions (100 Gold Crowns)"
+    4-4     "4 Skaven Warriors, 1 Skaven Sentry, 1 Skaven Warlord (120 Gold Crowns)"
+    5-5     "3 Skaven Champions, 1 Skaven Warlord (120 Gold Crowns)"
+    6-6     "8 Skaven Warriors, 2 Skaven Champions (120 Gold Crowns)"
+    7-7     "2 Skaven Warriors, 2 Skaven Champions, 1 Skaven Warlord (120 Gold Crowns)"
+    8-8     "6 Skaven Warriors, 1 Skaven Sentry, 1 Skaven Warlord (140 Gold Crowns)"
+    9-9     "4 Skaven Warriors, 2 Skaven Champions, 1 Skaven Warlord (140 Gold Crowns)" & Specialist-Skaven()
+    10-10   "8 Skaven Warriors, 3 Skaven Champions (140 Gold Crowns)" & Specialist-Skaven()
+    11-11   "4 Skaven Champions, 1 Skaven Warlord (140 Gold Crowns)" & Specialist-Skaven()
+    12-12   "12 Skaven Warriors, 1 Skaven Sentry, 1 Skaven Champion (160 Gold Crowns)" & Specialist-Skaven()
+)
+
+Specialist-Skaven
+(   1D12
+    1-7     None
+    8-8     "1 Skaven Nightrunner"
+    9-9     "2 Skaven Gutter Runners"
+    10-10   "1 Skaven Poisend Wind Globadier"
+    11-11   "1 Skaven Warp Thrower Team"
+    12-12   "1 Skaven Jezzail Team"
+)
+

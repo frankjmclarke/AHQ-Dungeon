@@ -1,0 +1,207 @@
+Hazards-Matrix
+(   1D12
+    1-1     Room-Furnish() & Wandering-Monsters()
+    2-2     Non-Player-Character()
+    3-3     Chasm()
+    4-4     Statue()
+    5-5     &   ;Rats-or-Bats
+            (   1D12
+                1-6     Rats()
+                7-12    Bats()
+            )
+    6-6     Mould()
+    7-7     Mushrooms()
+    8-8     Grate()
+    9-9     Pool()
+   10-10    Magic-Circle()
+   11-11    Trapdoor()
+   12-12    Throne()
+)
+
+Non-Player-Character
+(   1D12
+    1-3     Maiden & "Maiden (SP 6, T 3, W 2)" & Wandering-Monsters()
+    4-6     Witch & "Witch (WS 7, T 4, W 2)" & "- or -" & Wandering-Monsters()
+    7-9     Man-at-Arms & "Man-at-Arms (Henchman: SP 6, WS 7, T 8, W 3)" & Wandering-Monsters()
+    10-12   Rogue & "Rogue (Sergeand: SP 6, WS 8, T 10, W 3, F 1)" & "- or -" & Wandering-Monsters()
+)
+
+Chasm
+(   1D12
+    1-12    Chasm & "Chasm" & Wandering-Monsters() & Treasure-Chest()
+)
+
+Statue
+(   1D12
+    1-12    Statue &
+            (   1D12
+                1-2     "Statue: Curse"
+                3-6     "Animated Statue (SP 6, WS 9, T 8, W 8, DD 5)"
+                7-11    "Statue: Transformation to Skaven Warlord Sentry"
+                12-12   "Statue: Nothing Happens"
+            )
+)
+
+Rats
+(   1D12
+    1-12    Rats &
+            (   2D12
+                2-2     "10 Rats"
+                3-3     "15 Rats"
+                4-4     "20 Rats"
+                5-5     "25 Rats"
+                6-6     "30 Rats"
+                7-7     "35 Rats"
+                8-8     "40 Rats"
+                9-9     "45 Rats"
+                10-10   "50 Rats"
+                11-11   "55 Rats"
+                12-12   "60 Rats"
+                13-13   "65 Rats"
+                14-14   "70 Rats"
+                15-15   "75 Rats"
+                16-16   "80 Rats"
+                17-17   "85 Rats"
+                18-18   "90 Rats"
+                19-19   "95 Rats"
+                20-20   "100 Rats"
+                21-21   "105 Rats"
+                22-22   "110 Rats"
+                23-23   "115 Rats"
+                24-24   "120 Rats"
+            )
+)
+
+Bats
+(   1D12
+    1-12    Bats &
+            (   1D12
+                1-2     "Bats (1 Wound)"
+                3-4     "Bats (2 Wounds)"
+                5-6     "Bats (3 Wounds)"
+                7-8     "Bats (4 Wounds)"
+                9-10    "Bats (5 Wounds)"
+                11-12   "Bats (6 Wounds)"
+            )
+)
+      
+Mould
+(   1D12
+    1-12    Mould & "Mould"
+)
+
+Mushrooms
+(   1D12
+    1-12    Mushrooms &
+            (   1D12
+                1-1     "1 Mushroom:"
+                2-2     "2 Mushrooms:"
+                3-3     "3 Mushrooms:"
+                4-4     "4 Mushrooms:"
+                5-5     "5 Mushrooms:"
+                6-6     "6 Mushrooms:"
+                7-7     "7 Mushrooms:"
+                8-8     "8 Mushrooms:"
+                9-9     "9 Mushrooms:"
+                10-10   "10 Mushrooms:"
+                11-11   "11 Mushrooms:"
+                12-12   "12 Mushrooms:"
+            ) &
+            (   1D12
+                1-2     "Deadly Poison (Rat Poison)"
+                3-4     "Sleeping Mushrooms"
+                5-6     "Polka Dots"
+                7-8     "Strenght (DD +1)"
+                9-10    "Speed (SP +4 / *2)"
+                11-12   "Healing"
+            )
+)
+
+Grate
+(   1D12
+    1-12    Grate & "Grate" & Room()
+)
+
+Pool
+(   1D12
+    1-12    Pool & "Pool"
+)
+
+Magic-Circle
+(   1D12
+    1-12    Magic-Circle & 
+            (   1D12
+                1-1     "Magic Cricle: Cursed"
+                2-2     "Magic Cricle: Summoning" & Wandering-Monsters()
+                3-6     "Magic Cricle: Nothing Happens"
+                7-9     "Magic Cricle: Magical Power"
+                10-11   "Magic Cricle: Healing"
+                12-12   "Magic Cricle: Fate"
+            )
+)
+
+Trapdoor
+(   1D12
+    1-12    Trapdoor & "Trapdoor" &
+            (   1D12
+                1-1     Chest-Trap()
+                2-3     Room()
+            
+                4-6     "Crypt:" &
+                (   1D12
+                    1-2     "Mould Spores"
+                    3-6     "Empty"
+                    7-11    "Golden Ring: 25 Gold"
+                    12-12   "Undead Skaven (WS 6, T 12, S 6, W 1, DD 6)"
+                )
+                7-9     "Nothing"
+                10-12   "Stairs-Down"
+            )
+)
+
+Throne
+(   1D12
+    1-12    Throne & "Throne" & Wandering-Monsters()
+)
+
+Room
+(   1D12
+    1-12    "Sub-Room" &
+            (   1D12
+                1-6     "Normal:" & Normal()
+                7-8     "Hazard:" &
+                        (   1D12
+                            1-1     Room-Furnish() & Wandering-Monsters()
+                            2-2     Non-Player-Character()
+                            3-3     Room-Furnish() & Wandering-Monsters()
+                            4-4     Statue()
+                            5-5     & ; Rats-or-Bats
+                                    (   1D12
+                                        1-6     Rats()
+                                        7-12    Bats()
+                                    )
+                            6-6     Mould()
+                            7-7     Mushrooms()
+                            8-8     Room-Furnish() & Wandering-Monsters()
+                            9-9     Pool()
+                           10-10    Magic-Circle()
+                           11-11    Room-Furnish() & Wandering-Monsters()
+                           12-12    Throne()
+                        ) & Hidden-Treasure()
+                9-10    "Lair: " & Lair()
+                11-12   "Quest Room: " & Quest()
+            )
+)
+
+Moths
+(   1D12
+    1-12    Moths &
+            (   1D12
+                1-2     "Moths (1 Wound)"
+                3-4     "Moths (2 Wounds)"
+                5-6     "Moths (3 Wounds)"
+                7-8     "Moths (4 Wounds)"
+                9-10    "Moths (5 Wounds)"
+                11-12   "Moths (6 Wounds)"
+            )
+)

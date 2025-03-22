@@ -1,0 +1,12 @@
+#The Quest for the Shattered Amulett
+#-----------------------------------
+#
+
+define ROOM-FURNISH
+
+include amulett\room.tab
+include standard\furnish.tab
+include standard\hazard.tab
+include standard\treasure.tab
+include standard\trap.tab
+include amulett\skaven.tab
