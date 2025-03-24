@@ -1,20 +1,14 @@
-<?php
+﻿<?php
 define('MAX_DEPTH', 50);
 define('DEFAULT_DICE', '1D12');
-$VERBOSE = isset($_GET['verbose']);
+$VERBOSE = true;
 $resolved_stack = [];
+$context_stack = [];
 
-function html($text) {
-    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
-}
+$directories = array_filter(glob('*'), 'is_dir');
 
-function debug_print($msg) {
-    global $VERBOSE;
-    if ($VERBOSE) echo "<pre style='color:gray'>" . html($msg) . "</pre>";
-}
-
-function final_print($indent, $msg) {
-    echo "<pre>" . html($msg) . "</pre>";
+function normalize_name($name) {
+    return strtolower(str_replace(['-', '_'], '', $name));
 }
 
 function roll_dice($notation) {
@@ -56,7 +50,7 @@ function extract_named_blocks() {
         $lines = array_values(array_filter(array_map('rtrim', file($file)), fn($l) => trim($l) && !str_starts_with(trim($l), '#')));
         for ($i = 0; $i < count($lines);) {
             if (preg_match('/^[A-Za-z_][A-Za-z0-9_\-]*$/', $lines[$i])) {
-                $name = strtolower(trim($lines[$i]));
+                $name = normalize_name(trim($lines[$i]));
                 $i++;
                 if ($i < count($lines) && str_starts_with(trim($lines[$i]), '(')) {
                     $depth = 1;
@@ -79,7 +73,7 @@ function extract_named_blocks() {
 }
 
 function parse_named_block($lines) {
-    $name = strtolower(trim($lines[0]));
+    $name = normalize_name(trim($lines[0]));
     $stack = [];
     $current = [];
     $parsed_tables = [];
@@ -109,12 +103,10 @@ function parse_named_block($lines) {
     $resolver = function () use ($name, $parsed_tables) {
         if (!$parsed_tables) return '';
         [$notation, $outer] = $parsed_tables[0];
-        $roll_notation = $notation ?: ($name === 'spell' ? '2D12' : DEFAULT_DICE);
-
+        $roll_notation = $notation ?: DEFAULT_DICE;
         $has_composite = array_reduce($outer, fn($carry, $e) => $carry || str_contains($e[1], '&'), false);
         $attempts = 0;
         $entry = null;
-
         while ($attempts < 10) {
             [$roll, $rolls] = roll_dice($roll_notation);
             foreach ($outer as [$r, $content]) {
@@ -123,35 +115,21 @@ function parse_named_block($lines) {
                     break;
                 }
             }
-            if ($entry && $has_composite && strtolower(trim($entry)) === $name) {
+            if ($entry && $has_composite && normalize_name($entry) === $name) {
                 $attempts++;
                 continue;
             }
             break;
         }
-
         if ($entry && str_contains($entry, '&')) {
             $parts = array_map('trim', explode('&', $entry));
             $output = [];
             foreach ($parts as $part) {
-                if (strtolower($part) === $name) continue;
-                if (str_starts_with($part, '(') && isset($parsed_tables[1])) {
-                    [$notation2, $subtable] = $parsed_tables[1];
-                    $roll2 = $notation2 ?: DEFAULT_DICE;
-                    [$subroll, $sub_rolls] = roll_dice($roll2);
-                    foreach ($subtable as [$r, $c]) {
-                        if ($r === $subroll) {
-                            $output[] = $c;
-                            break;
-                        }
-                    }
-                } else {
-                    $output[] = $part;
-                }
+                if (normalize_name($part) === $name) continue;
+                $output[] = $part;
             }
             return implode("\n", $output);
         }
-
         return $entry ?? '';
     };
 
@@ -177,130 +155,142 @@ function parse_tab_file($filename) {
 
 function load_tables() {
     $tables = [];
-    foreach (glob("*.tab") as $file) {
-        $name = strtolower(pathinfo($file, PATHINFO_FILENAME));
-        $tables[$name] = parse_tab_file($file);
+    foreach (glob("*.tab") as $filepath) {
+        $basename = pathinfo($filepath, PATHINFO_FILENAME);
+        $normalized = normalize_name($basename);
+        $tables[$normalized] = parse_tab_file($filepath);
     }
     return $tables;
 }
 
 function process_and_resolve_text($text, $tables, $named_rules, $depth, $parent_table = null, $current_named = null) {
-    global $resolved_stack;
-    $indent = str_repeat("  ", $depth);
-    if ($depth > MAX_DEPTH) return;
+    global $resolved_stack, $context_stack;
+    $result = "";
+    if ($depth > MAX_DEPTH) return $result;
 
     foreach (explode("\n", $text) as $line) {
         $line = trim($line);
-        if (preg_match('/^([A-Za-z0-9_\-]+)\(\)$/', $line, $m)) {
-            $name = strtolower($m[1]);
-            if (isset($named_rules[$name])) {
-                $result = $named_rules[$name]();
-                process_and_resolve_text($result, $tables, $named_rules, $depth + 1, $parent_table, $name);
-                continue;
-            }
-        }
+        $lname = normalize_name($line);
 
-        if (isset($named_rules[strtolower($line)])) {
-            $lname = strtolower($line);
-            if ($current_named === $lname) {
-                final_print($indent, $line);
+        if (isset($named_rules[$lname])) {
+            if ($current_named !== null && $lname === $current_named) {
+                $result .= "$line\n";
             } elseif (!in_array($lname, $resolved_stack)) {
                 $resolved_stack[] = $lname;
-                $result = $named_rules[$lname]();
-                process_and_resolve_text($result, $tables, $named_rules, $depth + 1, $parent_table, $lname);
+                $context_stack[] = $lname;
+
+                $resolved = $named_rules[$lname]();
+                $result .= process_and_resolve_text($resolved, $tables, $named_rules, $depth + 1, $parent_table, $lname);
+
+                array_pop($context_stack);
                 array_pop($resolved_stack);
             }
             continue;
         }
 
-        if (str_starts_with($line, '"') && str_ends_with($line, '"')) {
-            final_print($indent, substr($line, 1, -1));
-        } else {
-            final_print($indent, $line);
-        }
+        $result .= "$line\n";
 
         preg_match_all('/([A-Za-z0-9_\-]+)\(\)/', $line, $matches);
         foreach ($matches[1] as $match) {
-            $match = strtolower($match);
-            if ($current_named === $match || in_array($match, $resolved_stack)) continue;
-            $resolved_stack[] = $match;
-            if (isset($named_rules[$match])) {
-                $result = $named_rules[$match]();
-                process_and_resolve_text($result, $tables, $named_rules, $depth + 1, $parent_table, $match);
-            } elseif (isset($tables[$match])) {
-                resolve_table($match, $tables, $named_rules, $depth + 1);
+            $mname = normalize_name($match);
+            if ($current_named === $mname || in_array($mname, $resolved_stack)) continue;
+            $resolved_stack[] = $mname;
+            $context_stack[] = $mname;
+            if (isset($named_rules[$mname])) {
+                $resolved = $named_rules[$mname]();
+                $result .= process_and_resolve_text($resolved, $tables, $named_rules, $depth + 1, $parent_table, $mname);
+            } elseif (isset($tables[$mname])) {
+                $result .= resolve_table($mname, $tables, $named_rules, $depth + 1);
             }
+            array_pop($context_stack);
             array_pop($resolved_stack);
         }
     }
+    return $result;
 }
 
 function resolve_table($name, $tables, $named_rules = [], $depth = 0) {
-    $indent = str_repeat("  ", $depth);
-    $name = strtolower($name);
-    if (!isset($tables[$name])) return;
+    global $context_stack;
+
+    $normalized = normalize_name($name);
+    $context_stack[] = $normalized;
+
+    if (!isset($tables[$normalized])) {
+        echo "<pre style='color:red'>[Missing table: $name] — Called from: " . implode(" → ", $context_stack) . "</pre>\n";
+        array_pop($context_stack);
+        return "";
+    }
+
     [$roll, $rolls] = roll_dice(DEFAULT_DICE);
-    foreach ($tables[$name] as [$r, $content]) {
+    foreach ($tables[$normalized] as [$r, $content]) {
         if ($r === $roll) {
+            $result = "";
             if (str_starts_with($content, '"') && str_ends_with($content, '"')) {
-                final_print($indent, substr($content, 1, -1));
+                $result = substr($content, 1, -1) . "\n";
             } elseif (str_starts_with($content, '[[') && str_ends_with($content, ']]')) {
                 foreach (explode("&", substr($content, 2, -2)) as $part) {
-                    resolve_table(strtolower(trim(str_replace("()", "", $part))), $tables, $named_rules, $depth + 1);
+                    $result .= resolve_table(trim($part), $tables, $named_rules, $depth + 1);
                 }
             } else {
-                process_and_resolve_text($content, $tables, $named_rules, $depth, $name);
+                $result = process_and_resolve_text($content, $tables, $named_rules, $depth, $name);
             }
-            return;
+
+            array_pop($context_stack);
+            return $result;
         }
     }
+
+    array_pop($context_stack);
+    return "[No match for roll in $name]";
 }
 
-function run_web($startTable) {
+function handle_ajax() {
+    if (!isset($_GET['tables'])) return;
+    $input = explode(" ", $_GET['tables']);
     $tables = load_tables();
     $named_rules = [];
     foreach (extract_named_blocks() as $name => $lines) {
         [$key, $fn] = parse_named_block($lines);
         $named_rules[$key] = $fn;
     }
-
-    $normalized = strtolower(str_replace(['-', '_'], '', $startTable));
-    $candidates = array_filter(array_keys($tables), fn($k) => str_replace(['-', '_'], '', $k) === $normalized);
-
-    if (!$candidates) {
-        echo "<p style='color:red'>Table '$startTable' not found.</p>";
-        return;
+    $output = "";
+    foreach ($input as $tbl) {
+        $output .= resolve_table($tbl, $tables, $named_rules);
     }
-
-    $table_name = array_values($candidates)[0];
-    resolve_table($table_name, $tables, $named_rules);
+    echo trim($output);
+    exit;
 }
+
+if (isset($_GET['tables'])) handle_ajax();
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Recursive Table Roller</title>
+    <title>Map Generator</title>
+    <script>
+        function runCommand(command) {
+            fetch("?tables=" + encodeURIComponent(command))
+                .then(res => res.text())
+                .then(text => {
+                    document.getElementById("output").value = text;
+                });
+        }
+    </script>
 </head>
 <body>
-    <h2>Recursive Table Resolver</h2>
-    <form method="get">
-        <label>Choose a table:</label>
-        <select name="table">
-            <?php foreach (glob("*.tab") as $f): $name = basename($f, '.tab'); ?>
-                <option value="<?= html($name) ?>" <?= (isset($_GET['table']) && $_GET['table'] === $name) ? 'selected' : '' ?>>
-                    <?= html($name) ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-        <label><input type="checkbox" name="verbose" <?= $VERBOSE ? 'checked' : '' ?>> Verbose</label>
-        <button type="submit">Roll!</button>
-    </form>
-    <hr>
-    <?php
-        if (isset($_GET['table'])) {
-            run_web($_GET['table']);
-        }
-    ?>
+    <h1>Map Generator</h1>
+    <button onclick="runCommand('passagelength passageend passagefeature')">New Passage</button>
+    <button onclick="runCommand('roomtype roomdoors')">Open Passage Door</button>
+    <button onclick="runCommand('secretdoors')">Secret Doors</button>
+    <button onclick="runCommand('roomorpassage')">Open Door in Room</button>
+    <br><br>
+    <textarea id="output" rows="20" cols="80"></textarea>
+      <br>
+      <select id="dropdown">
+        <?php foreach ($directories as $dir): ?>
+          <option value="<?= htmlspecialchars($dir) ?>"><?= htmlspecialchars($dir) ?></option>
+        <?php endforeach; ?>
+      </select>
 </body>
 </html>
