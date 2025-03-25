@@ -63,10 +63,26 @@ function parse_inline_table($lines) {
 }
 
 // --- Extract named blocks from .tab and .txt files ---
-function extract_named_blocks() {
+// Now accepts an optional $subdir parameter; files in $subdir take precedence.
+function extract_named_blocks($subdir = null) {
     $blocks = array();
-    $files = array_merge(glob("*.tab"), glob("*.txt"));
+    $files = array();
+    
+    // First, add files from the subdirectory if provided.
+    if ($subdir && is_dir($subdir)) {
+        $files = array_merge($files, glob($subdir . "/*.tab"), glob($subdir . "/*.txt"));
+    }
+    // Then add top-level files.
+    $files = array_merge($files, glob("*.tab"), glob("*.txt"));
+    
+    // To avoid duplicates, only use the first occurrence (subdirectory files override top-level)
+    $used = array();
     foreach ($files as $filepath) {
+        $basename = basename($filepath);
+        if (isset($used[$basename])) {
+            continue;
+        }
+        $used[$basename] = true;
         $lines_raw = file($filepath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         $lines = array();
         foreach ($lines_raw as $line) {
@@ -104,119 +120,28 @@ function extract_named_blocks() {
     return $blocks;
 }
 
-// --- Parse a named block into a block name and a resolver closure ---
-function parse_named_block($lines) {
-    $name = strtolower(trim($lines[0]));
-    $stack = array();
-    $current = array();
-    $parsed_tables = array();  // Each element: [dice_notation, table]
-    $dice_notation = null;
-    for ($i = 1; $i < count($lines); $i++) {
-        $line = $lines[$i];
-        if (strpos(trim($line), "(") === 0) {
-            $stack[] = $current;
-            $current = array();
-        } elseif (strpos(trim($line), ")") === 0) {
-            if (!empty($current)) {
-                $first_line = trim($current[0]);
-                $tokens = preg_split('/\s+/', $first_line);
-                if (!empty($tokens) && preg_match('/^\d+[dD]\d+$/', $tokens[0])) {
-                    $dice_notation = $tokens[0];
-                    array_shift($tokens);
-                    if (!empty($tokens)) {
-                        $current[0] = implode(" ", $tokens);
-                    } else {
-                        array_shift($current);
-                    }
-                }
-            }
-            $parsed = parse_inline_table($current);
-            $current = count($stack) > 0 ? array_pop($stack) : array();
-            $parsed_tables[] = array($dice_notation, $parsed);
-            $dice_notation = null;
-        } else {
-            $current[] = $line;
+// --- Load tables from .tab files ---
+// Checks for files in the selected subdirectory first, then falls back to top-level.
+function load_tables($subdir = null) {
+    $tables = array();
+    
+    // Load files from the subdirectory (if provided)
+    if ($subdir && is_dir($subdir)) {
+        $files = glob($subdir . "/*.tab");
+        foreach ($files as $filepath) {
+            $filename = basename($filepath);
+            $name = strtolower(pathinfo($filename, PATHINFO_FILENAME));
+            $tables[$name] = parse_tab_file($filepath);
         }
     }
-    // Return a closure that resolves this block when called
-    $resolve_nested = function() use ($parsed_tables, $name) {
-        if (empty($parsed_tables)) {
-            return "";
-        }
-        list($notation, $outer) = $parsed_tables[0];
-        if ($name === "spell" && $notation === null) {
-            $roll_notation = "2D12";
-        } else {
-            $roll_notation = $notation !== null ? $notation : DEFAULT_DICE;
-        }
-        debug_print("Using dice notation '{$roll_notation}' for block '{$name}'");
-        $has_composite = false;
-        foreach ($outer as $entry) {
-            if (strpos($entry[1], "&") !== false) {
-                $has_composite = true;
-                break;
-            }
-        }
-        $attempts = 0;
-        $entry_val = null;
-        while ($attempts < 10) {
-            $result = roll_dice($roll_notation);
-            $roll = $result['total'];
-            $rolls = $result['rolls'];
-            $entry_val = null;
-            foreach ($outer as $tuple) {
-                if ($tuple[0] == $roll) {
-                    $entry_val = $tuple[1];
-                    break;
-                }
-            }
-            debug_print("  → [Nested roll in {$name}]: Rolled {$roll} (rolls: " . implode(",", $rolls) . ") resulting in: {$entry_val}");
-            if ($entry_val !== null && $has_composite && strtolower(trim($entry_val)) === $name) {
-                $attempts++;
-                continue;
-            }
-            break;
-        }
-        if ($entry_val !== null && strpos($entry_val, "&") !== false) {
-            $parts = array_map('trim', explode("&", $entry_val));
-            $output = array();
-            foreach ($parts as $part) {
-                if (strtolower($part) === $name) {
-                    continue;
-                }
-                if (strpos($part, "(") === 0 && count($parsed_tables) > 1) {
-                    list($notation2, $subtable) = $parsed_tables[1];
-                    $roll_notation2 = $notation2 !== null ? $notation2 : DEFAULT_DICE;
-                    $result2 = roll_dice($roll_notation2);
-                    $subroll = $result2['total'];
-                    $sub_rolls = $result2['rolls'];
-                    $subentry = null;
-                    foreach ($subtable as $tuple) {
-                        if ($tuple[0] == $subroll) {
-                            $subentry = $tuple[1];
-                            break;
-                        }
-                    }
-                    $output[] = "[Nested roll in {$name} nested]: Rolled {$subroll} (rolls: " . implode(",", $sub_rolls) . ") resulting in: {$subentry}";
-                } else {
-                    $output[] = $part;
-                }
-            }
-            return implode("\n", $output);
-        }
-        return $entry_val !== null ? $entry_val : "";
-    };
-    return array($name, $resolve_nested);
-}
-
-// --- Load tables from .tab files ---
-function load_tables() {
-    $tables = array();
+    // Load from top-level, but do not override files already loaded from subdir
     $files = glob("*.tab");
     foreach ($files as $filepath) {
         $filename = basename($filepath);
         $name = strtolower(pathinfo($filename, PATHINFO_FILENAME));
-        $tables[$name] = parse_tab_file($filepath);
+        if (!isset($tables[$name])) {
+            $tables[$name] = parse_tab_file($filepath);
+        }
     }
     return $tables;
 }
@@ -348,25 +273,26 @@ function resolve_table($name, $tables, $named_rules = array(), $depth = 0) {
 // --- Main function ---
 function main() {
     global $VERBOSE;
-    // Retrieve parameters from the URL query string, e.g. ?tables=room,treasure&verbose=1
-    if (isset($_GET['verbose']) && $_GET['verbose'] == "1") {
+    // Check for verbose flag and subdirectory parameter.
+    $params = $_GET;
+    if (isset($params['verbose']) && $params['verbose'] == "1") {
         $VERBOSE = true;
     }
-    if (!isset($_GET['tables']) || empty($_GET['tables'])) {
-        echo "Usage: script.php?tables=TableName1,TableName2[,...]&verbose=1 (optional for verbose output)";
+    if (!isset($params['tables']) || empty($params['tables'])) {
+        echo "Usage: index2.php?tables=TableName1,TableName2[,...]&verbose=1&subdir=your_subdir (optional)";
         return;
     }
-    // Expect comma-separated table names in the 'tables' GET parameter
-    $params = array_map('trim', explode(",", $_GET['tables']));
+    $subdir = isset($params['subdir']) ? $params['subdir'] : null;
     
-    $tables = load_tables();
+    $tables = load_tables($subdir);
     $named_rules = array();
-    $raw_blocks = extract_named_blocks();
+    $raw_blocks = extract_named_blocks($subdir);
     foreach ($raw_blocks as $name => $block_lines) {
         list($key, $fn) = parse_named_block($block_lines);
         $named_rules[$key] = $fn;
     }
-    foreach ($params as $user_input) {
+    $user_tables = array_map('trim', explode(",", $params['tables']));
+    foreach ($user_tables as $user_input) {
         $normalized = strtolower(str_replace(array("-", "_"), "", $user_input));
         $candidates = array();
         foreach ($tables as $key => $value) {
@@ -388,6 +314,110 @@ function main() {
             }
         }
     }
+}
+
+// --- Parse a named block into a block name and a resolver closure ---
+function parse_named_block($lines) {
+    $name = strtolower(trim($lines[0]));
+    $stack = array();
+    $current = array();
+    $parsed_tables = array();  // Each element: [dice_notation, table]
+    $dice_notation = null;
+    for ($i = 1; $i < count($lines); $i++) {
+        $line = $lines[$i];
+        if (strpos(trim($line), "(") === 0) {
+            $stack[] = $current;
+            $current = array();
+        } elseif (strpos(trim($line), ")") === 0) {
+            if (!empty($current)) {
+                $first_line = trim($current[0]);
+                $tokens = preg_split('/\s+/', $first_line);
+                if (!empty($tokens) && preg_match('/^\d+[dD]\d+$/', $tokens[0])) {
+                    $dice_notation = $tokens[0];
+                    array_shift($tokens);
+                    if (!empty($tokens)) {
+                        $current[0] = implode(" ", $tokens);
+                    } else {
+                        array_shift($current);
+                    }
+                }
+            }
+            $parsed = parse_inline_table($current);
+            $current = count($stack) > 0 ? array_pop($stack) : array();
+            $parsed_tables[] = array($dice_notation, $parsed);
+            $dice_notation = null;
+        } else {
+            $current[] = $line;
+        }
+    }
+    $resolve_nested = function() use ($parsed_tables, $name) {
+        if (empty($parsed_tables)) {
+            return "";
+        }
+        list($notation, $outer) = $parsed_tables[0];
+        if ($name === "spell" && $notation === null) {
+            $roll_notation = "2D12";
+        } else {
+            $roll_notation = $notation !== null ? $notation : DEFAULT_DICE;
+        }
+        debug_print("Using dice notation '{$roll_notation}' for block '{$name}'");
+        $has_composite = false;
+        foreach ($outer as $entry) {
+            if (strpos($entry[1], "&") !== false) {
+                $has_composite = true;
+                break;
+            }
+        }
+        $attempts = 0;
+        $entry_val = null;
+        while ($attempts < 10) {
+            $result = roll_dice($roll_notation);
+            $roll = $result['total'];
+            $rolls = $result['rolls'];
+            $entry_val = null;
+            foreach ($outer as $tuple) {
+                if ($tuple[0] == $roll) {
+                    $entry_val = $tuple[1];
+                    break;
+                }
+            }
+            debug_print("  → [Nested roll in {$name}]: Rolled {$roll} (rolls: " . implode(",", $rolls) . ") resulting in: {$entry_val}");
+            if ($entry_val !== null && $has_composite && strtolower(trim($entry_val)) === $name) {
+                $attempts++;
+                continue;
+            }
+            break;
+        }
+        if ($entry_val !== null && strpos($entry_val, "&") !== false) {
+            $parts = array_map('trim', explode("&", $entry_val));
+            $output = array();
+            foreach ($parts as $part) {
+                if (strtolower($part) === $name) {
+                    continue;
+                }
+                if (strpos($part, "(") === 0 && count($parsed_tables) > 1) {
+                    list($notation2, $subtable) = $parsed_tables[1];
+                    $roll_notation2 = $notation2 !== null ? $notation2 : DEFAULT_DICE;
+                    $result2 = roll_dice($roll_notation2);
+                    $subroll = $result2['total'];
+                    $sub_rolls = $result2['rolls'];
+                    $subentry = null;
+                    foreach ($subtable as $tuple) {
+                        if ($tuple[0] == $subroll) {
+                            $subentry = $tuple[1];
+                            break;
+                        }
+                    }
+                    $output[] = "[Nested roll in {$name} nested]: Rolled {$subroll} (rolls: " . implode(",", $sub_rolls) . ") resulting in: {$subentry}";
+                } else {
+                    $output[] = $part;
+                }
+            }
+            return implode("\n", $output);
+        }
+        return $entry_val !== null ? $entry_val : "";
+    };
+    return array($name, $resolve_nested);
 }
 
 main();
