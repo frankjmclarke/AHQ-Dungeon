@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Heroquest - Generating the Dungeon</title>
+    <title>Generating the Dungeon</title>
     <style>
         * {
             box-sizing: border-box;
@@ -15,11 +15,28 @@
             font-family: Arial, sans-serif;
         }
 
+        .logo {
+            display: block;
+            margin: 0 auto 5px auto; /* minimal space below the logo */
+            max-width: 100%;
+            height: auto;
+        }
+
         h1 {
             text-align: center;
             font-size: 2em;
+            margin-top: 0; /* remove top margin */
             margin-bottom: 20px;
+            /* Removed Eagle Lake font */
         }
+
+            h1 a.help-icon {
+                text-decoration: none;
+                font-size: 0.9em; /* 50% bigger than previous 0.6em */
+                vertical-align: middle;
+                margin-left: 10px;
+                color: red;
+            }
 
         .button-container {
             display: flex;
@@ -59,13 +76,20 @@
     </style>
 </head>
 <body>
-    <h1>Advanced Heroquest - Generating the Dungeon</h1>
+    <img src="logo.webp" alt="Advanced Heroquest Logo" class="logo">
+
+    <h1>
+        Generating the Dungeon
+        <a class="help-icon" href="https://www.fclarke.com/2025/03/advanced-heroquest-generating-dungeon.html" title="Help" target="_blank">&#8505;</a>
+    </h1>
+
     <div class="button-container">
         <button id="new-passage">New Passage</button>
         <button id="open-door">Open Door</button>
         <button id="secret-door">Secret Door</button>
         <button id="door-inside-room">Door inside Room</button>
     </div>
+
     <textarea id="result-area" readonly></textarea>
 
     <select id="subdir-dropdown">
