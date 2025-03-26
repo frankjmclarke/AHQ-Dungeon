@@ -25,14 +25,13 @@
         h1 {
             text-align: center;
             font-size: 2em;
-            margin-top: 0; /* remove top margin */
+            margin-top: 0;
             margin-bottom: 20px;
-            /* Removed Eagle Lake font */
         }
 
             h1 a.help-icon {
                 text-decoration: none;
-                font-size: 0.9em; /* 50% bigger than previous 0.6em */
+                font-size: 0.9em;
                 vertical-align: middle;
                 margin-left: 10px;
                 color: red;
@@ -53,16 +52,16 @@
             font-size: 1.2em;
             cursor: pointer;
         }
-
-        textarea {
+        /* Style the result area to look like an output box */
+        .result-area {
             width: 100%;
             max-width: 500px;
-            height: 200px;
-            font-size: 1.1em;
+            min-height: 200px;
+            border: 1px solid #ccc;
             padding: 10px;
             margin: 0 auto;
-            display: block;
-            resize: vertical;
+            white-space: pre-wrap;
+            background: #f9f9f9;
         }
 
         select {
@@ -72,6 +71,24 @@
             font-size: 1.1em;
             margin: 20px auto 0 auto;
             display: block;
+        }
+        /* Style for the reveal button */
+        .reveal-button {
+            display: inline-block;
+            margin: 5px 0;
+            padding: 5px 10px;
+            font-size: 0.9em;
+            cursor: pointer;
+            background: #eee;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .hidden-treasure {
+            border: 1px dashed #aaa;
+            padding: 5px;
+            margin-top: 5px;
+            background: #fff;
         }
     </style>
 </head>
@@ -90,13 +107,23 @@
         <button id="door-inside-room">Door inside Room</button>
     </div>
 
-    <textarea id="result-area" readonly></textarea>
+    <!-- Changed from a textarea to a div so we can render HTML -->
+    <div id="result-area" class="result-area"></div>
 
     <select id="subdir-dropdown">
         <option value="">Select a directory</option>
     </select>
 
     <script>
+        // Process fetched text to hide sections marked as Hidden-Treasure.
+        // It looks for markers [Hidden-Treasure] ... [/Hidden-Treasure]
+        function processOutputText(text) {
+            return text.replace(/\[Hidden-Treasure\]([\s\S]*?)\[\/Hidden-Treasure\]/g, function (match, hiddenContent) {
+                return '<button class="reveal-button" onclick="this.nextElementSibling.style.display=\'block\'; this.style.display=\'none\';">Reveal Hidden Treasure</button>' +
+                    '<div class="hidden-treasure" style="display:none;">' + hiddenContent + '</div>';
+            });
+        }
+
         // Function to fetch output from the PHP script, including subdir parameter if selected
         async function fetchTables(tables) {
             const subdir = document.getElementById('subdir-dropdown').value;
@@ -109,7 +136,9 @@
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                return await response.text();
+                let text = await response.text();
+                // Process text to hide Hidden-Treasure sections
+                return processOutputText(text);
             } catch (error) {
                 return "Error: " + error.message;
             }
@@ -118,22 +147,22 @@
         // Attach event listeners to buttons
         document.getElementById('new-passage').addEventListener('click', async function () {
             const result = await fetchTables('passage-length,passage-end,passage-feature');
-            document.getElementById('result-area').value = result.replace(/<br\s*\/?>/gi, "\n");
+            document.getElementById('result-area').innerHTML = result;
         });
 
         document.getElementById('open-door').addEventListener('click', async function () {
             const result = await fetchTables('room-type,room-doors');
-            document.getElementById('result-area').value = result.replace(/<br\s*\/?>/gi, "\n");
+            document.getElementById('result-area').innerHTML = result;
         });
 
         document.getElementById('secret-door').addEventListener('click', async function () {
             const result = await fetchTables('secret-doors');
-            document.getElementById('result-area').value = result.replace(/<br\s*\/?>/gi, "\n");
+            document.getElementById('result-area').innerHTML = result;
         });
 
         document.getElementById('door-inside-room').addEventListener('click', async function () {
             const result = await fetchTables('room-or-passage');
-            document.getElementById('result-area').value = result.replace(/<br\s*\/?>/gi, "\n");
+            document.getElementById('result-area').innerHTML = result;
         });
 
         // Fetch subdirectories and populate the dropdown menu
