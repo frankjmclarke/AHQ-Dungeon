@@ -62,27 +62,34 @@ function parse_inline_table($lines) {
     return $table;
 }
 
-// --- Extract named blocks from .tab and .txt files ---
-// Now accepts an optional $subdir parameter; files in $subdir take precedence.
 function extract_named_blocks($subdir = null) {
+    global $VERBOSE;
     $blocks = array();
-    $files = array();
     
-    // First, add files from the subdirectory if provided.
-    if ($subdir && is_dir($subdir)) {
-        $files = array_merge($files, glob($subdir . "/*.tab"), glob($subdir . "/*.txt"));
+    // Get files from top-level
+    $files_top = array_merge(glob("*.tab"), glob("*.txt"));
+    // Get files from the subdirectory (if provided)
+    $files_sub = ($subdir && is_dir($subdir)) 
+        ? array_merge(glob($subdir . "/*.tab"), glob($subdir . "/*.txt"))
+        : array();
+    
+    // Build an associative array keyed by lowercased basename
+    $files_assoc = array();
+    foreach ($files_top as $filepath) {
+        $key = strtolower(basename($filepath));
+        $files_assoc[$key] = $filepath;
     }
-    // Then add top-level files.
-    $files = array_merge($files, glob("*.tab"), glob("*.txt"));
+    // Override (or add) with subdirectory files
+    foreach ($files_sub as $filepath) {
+        $key = strtolower(basename($filepath));
+        $files_assoc[$key] = $filepath;
+    }
     
-    // To avoid duplicates, only use the first occurrence (subdirectory files override top-level)
-    $used = array();
-    foreach ($files as $filepath) {
-        $basename = basename($filepath);
-        if (isset($used[$basename])) {
-            continue;
+    // Now process each file in $files_assoc
+    foreach ($files_assoc as $filepath) {
+        if ($VERBOSE) {
+            debug_print("Processing named blocks from file: {$filepath}");
         }
-        $used[$basename] = true;
         $lines_raw = file($filepath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         $lines = array();
         foreach ($lines_raw as $line) {
@@ -123,6 +130,7 @@ function extract_named_blocks($subdir = null) {
 // --- Load tables from .tab files ---
 // Checks for files in the selected subdirectory first, then falls back to top-level.
 function load_tables($subdir = null) {
+    global $VERBOSE;
     $tables = array();
     
     // Load files from the subdirectory (if provided)
@@ -132,6 +140,9 @@ function load_tables($subdir = null) {
             $filename = basename($filepath);
             $name = strtolower(pathinfo($filename, PATHINFO_FILENAME));
             $tables[$name] = parse_tab_file($filepath);
+            if ($VERBOSE) {
+                debug_print("Loaded table '{$name}' from subdirectory: {$filepath}");
+            }
         }
     }
     // Load from top-level, but do not override files already loaded from subdir
@@ -141,6 +152,9 @@ function load_tables($subdir = null) {
         $name = strtolower(pathinfo($filename, PATHINFO_FILENAME));
         if (!isset($tables[$name])) {
             $tables[$name] = parse_tab_file($filepath);
+            if ($VERBOSE) {
+                debug_print("Loaded table '{$name}' from top-level: {$filepath}");
+            }
         }
     }
     return $tables;
@@ -316,7 +330,6 @@ function main() {
     }
 }
 
-// --- Parse a named block into a block name and a resolver closure ---
 function parse_named_block($lines) {
     $name = strtolower(trim($lines[0]));
     $stack = array();
@@ -350,12 +363,13 @@ function parse_named_block($lines) {
             $current[] = $line;
         }
     }
+    // The closure that, when called, resolves this block
     $resolve_nested = function() use ($parsed_tables, $name) {
         if (empty($parsed_tables)) {
             return "";
         }
         list($notation, $outer) = $parsed_tables[0];
-        if ($name === "spell" && $notation === null) {
+        if ($name == "spell" && $notation === null) {
             $roll_notation = "2D12";
         } else {
             $roll_notation = $notation !== null ? $notation : DEFAULT_DICE;
@@ -382,7 +396,7 @@ function parse_named_block($lines) {
                 }
             }
             debug_print("  → [Nested roll in {$name}]: Rolled {$roll} (rolls: " . implode(",", $rolls) . ") resulting in: {$entry_val}");
-            if ($entry_val !== null && $has_composite && strtolower(trim($entry_val)) === $name) {
+            if ($entry_val !== null && $has_composite && strtolower(trim($entry_val)) == $name) {
                 $attempts++;
                 continue;
             }
@@ -392,7 +406,7 @@ function parse_named_block($lines) {
             $parts = array_map('trim', explode("&", $entry_val));
             $output = array();
             foreach ($parts as $part) {
-                if (strtolower($part) === $name) {
+                if (strtolower($part) == $name) {
                     continue;
                 }
                 if (strpos($part, "(") === 0 && count($parsed_tables) > 1) {
@@ -413,12 +427,19 @@ function parse_named_block($lines) {
                     $output[] = $part;
                 }
             }
-            return implode("\n", $output);
+            $final_output = implode("\n", $output);
+        } else {
+            $final_output = ($entry_val !== null) ? $entry_val : "";
         }
-        return $entry_val !== null ? $entry_val : "";
+        // If this is a Hidden-Treasure block, wrap the output with special markers.
+        if ($name == "hidden-treasure") {
+            return "[Hidden-Treasure]\n" . $final_output . "\n[/Hidden-Treasure]";
+        }
+        return $final_output;
     };
     return array($name, $resolve_nested);
 }
+
 
 main();
 ?>
