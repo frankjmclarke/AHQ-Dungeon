@@ -31,7 +31,7 @@
 
             h1 a.help-icon {
                 text-decoration: none;
-                font-size: 0.9em;
+                font-size: 0.9em; /* help icon size */
                 vertical-align: middle;
                 margin-left: 10px;
                 color: red;
@@ -52,7 +52,7 @@
             font-size: 1.2em;
             cursor: pointer;
         }
-        /* Style the result area to look like an output box */
+
         .result-area {
             width: 100%;
             max-width: 500px;
@@ -64,7 +64,7 @@
             background: #f9f9f9;
         }
 
-        select {
+        select, .switch-container {
             width: 100%;
             max-width: 500px;
             padding: 10px;
@@ -72,7 +72,24 @@
             margin: 20px auto 0 auto;
             display: block;
         }
-        /* Style for the reveal button */
+
+        .switch-container {
+            text-align: center;
+        }
+        /* New style for the stats image */
+        #stats-image-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto 0 auto;
+            display: none; /* Hidden by default */
+        }
+
+            #stats-image-container img {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+
         .reveal-button {
             display: inline-block;
             margin: 5px 0;
@@ -107,24 +124,78 @@
         <button id="door-inside-room">Door inside Room</button>
     </div>
 
-    <!-- Changed from a textarea to a div so we can render HTML -->
     <div id="result-area" class="result-area"></div>
 
     <select id="subdir-dropdown">
         <option value="">Select a directory</option>
     </select>
 
+    <!-- New container for stats.webp -->
+    <div id="stats-image-container">
+        <img src="stats.webp" alt="Monster Stats">
+    </div>
+
+    <div class="switch-container">
+        <label>
+            <input type="checkbox" id="monster-stats-switch">
+            Monster Stats
+        </label>
+    </div>
+
     <script>
-        // Process fetched text to hide sections marked as Hidden-Treasure.
-        // It looks for markers [Hidden-Treasure] ... [/Hidden-Treasure]
+        // Toggle the stats image display based on the Monster Stats switch.
+        const monsterSwitch = document.getElementById("monster-stats-switch");
+        const statsImageContainer = document.getElementById("stats-image-container");
+        monsterSwitch.addEventListener("change", function () {
+            if (this.checked) {
+                statsImageContainer.style.display = "block";
+            } else {
+                statsImageContainer.style.display = "none";
+            }
+        });
+
+        // Transform a stat string according to the rules.
+        function transformStat(stat) {
+            let result = "";
+            const len = stat.length;
+            for (let i = 0; i < len; i++) {
+                const ch = stat[i];
+                let color = "";
+                if (ch === '/' || ch === '*') {
+                    color = "green";
+                } else if (i === 0) {
+                    color = "#0026FE";
+                } else if (i === 1) {
+                    color = "green";
+                } else if (i === len - 2) {
+                    color = "#0094FE";
+                } else if (i === len - 1) {
+                    color = "red";
+                }
+                result += `<span style="color:${color};">${ch}</span>`;
+            }
+            return result;
+        }
+
+        // Process output text to handle Hidden-Treasure and Monster Stats.
         function processOutputText(text) {
-            return text.replace(/\[Hidden-Treasure\]([\s\S]*?)\[\/Hidden-Treasure\]/g, function (match, hiddenContent) {
+            text = text.replace(/\[Hidden-Treasure\]([\s\S]*?)\[\/Hidden-Treasure\]/g, function (match, hiddenContent) {
                 return '<button class="reveal-button" onclick="this.nextElementSibling.style.display=\'block\'; this.style.display=\'none\';">Reveal Hidden Treasure</button>' +
                     '<div class="hidden-treasure" style="display:none;">' + hiddenContent + '</div>';
             });
+
+            const monsterStatsOn = monsterSwitch.checked;
+            text = text.replace(/\B#([0-9\/\*]+)(?=[^0-9\/\*]|$)/g, function (match, stat) {
+                if (monsterStatsOn) {
+                    return transformStat(stat);
+                } else {
+                    return "";
+                }
+            });
+            return text;
         }
 
-        // Function to fetch output from the PHP script, including subdir parameter if selected
+        // Fetch output from the PHP script.
         async function fetchTables(tables) {
             const subdir = document.getElementById('subdir-dropdown').value;
             let url = 'index2.php?tables=' + encodeURIComponent(tables);
@@ -137,35 +208,31 @@
                     throw new Error('Network response was not ok');
                 }
                 let text = await response.text();
-                // Process text to hide Hidden-Treasure sections
                 return processOutputText(text);
             } catch (error) {
                 return "Error: " + error.message;
             }
         }
 
-        // Attach event listeners to buttons
+        // Button event listeners.
         document.getElementById('new-passage').addEventListener('click', async function () {
             const result = await fetchTables('passage-length,passage-end,passage-feature');
             document.getElementById('result-area').innerHTML = result;
         });
-
         document.getElementById('open-door').addEventListener('click', async function () {
             const result = await fetchTables('room-type,room-doors');
             document.getElementById('result-area').innerHTML = result;
         });
-
         document.getElementById('secret-door').addEventListener('click', async function () {
             const result = await fetchTables('secret-doors');
             document.getElementById('result-area').innerHTML = result;
         });
-
         document.getElementById('door-inside-room').addEventListener('click', async function () {
             const result = await fetchTables('room-or-passage');
             document.getElementById('result-area').innerHTML = result;
         });
 
-        // Fetch subdirectories and populate the dropdown menu
+        // Fetch subdirectories for the dropdown.
         async function fetchSubdirectories() {
             try {
                 const response = await fetch('list_dirs.php');
@@ -184,8 +251,6 @@
                 console.error("Error fetching subdirectories:", error);
             }
         }
-
-        // Call the function on page load
         fetchSubdirectories();
     </script>
 </body>
