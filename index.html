@@ -17,7 +17,7 @@
 
         .logo {
             display: block;
-            margin: 0 auto 5px auto; /* minimal space below the logo */
+            margin: 0 auto 5px auto;
             max-width: 100%;
             height: auto;
         }
@@ -31,7 +31,7 @@
 
             h1 a.help-icon {
                 text-decoration: none;
-                font-size: 0.9em; /* help icon size */
+                font-size: 0.9em;
                 vertical-align: middle;
                 margin-left: 10px;
                 color: red;
@@ -76,12 +76,20 @@
         .switch-container {
             text-align: center;
         }
-        /* New style for the stats image */
+
+            .switch-container a.help-icon {
+                text-decoration: none;
+                font-size: 0.9em;
+                vertical-align: middle;
+                margin-left: 5px;
+                color: red;
+            }
+
         #stats-image-container {
             width: 100%;
             max-width: 500px;
             margin: 20px auto 0 auto;
-            display: none; /* Hidden by default */
+            display: none;
         }
 
             #stats-image-container img {
@@ -130,7 +138,6 @@
         <option value="">Select a directory</option>
     </select>
 
-    <!-- New container for stats.webp -->
     <div id="stats-image-container">
         <img src="stats.webp" alt="Monster Stats">
     </div>
@@ -139,6 +146,7 @@
         <label>
             <input type="checkbox" id="monster-stats-switch">
             Monster Stats
+            <a class="help-icon" href="https://www.fclarke.com/2016/11/advanced-heroquest-simplifications-for_74.html" title="Monster Stats Help" target="_blank">&#8505;</a>
         </label>
     </div>
 
@@ -154,7 +162,6 @@
             }
         });
 
-        // Transform a stat string according to the rules.
         function transformStat(stat) {
             let result = "";
             const len = stat.length;
@@ -177,14 +184,16 @@
             return result;
         }
 
-        // Process output text to handle Hidden-Treasure and Monster Stats.
         function processOutputText(text) {
+            // Process Hidden-Treasure blocks as before.
             text = text.replace(/\[Hidden-Treasure\]([\s\S]*?)\[\/Hidden-Treasure\]/g, function (match, hiddenContent) {
                 return '<button class="reveal-button" onclick="this.nextElementSibling.style.display=\'block\'; this.style.display=\'none\';">Reveal Hidden Treasure</button>' +
                     '<div class="hidden-treasure" style="display:none;">' + hiddenContent + '</div>';
             });
 
-            const monsterStatsOn = monsterSwitch.checked;
+            const monsterStatsOn = document.getElementById("monster-stats-switch").checked;
+
+            // Process Monster Stats tokens (e.g. "#62/*53")
             text = text.replace(/\B#([0-9\/\*]+)(?=[^0-9\/\*]|$)/g, function (match, stat) {
                 if (monsterStatsOn) {
                     return transformStat(stat);
@@ -192,10 +201,22 @@
                     return "";
                 }
             });
+
+            // Process extra stats delimited by underscores.
+            // Any text between two "_" characters is replaced with the same text in black (without the underscores),
+            // but only if Monster Stats is enabled; otherwise, it is removed.
+            text = text.replace(/_([^_]+)_/g, function (match, extra) {
+                if (monsterStatsOn) {
+                    return `<span style="color:black;">${extra}</span>`;
+                } else {
+                    return "";
+                }
+            });
+
             return text;
         }
 
-        // Fetch output from the PHP script.
+
         async function fetchTables(tables) {
             const subdir = document.getElementById('subdir-dropdown').value;
             let url = 'index2.php?tables=' + encodeURIComponent(tables);
@@ -214,25 +235,26 @@
             }
         }
 
-        // Button event listeners.
         document.getElementById('new-passage').addEventListener('click', async function () {
             const result = await fetchTables('passage-length,passage-end,passage-feature');
             document.getElementById('result-area').innerHTML = result;
         });
+
         document.getElementById('open-door').addEventListener('click', async function () {
             const result = await fetchTables('room-type,room-doors');
             document.getElementById('result-area').innerHTML = result;
         });
+
         document.getElementById('secret-door').addEventListener('click', async function () {
             const result = await fetchTables('secret-doors');
             document.getElementById('result-area').innerHTML = result;
         });
+
         document.getElementById('door-inside-room').addEventListener('click', async function () {
             const result = await fetchTables('room-or-passage');
             document.getElementById('result-area').innerHTML = result;
         });
 
-        // Fetch subdirectories for the dropdown.
         async function fetchSubdirectories() {
             try {
                 const response = await fetch('list_dirs.php');
