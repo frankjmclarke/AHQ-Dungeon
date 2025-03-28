@@ -115,6 +115,25 @@
             margin-top: 5px;
             background: #fff;
         }
+
+        #csv-area {
+            width: 100%;
+            overflow-x: auto; /* Allows horizontal scrolling if the table is too wide */
+        }
+
+            #csv-area table {
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: auto;
+            }
+
+                #csv-area table th,
+                #csv-area table td {
+                    word-wrap: break-word;
+                    white-space: normal;
+                    padding: 4px;
+                }
+
     </style>
 </head>
 <body>
@@ -132,7 +151,10 @@
         <button id="door-inside-room">Door inside Room</button>
     </div>
 
+    <!-- Main output area -->
     <div id="result-area" class="result-area"></div>
+    <!-- New CSV area: table output will be inserted here -->
+    <div id="csv-area"></div>
 
     <select id="subdir-dropdown">
         <option value="">Select a directory</option>
@@ -211,6 +233,7 @@
             return text;
         }
 
+        // Modify fetchTables to split the response.
         async function fetchTables(tables) {
             const subdir = document.getElementById('subdir-dropdown').value;
             let url = 'index2.php?tables=' + encodeURIComponent(tables);
@@ -222,31 +245,39 @@
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                let text = await response.text();
-                return processOutputText(text);
+                let fullText = await response.text();
+                // Process the text to handle Hidden-Treasure, Monster Stats, etc.
+                fullText = processOutputText(fullText);
+
+                const marker = "##CSV_MARKER##";
+                let mainOutput = fullText;
+                let csvOutput = "";
+                if (fullText.indexOf(marker) !== -1) {
+                    const parts = fullText.split(marker);
+                    mainOutput = parts[0];
+                    csvOutput = parts[1];
+                }
+                document.getElementById('result-area').innerHTML = mainOutput;
+                document.getElementById('csv-area').innerHTML = csvOutput;
             } catch (error) {
-                return "Error: " + error.message;
+                document.getElementById('result-area').innerHTML = "Error: " + error.message;
             }
         }
 
+
+
+        // Your existing event listeners remain unchanged.
         document.getElementById('new-passage').addEventListener('click', async function () {
-            const result = await fetchTables('passage-length,passage-end,passage-feature');
-            document.getElementById('result-area').innerHTML = result;
+            await fetchTables('passage-length,passage-end,passage-feature');
         });
-
         document.getElementById('open-door').addEventListener('click', async function () {
-            const result = await fetchTables('room-type,room-doors');
-            document.getElementById('result-area').innerHTML = result;
+            await fetchTables('room-type,room-doors');
         });
-
         document.getElementById('secret-door').addEventListener('click', async function () {
-            const result = await fetchTables('secret-doors');
-            document.getElementById('result-area').innerHTML = result;
+            await fetchTables('secret-doors');
         });
-
         document.getElementById('door-inside-room').addEventListener('click', async function () {
-            const result = await fetchTables('room-or-passage');
-            document.getElementById('result-area').innerHTML = result;
+            await fetchTables('room-or-passage');
         });
 
         async function fetchSubdirectories() {

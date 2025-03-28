@@ -287,7 +287,6 @@ function resolve_table($name, $tables, $named_rules = array(), $depth = 0) {
 // --- Main function ---
 function main() {
     global $VERBOSE;
-    // Check for verbose flag and subdirectory parameter.
     $params = $_GET;
     if (isset($params['verbose']) && $params['verbose'] == "1") {
         $VERBOSE = true;
@@ -297,7 +296,11 @@ function main() {
         return;
     }
     $subdir = isset($params['subdir']) ? $params['subdir'] : null;
-    
+
+    // Start output buffering so we can capture all printed text.
+    ob_start();
+
+    // Existing logic: load tables, extract named blocks, and process user inputs.
     $tables = load_tables($subdir);
     $named_rules = array();
     $raw_blocks = extract_named_blocks($subdir);
@@ -328,6 +331,82 @@ function main() {
             }
         }
     }
+
+    // Get the generated output.
+    $output = ob_get_clean();
+
+    // Echo the main output.
+    echo $output;
+
+    // --- CSV Search Functionality ---
+    // Clear any existing CSV output by starting fresh on each call.
+    // If the output starts with a numeric sequence, try to extract name strings.
+// --- CSV Search Functionality ---
+    // --- CSV Search Functionality ---
+    // --- CSV Search Functionality ---
+// --- CSV Search Functionality ---
+// --- CSV Search Functionality ---
+$csvOutput = "";
+if (preg_match_all('/\d+\s+([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) {
+    $names = array_map('trim', $matches[1]);
+    $names = array_filter($names, function($n) { return $n !== ""; });
+    $csvResults = array();
+    if (($handle = fopen("skaven_bestiary.csv", "r")) !== false) {
+        while (($data = fgetcsv($handle)) !== false) {
+            if (isset($data[0])) {
+                $csvName = trim($data[0]);
+                foreach ($names as $name) {
+                    // Try exact match first.
+                    if (strcasecmp($csvName, $name) === 0) {
+                        $csvResults[$name][] = $data;
+                    } 
+                    // If not found and name ends with "s", try the singular form.
+                    else if (substr($name, -1) === "s") {
+                        $singular = substr($name, 0, -1);
+                        if (strcasecmp($csvName, $singular) === 0) {
+                            $csvResults[$name][] = $data;
+                        }
+                    }
+                }
+            }
+        }
+        fclose($handle);
+    }
+    if (!empty($csvResults)) {
+        // Use a unique marker to separate main output from CSV output.
+        $csvOutput .= "##CSV_MARKER##";
+        $csvOutput .= "<table border='1' cellspacing='0' cellpadding='4' style='width:100%;'>";
+        // Insert header row.
+        $csvOutput .= "<tr>";
+        $csvOutput .= "<th>Monster</th>";
+        $csvOutput .= "<th>WS</th>";
+        $csvOutput .= "<th>BS</th>";
+        $csvOutput .= "<th>S</th>";
+        $csvOutput .= "<th>T</th>";
+        $csvOutput .= "<th>Sp</th>";
+        $csvOutput .= "<th>Br</th>";
+        $csvOutput .= "<th>Int</th>";
+        $csvOutput .= "<th>W</th>";
+        $csvOutput .= "<th>DD</th>";
+        $csvOutput .= "<th>PV</th>";
+        $csvOutput .= "<th>Equipment</th>";
+        $csvOutput .= "</tr>";
+        foreach ($csvResults as $name => $rows) {
+            foreach ($rows as $row) {
+                $csvOutput .= "<tr>";
+                foreach ($row as $field) {
+                    $csvOutput .= "<td>" . htmlspecialchars($field) . "</td>";
+                }
+                $csvOutput .= "</tr>";
+            }
+        }
+        $csvOutput .= "</table>";
+    }
+}
+echo $csvOutput;
+
+
+
 }
 
 function parse_named_block($lines) {
@@ -441,5 +520,7 @@ function parse_named_block($lines) {
 }
 
 
-main();
+if (basename(__FILE__) == basename($_SERVER['SCRIPT_FILENAME'])) {
+    main();
+}
 ?>
