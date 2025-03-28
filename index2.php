@@ -375,7 +375,7 @@ if (preg_match_all('/\d+\s+([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) 
     if (!empty($csvResults)) {
         // Use a unique marker to separate main output from CSV output.
         $csvOutput .= "##CSV_MARKER##";
-        $csvOutput .= "<table border='1' cellspacing='0' cellpadding='4' style='width:100%;'>";
+        $csvOutput .= "<table border='1' cellspacing='0' cellpadding='4' style='max-width:500px; margin:0 auto;'>";
         // Insert header row.
         $csvOutput .= "<tr>";
         $csvOutput .= "<th>Monster</th>";
