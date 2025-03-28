@@ -185,15 +185,12 @@
         }
 
         function processOutputText(text) {
-            // Process Hidden-Treasure blocks as before.
             text = text.replace(/\[Hidden-Treasure\]([\s\S]*?)\[\/Hidden-Treasure\]/g, function (match, hiddenContent) {
                 return '<button class="reveal-button" onclick="this.nextElementSibling.style.display=\'block\'; this.style.display=\'none\';">Reveal Hidden Treasure</button>' +
                     '<div class="hidden-treasure" style="display:none;">' + hiddenContent + '</div>';
             });
 
-            const monsterStatsOn = document.getElementById("monster-stats-switch").checked;
-
-            // Process Monster Stats tokens (e.g. "#62/*53")
+            const monsterStatsOn = monsterSwitch.checked;
             text = text.replace(/\B#([0-9\/\*]+)(?=[^0-9\/\*]|$)/g, function (match, stat) {
                 if (monsterStatsOn) {
                     return transformStat(stat);
@@ -202,9 +199,7 @@
                 }
             });
 
-            // Process extra stats delimited by underscores.
-            // Any text between two "_" characters is replaced with the same text in black (without the underscores),
-            // but only if Monster Stats is enabled; otherwise, it is removed.
+            // Step 3: Process extra stats delimited by underscores.
             text = text.replace(/_([^_]+)_/g, function (match, extra) {
                 if (monsterStatsOn) {
                     return `<span style="color:black;">${extra}</span>`;
@@ -215,7 +210,6 @@
 
             return text;
         }
-
 
         async function fetchTables(tables) {
             const subdir = document.getElementById('subdir-dropdown').value;
