@@ -367,6 +367,12 @@ if (preg_match_all('/\d+\s+([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) 
                             $csvResults[$name][] = $data;
                         }
                     }
+                    else if (substr($name, -3) === "men") {
+                        $singular = substr($name, 0, -3) . "man";
+                        if (strcasecmp($csvName, $singular) === 0) {
+                            $csvResults[$name][] = $data;
+                        }
+                    }
                 }
             }
         }

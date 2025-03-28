@@ -115,25 +115,6 @@
             margin-top: 5px;
             background: #fff;
         }
-
-        #csv-area {
-            width: 100%;
-            overflow-x: auto; /* Allows horizontal scrolling if the table is too wide */
-        }
-
-            #csv-area table {
-                width: 100%;
-                border-collapse: collapse;
-                table-layout: auto;
-            }
-
-                #csv-area table th,
-                #csv-area table td {
-                    word-wrap: break-word;
-                    white-space: normal;
-                    padding: 4px;
-                }
-
     </style>
 </head>
 <body>
@@ -151,10 +132,7 @@
         <button id="door-inside-room">Door inside Room</button>
     </div>
 
-    <!-- Main output area -->
     <div id="result-area" class="result-area"></div>
-    <!-- New CSV area: table output will be inserted here -->
-    <div id="csv-area"></div>
 
     <select id="subdir-dropdown">
         <option value="">Select a directory</option>
@@ -164,9 +142,47 @@
         <img src="stats.webp" alt="Monster Stats">
     </div>
 
-
+    <div class="switch-container">
+        <label>
+            <input type="checkbox" id="monster-stats-switch">
+            Monster Stats
+            <a class="help-icon" href="https://www.fclarke.com/2016/11/advanced-heroquest-simplifications-for_74.html" title="Monster Stats Help" target="_blank">&#8505;</a>
+        </label>
+    </div>
 
     <script>
+        // Toggle the stats image display based on the Monster Stats switch.
+        const monsterSwitch = document.getElementById("monster-stats-switch");
+        const statsImageContainer = document.getElementById("stats-image-container");
+        monsterSwitch.addEventListener("change", function () {
+            if (this.checked) {
+                statsImageContainer.style.display = "block";
+            } else {
+                statsImageContainer.style.display = "none";
+            }
+        });
+
+        function transformStat(stat) {
+            let result = "";
+            const len = stat.length;
+            for (let i = 0; i < len; i++) {
+                const ch = stat[i];
+                let color = "";
+                if (ch === '/' || ch === '*') {
+                    color = "green";
+                } else if (i === 0) {
+                    color = "#0026FE";
+                } else if (i === 1) {
+                    color = "green";
+                } else if (i === len - 2) {
+                    color = "#0094FE";
+                } else if (i === len - 1) {
+                    color = "red";
+                }
+                result += `<span style="color:${color};">${ch}</span>`;
+            }
+            return result;
+        }
 
         function processOutputText(text) {
             text = text.replace(/\[Hidden-Treasure\]([\s\S]*?)\[\/Hidden-Treasure\]/g, function (match, hiddenContent) {
@@ -174,11 +190,27 @@
                     '<div class="hidden-treasure" style="display:none;">' + hiddenContent + '</div>';
             });
 
+            const monsterStatsOn = monsterSwitch.checked;
+            text = text.replace(/\B#([0-9\/\*]+)(?=[^0-9\/\*]|$)/g, function (match, stat) {
+                if (monsterStatsOn) {
+                    return transformStat(stat);
+                } else {
+                    return "";
+                }
+            });
+
+            // Step 3: Process extra stats delimited by underscores.
+            text = text.replace(/_([^_]+)_/g, function (match, extra) {
+                if (monsterStatsOn) {
+                    return `<span style="color:black;">${extra}</span>`;
+                } else {
+                    return "";
+                }
+            });
 
             return text;
         }
 
-        // Modify fetchTables to split the response.
         async function fetchTables(tables) {
             const subdir = document.getElementById('subdir-dropdown').value;
             let url = 'index2.php?tables=' + encodeURIComponent(tables);
@@ -190,39 +222,31 @@
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                let fullText = await response.text();
-                // Process the text to handle Hidden-Treasure, Monster Stats, etc.
-                fullText = processOutputText(fullText);
-
-                const marker = "##CSV_MARKER##";
-                let mainOutput = fullText;
-                let csvOutput = "";
-                if (fullText.indexOf(marker) !== -1) {
-                    const parts = fullText.split(marker);
-                    mainOutput = parts[0];
-                    csvOutput = parts[1];
-                }
-                document.getElementById('result-area').innerHTML = mainOutput;
-                document.getElementById('csv-area').innerHTML = csvOutput;
+                let text = await response.text();
+                return processOutputText(text);
             } catch (error) {
-                document.getElementById('result-area').innerHTML = "Error: " + error.message;
+                return "Error: " + error.message;
             }
         }
 
-
-
-        // Your existing event listeners remain unchanged.
         document.getElementById('new-passage').addEventListener('click', async function () {
-            await fetchTables('passage-length,passage-end,passage-feature');
+            const result = await fetchTables('passage-length,passage-end,passage-feature');
+            document.getElementById('result-area').innerHTML = result;
         });
+
         document.getElementById('open-door').addEventListener('click', async function () {
-            await fetchTables('room-type,room-doors');
+            const result = await fetchTables('room-type,room-doors');
+            document.getElementById('result-area').innerHTML = result;
         });
+
         document.getElementById('secret-door').addEventListener('click', async function () {
-            await fetchTables('secret-doors');
+            const result = await fetchTables('secret-doors');
+            document.getElementById('result-area').innerHTML = result;
         });
+
         document.getElementById('door-inside-room').addEventListener('click', async function () {
-            await fetchTables('room-or-passage');
+            const result = await fetchTables('room-or-passage');
+            document.getElementById('result-area').innerHTML = result;
         });
 
         async function fetchSubdirectories() {
