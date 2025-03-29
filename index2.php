@@ -8,7 +8,8 @@ define('MAX_DEPTH', 50);         // Maximum recursion depth
 define('DEFAULT_DICE', "1D12");   // Global default dice (if no block-specific notation is provided)
 $VERBOSE = false;                // Global verbosity flag
 $resolved_stack = array();       // Global resolved stack for cycle detection
-
+global $table2die;
+$table2die = array();
 // --- Helper printing functions ---
 function debug_print($msg) {
     global $VERBOSE;
@@ -42,6 +43,18 @@ function roll_dice($notation) {
     } else {
         $r = random_int(1, 12);
         return array('total' => $r, 'rolls' => array($r));
+    }
+}
+
+// Function that looks up a dice notation for a given table name.
+function getDiceNotation($tableName) {
+    global $table2die;  // Bring the global dictionary into the function's scope.
+    if (isset($table2die[$tableName])) {
+        $size = sizeof($table2die);
+        debug_print("[SIZE  {$size}]");
+        return $table2die[$tableName];
+    } else {
+        return null; // Or a default value.
     }
 }
 
@@ -253,7 +266,17 @@ function resolve_table($name, $tables, $named_rules = array(), $depth = 0) {
         return;
     }
     $table = $tables[$name];
-    $result = roll_dice(DEFAULT_DICE);
+    //$result = roll_dice(DEFAULT_DICE);
+    // Roll the dice using the proper dice notation.
+    $diceNotation = getDiceNotation($name);
+
+    if ($diceNotation !== null) {
+        $result = roll_dice($diceNotation);
+        debug_print("[Good entry for ROLL {$diceNotation}]");
+    } else {
+        debug_print("[Bad entry for ROLL {$name}]");
+        $result = roll_dice($dice_notation);
+    }
     $roll = $result['total'];
     $rolls = $result['rolls'];
     $entry = null;
@@ -416,6 +439,7 @@ echo $csvOutput;
 }
 
 function parse_named_block($lines) {
+    global $table2die;
     $name = strtolower(trim($lines[0]));
     $stack = array();
     $current = array();
@@ -446,6 +470,24 @@ function parse_named_block($lines) {
             $dice_notation = null;
         } else {
             $current[] = $line;
+        }
+        if ($i == 1) {
+            // Check for each possible dice notation in the first line.
+            if (strpos($line, "2D12") !== false) {
+                $dice_notation = "2D12";
+                $table2die[$name] = $dice_notation;
+                debug_print("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
+            } elseif (strpos($line, "1D12") !== false) {
+                $dice_notation = "1D12";
+                $table2die[$name] = $dice_notation;
+                debug_print("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
+            } elseif (strpos($line, "1D6") !== false) {
+                $dice_notation = "1D6";
+                $table2die[$name] = $dice_notation;
+                debug_print("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
+            }
+
+            // Optionally, you can trim or log the found dice notation.
         }
     }
     // The closure that, when called, resolves this block
