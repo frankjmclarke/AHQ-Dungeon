@@ -9,7 +9,7 @@ require_once __DIR__ . '/core/TextProcessor.php';
 require_once __DIR__ . '/utils/Debug.php';
 
 /**
- * Main function to process dungeon generation requests
+ * Main function  to process dungeon generation requests
  */
 function main($argv) {
     $config = DungeonConfig::getInstance();
