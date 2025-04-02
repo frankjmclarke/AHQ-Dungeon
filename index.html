@@ -73,30 +73,6 @@
             display: block;
         }
 
-        .switch-container {
-            text-align: center;
-        }
-
-            .switch-container a.help-icon {
-                text-decoration: none;
-                font-size: 0.9em;
-                vertical-align: middle;
-                margin-left: 5px;
-                color: red;
-            }
-
-        #stats-image-container {
-            width: 100%;
-            max-width: 500px;
-            margin: 20px auto 0 auto;
-            display: none;
-        }
-
-            #stats-image-container img {
-                width: 100%;
-                height: auto;
-                display: block;
-            }
 
         .reveal-button {
             display: inline-block;
@@ -137,92 +113,94 @@
     </style>
 </head>
 <body>
-    <img src="logo.webp" alt="Advanced Heroquest Logo" class="logo">
-
-    <h1>
-        Generating the Dungeon
-        <a class="help-icon" href="https://www.fclarke.com/2025/03/advanced-heroquest-generating-dungeon.html" title="Help" target="_blank">&#8505;</a>
-    </h1>
-
+    <img src="images/logo.png" alt="Logo" class="logo">
+    <h1>Generating the Dungeon <a href="#" class="help-icon" onclick="toggleHelp()">?</a></h1>
+    
     <div class="button-container">
-        <button id="new-passage">New Passage</button>
-        <button id="open-door">Open Door</button>
-        <button id="secret-door">Secret Door</button>
-        <button id="door-inside-room">Door inside Room</button>
+        <button onclick="generateDungeon()">Generate Dungeon</button>
+        <button onclick="generateMonster()">Generate Monster</button>
+        <button onclick="generateTreasure()">Generate Treasure</button>
     </div>
 
-    <!-- Main output area -->
-    <div id="result-area" class="result-area"></div>
-    <!-- New CSV area: table output will be inserted here -->
+    <div class="switch-container">
+        <label>
+            <input type="checkbox" id="verbose" onchange="toggleVerbose()"> Show Details
+        </label>
+    </div>
+
+    <div class="result-area" id="result"></div>
     <div id="csv-area"></div>
 
     <select id="subdir-dropdown">
         <option value="">Select a directory</option>
     </select>
 
-    <div id="stats-image-container">
-        <img src="stats.webp" alt="Monster Stats">
-    </div>
-
-
-
     <script>
-
-        function processOutputText(text) {
-            text = text.replace(/\[Hidden-Treasure\]([\s\S]*?)\[\/Hidden-Treasure\]/g, function (match, hiddenContent) {
-                return '<button class="reveal-button" onclick="this.nextElementSibling.style.display=\'block\'; this.style.display=\'none\';">Reveal Hidden Treasure</button>' +
-                    '<div class="hidden-treasure" style="display:none;">' + hiddenContent + '</div>';
-            });
-
-
-            return text;
+        function generateDungeon() {
+            const verbose = document.getElementById('verbose').checked ? '1' : '0';
+            fetch(`src/index.php?tables=dungeon&verbose=${verbose}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('result').innerHTML = data;
+                    processCSVMarker(data);
+                })
+                .catch(error => console.error('Error:', error));
         }
 
-        // Modify fetchTables to split the response.
-        async function fetchTables(tables) {
-            const subdir = document.getElementById('subdir-dropdown').value;
-            let url = 'index2.php?tables=' + encodeURIComponent(tables);
-            if (subdir !== "") {
-                url += "&subdir=" + encodeURIComponent(subdir);
-            }
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                let fullText = await response.text();
-                // Process the text to handle Hidden-Treasure, Monster Stats, etc.
-                fullText = processOutputText(fullText);
+        function generateMonster() {
+            const verbose = document.getElementById('verbose').checked ? '1' : '0';
+            fetch(`src/index.php?tables=monster&verbose=${verbose}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('result').innerHTML = data;
+                    processCSVMarker(data);
+                })
+                .catch(error => console.error('Error:', error));
+        }
 
-                const marker = "##CSV_MARKER##";
-                let mainOutput = fullText;
-                let csvOutput = "";
-                if (fullText.indexOf(marker) !== -1) {
-                    const parts = fullText.split(marker);
-                    mainOutput = parts[0];
-                    csvOutput = parts[1];
-                }
-                document.getElementById('result-area').innerHTML = mainOutput;
-                document.getElementById('csv-area').innerHTML = csvOutput;
-            } catch (error) {
-                document.getElementById('result-area').innerHTML = "Error: " + error.message;
+        function generateTreasure() {
+            const verbose = document.getElementById('verbose').checked ? '1' : '0';
+            fetch(`src/index.php?tables=treasure&verbose=${verbose}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('result').innerHTML = data;
+                    processCSVMarker(data);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function toggleVerbose() {
+            const verbose = document.getElementById('verbose').checked;
+            // Store the verbose setting in localStorage
+            localStorage.setItem('verbose', verbose);
+        }
+
+        function toggleHelp() {
+            const helpText = `
+                <h3>How to Use</h3>
+                <p>1. Click any of the generation buttons to create content</p>
+                <p>2. Toggle "Show Details" to see the generation process</p>
+                <p>3. Monster stats will appear automatically when monsters are generated</p>
+            `;
+            alert(helpText);
+        }
+
+        function processCSVMarker(data) {
+            const csvArea = document.getElementById('csv-area');
+            const markerIndex = data.indexOf('##CSV_MARKER##');
+            
+            if (markerIndex !== -1) {
+                const csvContent = data.substring(markerIndex + '##CSV_MARKER##'.length);
+                csvArea.innerHTML = csvContent;
+            } else {
+                csvArea.innerHTML = '';
             }
         }
 
-
-
-        // Your existing event listeners remain unchanged.
-        document.getElementById('new-passage').addEventListener('click', async function () {
-            await fetchTables('passage-length,passage-end,passage-feature');
-        });
-        document.getElementById('open-door').addEventListener('click', async function () {
-            await fetchTables('room-type,room-doors');
-        });
-        document.getElementById('secret-door').addEventListener('click', async function () {
-            await fetchTables('secret-doors');
-        });
-        document.getElementById('door-inside-room').addEventListener('click', async function () {
-            await fetchTables('room-or-passage');
+        // Load saved verbose setting
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedVerbose = localStorage.getItem('verbose') === 'true';
+            document.getElementById('verbose').checked = savedVerbose;
         });
 
         async function fetchSubdirectories() {
