@@ -125,7 +125,7 @@ class TableManager {
                 $name = strtolower(pathinfo($filename, PATHINFO_FILENAME));
                 $tables[$name] = $this->parseTabFile($filepath);
                 if ($VERBOSE) {
-                    debug_print("Loaded table '{$name}' from subdirectory: {$filepath}");
+                    //debug_print("Loaded table '{$name}' from subdirectory: {$filepath}");
                 }
             }
         }
@@ -138,7 +138,7 @@ class TableManager {
             if (!isset($tables[$name])) {
                 $tables[$name] = $this->parseTabFile($filepath);
                 if ($VERBOSE) {
-                    debug_print("Loaded table '{$name}' from parent directory: {$filepath}");
+                    //debug_print("Loaded table '{$name}' from parent directory: {$filepath}");
                 }
             }
         }
@@ -280,14 +280,14 @@ class TextProcessorImpl implements TextProcessor {
         
         // Handle named block calls
         if (preg_match('/^([A-Za-z0-9_\-]+)\(\)$/', $line, $matches)) {
-            $this->handleNamedBlockCall($matches[1], $named_rules, $depth, $parent_table);
+            $this->handleNamedBlockCall($matches[1], $named_rules, $depth, $parent_table, $tables);
             return;
         }
         
         // Handle direct named block references
         $lower_line = strtolower($line);
         if (isset($named_rules[$lower_line])) {
-            $this->handleNamedBlockReference($line, $lower_line, $current_named, $named_rules, $depth, $parent_table);
+            $this->handleNamedBlockReference($line, $lower_line, $current_named, $named_rules, $depth, $parent_table, $tables);
             return;
         }
         
@@ -302,7 +302,7 @@ class TextProcessorImpl implements TextProcessor {
         $this->handleInlineReferences($line, $tables, $named_rules, $depth, $parent_table, $current_named);
     }
     
-    private function handleNamedBlockCall($name, $named_rules, $depth, $parent_table) {
+    private function handleNamedBlockCall($name, $named_rules, $depth, $parent_table, $tables) {
         $name_candidate = strtolower($name);
         if (isset($named_rules[$name_candidate])) {
             debug_print(str_repeat("  ", $depth) . "→ Resolving named block: " . $name);
@@ -311,7 +311,7 @@ class TextProcessorImpl implements TextProcessor {
         }
     }
     
-    private function handleNamedBlockReference($line, $lower_line, $current_named, $named_rules, $depth, $parent_table) {
+    private function handleNamedBlockReference($line, $lower_line, $current_named, $named_rules, $depth, $parent_table, $tables) {
         if ($current_named !== null && $lower_line === $current_named) {
             final_print(str_repeat("  ", $depth), $line);
             return;
@@ -659,11 +659,11 @@ class DungeonGenerator {
         if (strpos($line, "2D12") !== false) {
             $dice_notation = "2D12";
             $table2die[$name] = $dice_notation;
-            debug_print("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
+            //debug_print("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
         } elseif (strpos($line, "1D12") !== false) {
             $dice_notation = "1D12";
             $table2die[$name] = $dice_notation;
-            debug_print("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
+            //debug_print("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
         } elseif (strpos($line, "1D6") !== false) {
             $dice_notation = "1D6";
             $table2die[$name] = $dice_notation;
