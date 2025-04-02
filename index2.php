@@ -14,6 +14,7 @@ $table2die = array();
 // Cache for tables and named blocks
 $table_cache = array();
 $named_blocks_cache = array();
+$monster_cache = array();  // Cache for monster records
 $cache_ttl = 300; // 5 minutes cache TTL
 
 /**
@@ -65,6 +66,74 @@ function get_cached_named_blocks($subdir = null) {
     );
     
     return $blocks;
+}
+
+/**
+ * Get cached monster records or load them if not in cache
+ * @param string $csvFile Path to the CSV file
+ * @param array $names Monster names to look up
+ * @return array Array of monster records keyed by name
+ */
+function get_cached_monster_records($csvFile, $names) {
+    global $monster_cache, $cache_ttl;
+    
+    $cache_key = md5($csvFile . implode('|', $names));
+    
+    if (isset($monster_cache[$cache_key]) && 
+        isset($monster_cache[$cache_key]['timestamp']) && 
+        (time() - $monster_cache[$cache_key]['timestamp'] < $cache_ttl)) {
+        return $monster_cache[$cache_key]['data'];
+    }
+    
+    $monsterResults = array();
+    
+    if (!file_exists($csvFile)) {
+        debug_print("[Error: Monster data file '{$csvFile}' does not exist]");
+        return array();
+    }
+    
+    $handle = @fopen($csvFile, "r");
+    if ($handle === false) {
+        debug_print("[Error: Could not open monster data file '{$csvFile}']");
+        return array();
+    }
+    
+    try {
+        while (($data = fgetcsv($handle)) !== false) {
+            if (isset($data[0])) {
+                $monsterName = trim($data[0]);
+                foreach ($names as $name) {
+                    // Try exact match.
+                    if (strcasecmp($monsterName, $name) === 0) {
+                        $monsterResults[$name][] = $data;
+                    } 
+                    // If name ends with "s", try the singular form.
+                    else if (substr($name, -1) === "s") {
+                        $singular = substr($name, 0, -1);
+                        if (strcasecmp($monsterName, $singular) === 0) {
+                            $monsterResults[$name][] = $data;
+                        }
+                    }
+                    // Handle names ending with "men".
+                    else if (substr($name, -3) === "men") {
+                        $singular = substr($name, 0, -3) . "man";
+                        if (strcasecmp($monsterName, $singular) === 0) {
+                            $monsterResults[$name][] = $data;
+                        }
+                    }
+                }
+            }
+        }
+    } finally {
+        fclose($handle);
+    }
+    
+    $monster_cache[$cache_key] = array(
+        'data' => $monsterResults,
+        'timestamp' => time()
+    );
+    
+    return $monsterResults;
 }
 
 // --- Helper printing functions ---
@@ -372,49 +441,9 @@ function generate_monster_stats_table($output) {
     if (preg_match_all('/\d+\s+([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) {
         $names = array_map('trim', $matches[1]);
         $names = array_filter($names, function($n) { return $n !== ""; });
-        $monsterResults = array();
         
         $csvFile = "skaven_bestiary.csv";
-        if (!file_exists($csvFile)) {
-            debug_print("[Error: Monster data file '{$csvFile}' does not exist]");
-            return "";
-        }
-        
-        $handle = @fopen($csvFile, "r");
-        if ($handle === false) {
-            debug_print("[Error: Could not open monster data file '{$csvFile}']");
-            return "";
-        }
-        
-        try {
-            while (($data = fgetcsv($handle)) !== false) {
-                if (isset($data[0])) {
-                    $monsterName = trim($data[0]);
-                    foreach ($names as $name) {
-                        // Try exact match.
-                        if (strcasecmp($monsterName, $name) === 0) {
-                            $monsterResults[$name][] = $data;
-                        } 
-                        // If name ends with "s", try the singular form.
-                        else if (substr($name, -1) === "s") {
-                            $singular = substr($name, 0, -1);
-                            if (strcasecmp($monsterName, $singular) === 0) {
-                                $monsterResults[$name][] = $data;
-                            }
-                        }
-                        // Handle names ending with "men".
-                        else if (substr($name, -3) === "men") {
-                            $singular = substr($name, 0, -3) . "man";
-                            if (strcasecmp($monsterName, $singular) === 0) {
-                                $monsterResults[$name][] = $data;
-                            }
-                        }
-                    }
-                }
-            }
-        } finally {
-            fclose($handle);
-        }
+        $monsterResults = get_cached_monster_records($csvFile, $names);
         
         if (!empty($monsterResults)) {
             $tableOutput .= "##CSV_MARKER##";
