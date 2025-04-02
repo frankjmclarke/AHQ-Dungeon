@@ -9,7 +9,7 @@ require_once __DIR__ . '/config/constants.php';
 require_once __DIR__ . '/interfaces/CSVProcessor.php';
 require_once __DIR__ . '/interfaces/DungeonGenerator.php';
 require_once __DIR__ . '/classes/CSVProcessorImpl.php';
-require_once __DIR__ . '/classes/DungeonGeneratorImpl.php';
+require_once __DIR__ . '/classes/DungeonGenerator.php';
 
 // Global state
 $VERBOSE = false;                // Global verbosity flag
