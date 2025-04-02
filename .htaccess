@@ -1,0 +1,49 @@
+# Enable CORS
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+Header set Access-Control-Allow-Headers "Content-Type"
+
+# Handle OPTIONS method
+RewriteEngine On
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=200,L]
+
+# PHP settings
+php_flag display_errors on
+php_value error_reporting E_ALL
+php_value error_log "error.log"
+
+# Set default character set
+AddDefaultCharset UTF-8
+
+# Prevent directory listing
+Options -Indexes
+
+# Allow PHP files to execute
+<FilesMatch "\.php$">
+    Require all granted
+</FilesMatch>
+
+# Set proper MIME types
+AddType application/javascript .js
+AddType text/css .css
+AddType image/svg+xml .svg
+AddType application/json .json
+AddType text/html .html
+AddType text/plain .txt
+AddType text/csv .csv
+
+# Ensure PHP files in src directory are executable
+<Directory "src">
+    Require all granted
+    Options +ExecCGI
+    AddHandler application/x-httpd-php .php
+</Directory>
+
+# Base directory for the application
+RewriteBase /test/
+
+# Only redirect to src if the file doesn't exist in the root
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /test/src/$1 [L] 

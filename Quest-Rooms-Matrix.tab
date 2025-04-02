@@ -1,0 +1,15 @@
+Quest-Rooms-Matrix
+(   2D12
+    1-2     "Empty Room"
+    3-4     "Room with Furniture"
+    5-6     "Room with Treasure"
+    7-8     "Room with Monsters"
+    9-10    "Room with Traps"
+    11-12   "Room with Both Monsters and Traps"
+    13-14   "Room with Both Monsters and Treasure"
+    15-16   "Room with Both Traps and Treasure"
+    17-18   "Room with Monsters, Traps, and Treasure"
+    19-20   "Room with Secret Door"
+    21-22   "Room with Hidden Treasure"
+    23-24   "Room with Both Secret Door and Hidden Treasure"
+) 

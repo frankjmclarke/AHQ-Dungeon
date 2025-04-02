@@ -3,251 +3,59 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Global constants
-define('MAX_DEPTH', 50);         // Maximum recursion depth
-define('CACHE_TTL', 300);        // 5 minutes cache TTL for tables and named blocks
-define('MONSTER_CACHE_TTL', 3600); // 60 minutes cache TTL for monster records
-
-// Configuration class for managing global state
-class DungeonConfig {
-    private static $instance = null;
-    private $verbose = false;
-    private $resolvedStack = [];
-    private $cache = [
-        'tables' => [],
-        'named_blocks' => [],
-        'monsters' => []
-    ];
-    
-    private function __construct() {}
-    
-    public static function getInstance() {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-    
-    public function setVerbose($verbose) {
-        $this->verbose = $verbose;
-    }
-    
-    public function isVerbose() {
-        return $this->verbose;
-    }
-    
-    public function getResolvedStack() {
-        return $this->resolvedStack;
-    }
-    
-    public function addToResolvedStack($item) {
-        $this->resolvedStack[] = $item;
-    }
-    
-    public function removeFromResolvedStack() {
-        array_pop($this->resolvedStack);
-    }
-    
-    public function isInResolvedStack($item) {
-        return in_array($item, $this->resolvedStack);
-    }
-    
-    public function getCache($type) {
-        return $this->cache[$type] ?? null;
-    }
-    
-    public function setCache($type, $key, $data, $ttl) {
-        $this->cache[$type][$key] = [
-            'data' => $data,
-            'timestamp' => time(),
-            'ttl' => $ttl
-        ];
-    }
-    
-    public function getCachedData($type, $key, $ttl) {
-        if (!isset($this->cache[$type][$key])) {
-            return null;
-        }
-        
-        $cache = $this->cache[$type][$key];
-        if (!isset($cache['timestamp']) || (time() - $cache['timestamp'] >= $ttl)) {
-            return null;
-        }
-        
-        return $cache['data'];
-    }
-}
-
-// Initialize global configuration
-$config = DungeonConfig::getInstance();
-
 // Global constants and variables
+define('MAX_DEPTH', 50);         // Maximum recursion depth
+define('DEFAULT_DICE', "1D12");   // Global default dice (if no block-specific notation is provided)
 $VERBOSE = false;                // Global verbosity flag
 $resolved_stack = array();       // Global resolved stack for cycle detection
-
-// Cache for tables and named blocks
-$table_cache = array();
-$named_blocks_cache = array();
-$monster_cache = array();  // Cache for monster records
-$cache_ttl = 300; // 5 minutes cache TTL
-
-/**
- * Get cached table or load it if not in cache
- * @param string $name Table name
- * @param string|null $subdir Subdirectory path
- * @return array Table data
- */
-function get_cached_table($name, $subdir = null) {
-    global $config;
-    
-    $cache_key = $subdir ? "{$subdir}/{$name}" : $name;
-    
-    $cached_data = $config->getCachedData('tables', $cache_key, CACHE_TTL);
-    if ($cached_data !== null) {
-        return $cached_data;
-    }
-    
-    $table = parse_tab_file($subdir ? "{$subdir}/{$name}.tab" : "{$name}.tab");
-    $config->setCache('tables', $cache_key, $table, CACHE_TTL);
-    
-    return $table;
-}
-
-/**
- * Get cached named blocks or load them if not in cache
- * @param string|null $subdir Subdirectory path
- * @return array Named blocks data
- */
-function get_cached_named_blocks($subdir = null) {
-    global $config;
-    
-    $cache_key = $subdir ?: 'root';
-    
-    $cached_data = $config->getCachedData('named_blocks', $cache_key, CACHE_TTL);
-    if ($cached_data !== null) {
-        return $cached_data;
-    }
-    
-    $blocks = extract_named_blocks($subdir);
-    $config->setCache('named_blocks', $cache_key, $blocks, CACHE_TTL);
-    
-    return $blocks;
-}
-
-/**
- * Get cached monster records or load them if not in cache
- * @param string $csvFile Path to the CSV file
- * @param array $names Monster names to look up
- * @return array Array of monster records keyed by name
- */
-function get_cached_monster_records($csvFile, $names) {
-    global $config;
-    
-    $cache_key = md5($csvFile . implode('|', $names));
-    
-    $cached_data = $config->getCachedData('monsters', $cache_key, MONSTER_CACHE_TTL);
-    if ($cached_data !== null) {
-        return $cached_data;
-    }
-    
-    $monsterResults = array();
-    
-    if (!file_exists($csvFile)) {
-        throw new RuntimeException("Monster data file '{$csvFile}' does not exist");
-    }
-    
-    $handle = @fopen($csvFile, "r");
-    if ($handle === false) {
-        throw new RuntimeException("Could not open monster data file '{$csvFile}'");
-    }
-    
-    try {
-        while (($data = fgetcsv($handle)) !== false) {
-            if (isset($data[0])) {
-                $monsterName = trim($data[0]);
-                foreach ($names as $name) {
-                    // Try exact match.
-                    if (strcasecmp($monsterName, $name) === 0) {
-                        $monsterResults[$name][] = $data;
-                    } 
-                    // If name ends with "s", try the singular form.
-                    else if (substr($name, -1) === "s") {
-                        $singular = substr($name, 0, -1);
-                        if (strcasecmp($monsterName, $singular) === 0) {
-                            $monsterResults[$name][] = $data;
-                        }
-                    }
-                    // Handle names ending with "men".
-                    else if (substr($name, -3) === "men") {
-                        $singular = substr($name, 0, -3) . "man";
-                        if (strcasecmp($monsterName, $singular) === 0) {
-                            $monsterResults[$name][] = $data;
-                        }
-                    }
-                }
-            }
-        }
-    } finally {
-        fclose($handle);
-    }
-    
-    $config->setCache('monsters', $cache_key, $monsterResults, MONSTER_CACHE_TTL);
-    
-    return $monsterResults;
-}
-
+global $table2die;
+$table2die = array();
 // --- Helper printing functions ---
 function debug_print($msg) {
-    global $config;
-    if ($config->isVerbose()) {
+    global $VERBOSE;
+    if ($VERBOSE) {
         echo $msg . "<br>";
     }
 }
 
 function final_print($indent, $msg) {
-    global $config;
-    echo $indent . ($config->isVerbose() ? "→ Output: " : "") . $msg . "<br>";
+    global $VERBOSE;
+    if ($VERBOSE) {
+        echo $indent . "→ Output: " . $msg . "<br>";
+    } else {
+        echo $msg . "<br>";
+    }
 }
 
-// --- Dice rolling with improved error handling ---
+// --- Dice rolling ---
 function roll_dice($notation) {
-    if (!is_string($notation)) {
-        throw new InvalidArgumentException("Dice notation must be a string");
+    if (preg_match('/^(\d+)[dD](\d+)$/', $notation, $matches)) {
+        $num = intval($matches[1]);
+        $sides = intval($matches[2]);
+        $total = 0;
+        $rolls = array();
+        for ($i = 0; $i < $num; $i++) {
+            $r = random_int(1, $sides);
+            $rolls[] = $r;
+            $total += $r;
+        }
+        return array('total' => $total, 'rolls' => $rolls);
+    } else {
+        $r = random_int(1, 12);
+        return array('total' => $r, 'rolls' => array($r));
     }
-    
-    if (!preg_match('/^(\d+)[dD](\d+)$/', $notation, $matches)) {
-        throw new InvalidArgumentException("Invalid dice notation format: {$notation}");
-    }
-    
-    $num = intval($matches[1]);
-    $sides = intval($matches[2]);
-    
-    if ($num < 1 || $num > 100) {
-        throw new InvalidArgumentException("Number of dice must be between 1 and 100");
-    }
-    
-    if ($sides < 1 || $sides > 100) {
-        throw new InvalidArgumentException("Number of sides must be between 1 and 100");
-    }
-    
-    $total = 0;
-    $rolls = array();
-    
-    for ($i = 0; $i < $num; $i++) {
-        $r = random_int(1, $sides);
-        $rolls[] = $r;
-        $total += $r;
-    }
-    
-    return array('total' => $total, 'rolls' => $rolls);
 }
 
-// --- Lookup dice notation for a given table name ---
-function getDiceNotation($tableName, $named_rules) {
-    if (isset($named_rules[$tableName])) {
-        return $named_rules[$tableName]['dice_notation'];
+// Function that looks up a dice notation for a given table name.
+function getDiceNotation($tableName) {
+    global $table2die;  // Bring the global dictionary into the function's scope.
+    if (isset($table2die[$tableName])) {
+        $size = sizeof($table2die);
+        debug_print("[SIZE  {$size}]");
+        return $table2die[$tableName];
+    } else {
+        return null; // Or a default value.
     }
-    return null;
 }
 
 // --- Parsing an inline table from a set of lines ---
@@ -267,35 +75,35 @@ function parse_inline_table($lines) {
     return $table;
 }
 
-// --- Extract named blocks from .tab or .txt files ---
 function extract_named_blocks($subdir = null) {
-    global $config;
+    global $VERBOSE;
     $blocks = array();
     
-    // Get files from top-level and optionally a subdirectory.
+    // Get files from top-level
     $files_top = array_merge(glob("*.tab"), glob("*.txt"));
-    $files_sub = ($subdir && is_dir($subdir))
+    // Get files from the subdirectory (if provided)
+    $files_sub = ($subdir && is_dir($subdir)) 
         ? array_merge(glob($subdir . "/*.tab"), glob($subdir . "/*.txt"))
         : array();
     
-    // Build associative array keyed by lowercased basename
+    // Build an associative array keyed by lowercased basename
     $files_assoc = array();
     foreach ($files_top as $filepath) {
-        $files_assoc[strtolower(basename($filepath))] = $filepath;
+        $key = strtolower(basename($filepath));
+        $files_assoc[$key] = $filepath;
     }
+    // Override (or add) with subdirectory files
     foreach ($files_sub as $filepath) {
-        $files_assoc[strtolower(basename($filepath))] = $filepath;
+        $key = strtolower(basename($filepath));
+        $files_assoc[$key] = $filepath;
     }
     
-    // Process each file in $files_assoc
+    // Now process each file in $files_assoc
     foreach ($files_assoc as $filepath) {
-        if ($config->isVerbose()) {
+        if ($VERBOSE) {
             debug_print("Processing named blocks from file: {$filepath}");
         }
         $lines_raw = file($filepath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        if ($lines_raw === false) {
-            throw new RuntimeException("Could not read file '{$filepath}'");
-        }
         $lines = array();
         foreach ($lines_raw as $line) {
             $trimmed = trim($line);
@@ -333,34 +141,31 @@ function extract_named_blocks($subdir = null) {
 }
 
 // --- Load tables from .tab files ---
+// Checks for files in the selected subdirectory first, then falls back to top-level.
 function load_tables($subdir = null) {
-    global $config;
+    global $VERBOSE;
     $tables = array();
     
-    // Load files from the subdirectory first.
+    // Load files from the subdirectory (if provided)
     if ($subdir && is_dir($subdir)) {
         $files = glob($subdir . "/*.tab");
-        if ($files === false) {
-            throw new RuntimeException("Could not list files in directory '{$subdir}'");
-        }
         foreach ($files as $filepath) {
-            $name = strtolower(pathinfo(basename($filepath), PATHINFO_FILENAME));
-            $tables[$name] = get_cached_table($name, $subdir);
-            if ($config->isVerbose()) {
+            $filename = basename($filepath);
+            $name = strtolower(pathinfo($filename, PATHINFO_FILENAME));
+            $tables[$name] = parse_tab_file($filepath);
+            if ($VERBOSE) {
                 debug_print("Loaded table '{$name}' from subdirectory: {$filepath}");
             }
         }
     }
-    // Then load from top-level without overriding.
+    // Load from top-level, but do not override files already loaded from subdir
     $files = glob("*.tab");
-    if ($files === false) {
-        throw new RuntimeException("Could not list files in current directory");
-    }
     foreach ($files as $filepath) {
-        $name = strtolower(pathinfo(basename($filepath), PATHINFO_FILENAME));
+        $filename = basename($filepath);
+        $name = strtolower(pathinfo($filename, PATHINFO_FILENAME));
         if (!isset($tables[$name])) {
-            $tables[$name] = get_cached_table($name);
-            if ($config->isVerbose()) {
+            $tables[$name] = parse_tab_file($filepath);
+            if ($VERBOSE) {
                 debug_print("Loaded table '{$name}' from top-level: {$filepath}");
             }
         }
@@ -370,16 +175,8 @@ function load_tables($subdir = null) {
 
 // --- Parse a single .tab file into a table ---
 function parse_tab_file($filename) {
-    if (!file_exists($filename)) {
-        throw new RuntimeException("File '{$filename}' does not exist");
-    }
-    
     $table = array();
-    $lines = @file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    if ($lines === false) {
-        throw new RuntimeException("Could not read file '{$filename}'");
-    }
-    
+    $lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
         $line = trim($line);
         if ($line === "" || strpos($line, '#') === 0) {
@@ -399,22 +196,19 @@ function parse_tab_file($filename) {
 
 // --- Process text with possible nested named blocks and table references ---
 function process_and_resolve_text($text, $tables, $named_rules, $depth, $parent_table = null, $current_named = null) {
-    global $config;
-    
+    global $resolved_stack;
     if ($depth > MAX_DEPTH) {
         debug_print(str_repeat("  ", $depth) . "[Maximum recursion depth reached]");
         return;
     }
-    
     $lines = explode("\n", $text);
     foreach ($lines as $line) {
         $line = trim($line);
-        // Handle inline named block call with parentheses.
         if (preg_match('/^([A-Za-z0-9_\-]+)\(\)$/', $line, $matches)) {
             $name_candidate = strtolower($matches[1]);
             if (isset($named_rules[$name_candidate])) {
                 debug_print(str_repeat("  ", $depth) . "→ Resolving named block: " . $line);
-                $result = $named_rules[$name_candidate]['resolve']();
+                $result = $named_rules[$name_candidate]();
                 process_and_resolve_text($result, $tables, $named_rules, $depth + 1, $parent_table, $name_candidate);
                 continue;
             }
@@ -424,14 +218,14 @@ function process_and_resolve_text($text, $tables, $named_rules, $depth, $parent_
             if ($current_named !== null && $lower_line === $current_named) {
                 final_print(str_repeat("  ", $depth), $line);
             } else {
-                if ($config->isInResolvedStack($lower_line)) {
+                if (in_array($lower_line, $resolved_stack)) {
                     debug_print(str_repeat("  ", $depth) . "→ [Cycle detected: " . $line . "]");
                 } else {
-                    $config->addToResolvedStack($lower_line);
+                    $resolved_stack[] = $lower_line;
                     debug_print(str_repeat("  ", $depth) . "→ Resolving named block: " . $line);
-                    $result = $named_rules[$lower_line]['resolve']();
+                    $result = $named_rules[$lower_line]();
                     process_and_resolve_text($result, $tables, $named_rules, $depth + 1, $parent_table, $lower_line);
-                    $config->removeFromResolvedStack();
+                    array_pop($resolved_stack);
                 }
             }
             continue;
@@ -447,17 +241,17 @@ function process_and_resolve_text($text, $tables, $named_rules, $depth, $parent_
                 if ($current_named !== null && $match_lower === $current_named) {
                     continue;
                 }
-                if ($config->isInResolvedStack($match_lower)) {
+                if (in_array($match_lower, $resolved_stack)) {
                     continue;
                 }
-                $config->addToResolvedStack($match_lower);
+                $resolved_stack[] = $match_lower;
                 if (isset($named_rules[$match_lower])) {
-                    $result = $named_rules[$match_lower]['resolve']();
+                    $result = $named_rules[$match_lower]();
                     process_and_resolve_text($result, $tables, $named_rules, $depth + 1, $parent_table, $match_lower);
                 } elseif (isset($tables[$match_lower])) {
                     resolve_table($match_lower, $tables, $named_rules, $depth + 1);
                 }
-                $config->removeFromResolvedStack();
+                array_pop($resolved_stack);
             }
         }
     }
@@ -472,18 +266,17 @@ function resolve_table($name, $tables, $named_rules = array(), $depth = 0) {
         return;
     }
     $table = $tables[$name];
-    
-    // Get dice notation from named rules
-    $diceNotation = getDiceNotation($name, $named_rules);
-    
+    //$result = roll_dice(DEFAULT_DICE);
+    // Roll the dice using the proper dice notation.
+    $diceNotation = getDiceNotation($name);
+
     if ($diceNotation !== null) {
         $result = roll_dice($diceNotation);
         debug_print("[Good entry for ROLL {$diceNotation}]");
     } else {
         debug_print("[Bad entry for ROLL {$name}]");
-        $result = roll_dice("1D12");  // Default to 1D12 if no notation found
+        $result = roll_dice($dice_notation);
     }
-    
     $roll = $result['total'];
     $rolls = $result['rolls'];
     $entry = null;
@@ -514,76 +307,144 @@ function resolve_table($name, $tables, $named_rules = array(), $depth = 0) {
     process_and_resolve_text($entry, $tables, $named_rules, $depth, $name, null);
 }
 
-/**
- * Generate HTML table output from monster data in CSV file
- * @param string $output The main output text containing monster names
- * @return string HTML table containing monster stats or empty string if no matches
- */
-function generate_monster_stats_table($output) {
-    $tableOutput = "";
-    if (preg_match_all('/\d+\s+([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) {
-        $names = array_map('trim', $matches[1]);
-        $names = array_filter($names, function($n) { return $n !== ""; });
-        
-        $csvFile = "skaven_bestiary.csv";
-        $monsterResults = get_cached_monster_records($csvFile, $names);
-        
-        if (!empty($monsterResults)) {
-            $tableOutput .= "##CSV_MARKER##";
-            $tableOutput .= "<table border='1' cellspacing='0' cellpadding='4' style='max-width:500px; margin:0 auto;'>";
-            $tableOutput .= "<tr>
-                <th>Monster</th>
-                <th>WS</th>
-                <th>BS</th>
-                <th>S</th>
-                <th>T</th>
-                <th>Sp</th>
-                <th>Br</th>
-                <th>Int</th>
-                <th>W</th>
-                <th>DD</th>
-                <th>PV</th>
-                <th>Equipment</th>
-            </tr>";
-            foreach ($monsterResults as $name => $rows) {
-                foreach ($rows as $row) {
-                    $tableOutput .= "<tr>";
-                    foreach ($row as $field) {
-                        $tableOutput .= "<td>" . htmlspecialchars($field) . "</td>";
-                    }
-                    $tableOutput .= "</tr>";
-                }
+// --- Main function ---
+function main() {
+    global $VERBOSE;
+    $params = $_GET;
+    if (isset($params['verbose']) && $params['verbose'] == "1") {
+        $VERBOSE = true;
+    }
+    if (!isset($params['tables']) || empty($params['tables'])) {
+        echo "Usage: index2.php?tables=TableName1,TableName2[,...]&verbose=1&subdir=your_subdir (optional)";
+        return;
+    }
+    $subdir = isset($params['subdir']) ? $params['subdir'] : null;
+
+    // Start output buffering so we can capture all printed text.
+    ob_start();
+
+    // Existing logic: load tables, extract named blocks, and process user inputs.
+    $tables = load_tables($subdir);
+    $named_rules = array();
+    $raw_blocks = extract_named_blocks($subdir);
+    foreach ($raw_blocks as $name => $block_lines) {
+        list($key, $fn) = parse_named_block($block_lines);
+        $named_rules[$key] = $fn;
+    }
+    $user_tables = array_map('trim', explode(",", $params['tables']));
+    foreach ($user_tables as $user_input) {
+        $normalized = strtolower(str_replace(array("-", "_"), "", $user_input));
+        $candidates = array();
+        foreach ($tables as $key => $value) {
+            $normalized_key = strtolower(str_replace(array("-", "_"), "", $key));
+            if ($normalized_key === $normalized) {
+                $candidates[] = $key;
             }
-            $tableOutput .= "</table>";
+        }
+        if (empty($candidates)) {
+            echo "[Table '{$user_input}' not found. Available: " . implode(", ", array_keys($tables)) . "]<br>";
+        } else {
+            $table_name = $candidates[0];
+            if ($VERBOSE) {
+                echo "<br>--- Resolving table '{$user_input}' ---<br>";
+            }
+            resolve_table($table_name, $tables, $named_rules);
+            if ($VERBOSE) {
+                echo "<br>" . str_repeat("=", 50) . "<br>";
+            }
         }
     }
-    return $tableOutput;
+
+    // Get the generated output.
+    $output = ob_get_clean();
+
+    // Echo the main output.
+    echo $output;
+
+    // --- CSV Search Functionality ---
+    // Clear any existing CSV output by starting fresh on each call.
+    // If the output starts with a numeric sequence, try to extract name strings.
+// --- CSV Search Functionality ---
+    // --- CSV Search Functionality ---
+    // --- CSV Search Functionality ---
+// --- CSV Search Functionality ---
+// --- CSV Search Functionality ---
+$csvOutput = "";
+if (preg_match_all('/\d+\s+([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) {
+    $names = array_map('trim', $matches[1]);
+    $names = array_filter($names, function($n) { return $n !== ""; });
+    $csvResults = array();
+    if (($handle = fopen("skaven_bestiary.csv", "r")) !== false) {
+        while (($data = fgetcsv($handle)) !== false) {
+            if (isset($data[0])) {
+                $csvName = trim($data[0]);
+                foreach ($names as $name) {
+                    // Try exact match first.
+                    if (strcasecmp($csvName, $name) === 0) {
+                        $csvResults[$name][] = $data;
+                    } 
+                    // If not found and name ends with "s", try the singular form.
+                    else if (substr($name, -1) === "s") {
+                        $singular = substr($name, 0, -1);
+                        if (strcasecmp($csvName, $singular) === 0) {
+                            $csvResults[$name][] = $data;
+                        }
+                    }
+                    else if (substr($name, -3) === "men") {
+                        $singular = substr($name, 0, -3) . "man";
+                        if (strcasecmp($csvName, $singular) === 0) {
+                            $csvResults[$name][] = $data;
+                        }
+                    }
+                }
+            }
+        }
+        fclose($handle);
+    }
+    if (!empty($csvResults)) {
+        // Use a unique marker to separate main output from CSV output.
+        $csvOutput .= "##CSV_MARKER##";
+        $csvOutput .= "<table border='1' cellspacing='0' cellpadding='4' style='max-width:500px; margin:0 auto;'>";
+        // Insert header row.
+        $csvOutput .= "<tr>";
+        $csvOutput .= "<th>Monster</th>";
+        $csvOutput .= "<th>WS</th>";
+        $csvOutput .= "<th>BS</th>";
+        $csvOutput .= "<th>S</th>";
+        $csvOutput .= "<th>T</th>";
+        $csvOutput .= "<th>Sp</th>";
+        $csvOutput .= "<th>Br</th>";
+        $csvOutput .= "<th>Int</th>";
+        $csvOutput .= "<th>W</th>";
+        $csvOutput .= "<th>DD</th>";
+        $csvOutput .= "<th>PV</th>";
+        $csvOutput .= "<th>Equipment</th>";
+        $csvOutput .= "</tr>";
+        foreach ($csvResults as $name => $rows) {
+            foreach ($rows as $row) {
+                $csvOutput .= "<tr>";
+                foreach ($row as $field) {
+                    $csvOutput .= "<td>" . htmlspecialchars($field) . "</td>";
+                }
+                $csvOutput .= "</tr>";
+            }
+        }
+        $csvOutput .= "</table>";
+    }
+}
+echo $csvOutput;
+
+
+
 }
 
-// --- Parse a named block into a closure ---
 function parse_named_block($lines) {
+    global $table2die;
     $name = strtolower(trim($lines[0]));
     $stack = array();
     $current = array();
     $parsed_tables = array();  // Each element: [dice_notation, table]
-    $dice_notation = "1D12";  // Default to 1D12 if not specified
-    
-    // First pass: find dice notation in the second line
-    if (count($lines) > 1) {
-        $second_line = trim($lines[1]);
-        if (strpos($second_line, "2D12") !== false) {
-            $dice_notation = "2D12";
-        } elseif (strpos($second_line, "1D12") !== false) {
-            $dice_notation = "1D12";
-        } elseif (strpos($second_line, "1D6") !== false) {
-            $dice_notation = "1D6";
-        }
-        if ($dice_notation) {
-            debug_print("Found dice notation '{$dice_notation}' in second line for block '{$name}'");
-        }
-    }
-    
-    // Second pass: parse the tables
+    $dice_notation = null;
     for ($i = 1; $i < count($lines); $i++) {
         $line = $lines[$i];
         if (strpos(trim($line), "(") === 0) {
@@ -591,25 +452,56 @@ function parse_named_block($lines) {
             $current = array();
         } elseif (strpos(trim($line), ")") === 0) {
             if (!empty($current)) {
-                $parsed = parse_inline_table($current);
-                $current = count($stack) > 0 ? array_pop($stack) : array();
-                $parsed_tables[] = array($dice_notation, $parsed);
+                $first_line = trim($current[0]);
+                $tokens = preg_split('/\s+/', $first_line);
+                if (!empty($tokens) && preg_match('/^\d+[dD]\d+$/', $tokens[0])) {
+                    $dice_notation = $tokens[0];
+                    array_shift($tokens);
+                    if (!empty($tokens)) {
+                        $current[0] = implode(" ", $tokens);
+                    } else {
+                        array_shift($current);
+                    }
+                }
             }
+            $parsed = parse_inline_table($current);
+            $current = count($stack) > 0 ? array_pop($stack) : array();
+            $parsed_tables[] = array($dice_notation, $parsed);
+            $dice_notation = null;
         } else {
             $current[] = $line;
         }
+        if ($i == 1) {
+            // Check for each possible dice notation in the first line.
+            if (strpos($line, "2D12") !== false) {
+                $dice_notation = "2D12";
+                $table2die[$name] = $dice_notation;
+                debug_print("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
+            } elseif (strpos($line, "1D12") !== false) {
+                $dice_notation = "1D12";
+                $table2die[$name] = $dice_notation;
+                debug_print("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
+            } elseif (strpos($line, "1D6") !== false) {
+                $dice_notation = "1D6";
+                $table2die[$name] = $dice_notation;
+                debug_print("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
+            }
+
+            // Optionally, you can trim or log the found dice notation.
+        }
     }
-    
-    // The closure that, when called, resolves this block.
-    $resolve_nested = function() use ($parsed_tables, $name, $dice_notation) {
+    // The closure that, when called, resolves this block
+    $resolve_nested = function() use ($parsed_tables, $name) {
         if (empty($parsed_tables)) {
             return "";
         }
         list($notation, $outer) = $parsed_tables[0];
-        $roll_notation = ($name == "spell" && $notation === null) ? "2D12" : ($notation !== null ? $notation : $dice_notation);
+        if ($name == "spell" && $notation === null) {
+            $roll_notation = "2D12";
+        } else {
+            $roll_notation = $notation !== null ? $notation : DEFAULT_DICE;
+        }
         debug_print("Using dice notation '{$roll_notation}' for block '{$name}'");
-        
-        // Check for composite entries (using '&')
         $has_composite = false;
         foreach ($outer as $entry) {
             if (strpos($entry[1], "&") !== false) {
@@ -646,7 +538,7 @@ function parse_named_block($lines) {
                 }
                 if (strpos($part, "(") === 0 && count($parsed_tables) > 1) {
                     list($notation2, $subtable) = $parsed_tables[1];
-                    $roll_notation2 = $notation2 !== null ? $notation2 : $dice_notation;
+                    $roll_notation2 = $notation2 !== null ? $notation2 : DEFAULT_DICE;
                     $result2 = roll_dice($roll_notation2);
                     $subroll = $result2['total'];
                     $sub_rolls = $result2['rolls'];
@@ -666,156 +558,15 @@ function parse_named_block($lines) {
         } else {
             $final_output = ($entry_val !== null) ? $entry_val : "";
         }
+        // If this is a Hidden-Treasure block, wrap the output with special markers.
         if ($name == "hidden-treasure") {
             return "[Hidden-Treasure]\n" . $final_output . "\n[/Hidden-Treasure]";
         }
         return $final_output;
     };
-    
-    return array($name, $resolve_nested, $dice_notation);
+    return array($name, $resolve_nested);
 }
 
-/**
- * Sanitize and validate input parameters
- * @return array Sanitized parameters
- */
-function get_sanitized_params() {
-    $params = array();
-    foreach ($_GET as $key => $value) {
-        $params[$key] = is_string($value) ? htmlspecialchars($value, ENT_QUOTES, 'UTF-8') : '';
-    }
-    return $params;
-}
-
-/**
- * Validate and sanitize subdirectory path
- * @param string|null $subdir Raw subdirectory path
- * @return string|null Sanitized subdirectory path or null if invalid
- */
-function validate_subdir($subdir) {
-    if (!$subdir) {
-        return null;
-    }
-    
-    $sanitized = preg_replace('/[^a-zA-Z0-9\/\-_]/', '', $subdir);
-    if (!is_dir($sanitized)) {
-        throw new Exception("Invalid subdirectory '{$subdir}'");
-    }
-    return $sanitized;
-}
-
-/**
- * Load and initialize tables and named rules
- * @param string|null $subdir Subdirectory path
- * @return array Tuple of [tables, named_rules]
- */
-function load_tables_and_rules($subdir) {
-    $tables = load_tables($subdir);
-    $named_rules = array();
-    $raw_blocks = get_cached_named_blocks($subdir);
-    
-    foreach ($raw_blocks as $name => $block_lines) {
-        list($key, $resolve_fn, $dice_notation) = parse_named_block($block_lines);
-        $named_rules[$key] = array(
-            'resolve' => $resolve_fn,
-            'dice_notation' => $dice_notation
-        );
-    }
-    
-    return array($tables, $named_rules);
-}
-
-/**
- * Process a single user input table
- * @param string $user_input User input table name
- * @param array $tables Available tables
- * @param array $named_rules Available named rules
- * @param bool $verbose Verbosity flag
- */
-function process_user_table($user_input, $tables, $named_rules, $verbose) {
-    $normalized = strtolower(str_replace(array("-", "_"), "", $user_input));
-    $candidates = array();
-    
-    foreach ($tables as $key => $value) {
-        $normalized_key = strtolower(str_replace(array("-", "_"), "", $key));
-        if ($normalized_key === $normalized) {
-            $candidates[] = $key;
-        }
-    }
-    
-    if (empty($candidates)) {
-        echo "[Table '{$user_input}' not found. Available: " . implode(", ", array_keys($tables)) . "]<br>";
-        return;
-    }
-    
-    $table_name = $candidates[0];
-    if ($verbose) {
-        echo "<br>--- Resolving table '{$user_input}' ---<br>";
-    }
-    
-    resolve_table($table_name, $tables, $named_rules);
-    
-    if ($verbose) {
-        echo "<br>" . str_repeat("=", 50) . "<br>";
-    }
-}
-
-/**
- * Process all user input tables
- * @param string $tables_param Comma-separated list of table names
- * @param array $tables Available tables
- * @param array $named_rules Available named rules
- * @param bool $verbose Verbosity flag
- */
-function process_user_tables($tables_param, $tables, $named_rules, $verbose) {
-    $user_tables = array_map('trim', explode(",", $tables_param));
-    foreach ($user_tables as $user_input) {
-        process_user_table($user_input, $tables, $named_rules, $verbose);
-    }
-}
-
-function main() {
-    global $config;
-    
-    try {
-        // Get and validate parameters
-        $params = get_sanitized_params();
-        
-        // Set verbosity
-        if (isset($params['verbose']) && $params['verbose'] === "1") {
-            $config->setVerbose(true);
-        }
-        
-        // Validate required parameters
-        if (!isset($params['tables']) || empty(trim($params['tables']))) {
-            echo "Usage: index2.php?tables=TableName1,TableName2[,...]&verbose=1&subdir=your_subdir (optional)";
-            return;
-        }
-        
-        // Validate subdirectory
-        $subdir = validate_subdir(isset($params['subdir']) ? $params['subdir'] : null);
-        
-        // Start output buffering
-        ob_start();
-        
-        // Load tables and rules
-        list($tables, $named_rules) = load_tables_and_rules($subdir);
-        
-        // Process user tables
-        process_user_tables($params['tables'], $tables, $named_rules, $config->isVerbose());
-        
-        // Generate and output results
-        $output = ob_get_clean();
-        echo $output;
-        echo generate_monster_stats_table($output);
-        
-    } catch (Exception $e) {
-        if (ob_get_level() > 0) {
-            ob_end_clean();
-        }
-        echo "[Error: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . "]";
-    }
-}
 
 if (basename(__FILE__) == basename($_SERVER['SCRIPT_FILENAME'])) {
     main();

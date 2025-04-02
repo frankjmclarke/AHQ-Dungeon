@@ -1,0 +1,15 @@
+Treasure-Chest
+(   2D12
+    1-2     "Empty Chest"
+    3-4     "Chest with Coins"
+    5-6     "Chest with Gems"
+    7-8     "Chest with Magic Items"
+    9-10    "Chest with Both Coins and Gems"
+    11-12   "Chest with Both Coins and Magic Items"
+    13-14   "Chest with Both Gems and Magic Items"
+    15-16   "Chest with Coins, Gems, and Magic Items"
+    17-18   "Chest with Traps"
+    19-20   "Chest with Both Traps and Coins"
+    21-22   "Chest with Both Traps and Gems"
+    23-24   "Chest with Both Traps and Magic Items"
+) 
