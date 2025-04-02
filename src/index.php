@@ -13,6 +13,7 @@ require_once __DIR__ . '/interfaces/TableResolver.php';
 require_once __DIR__ . '/interfaces/TextProcessor.php';
 require_once __DIR__ . '/classes/CSVProcessorImpl.php';
 require_once __DIR__ . '/classes/DungeonGenerator.php';
+require_once __DIR__ . '/classes/DiceRollerImpl.php';
 
 // Global state
 $VERBOSE = false;                // Global verbosity flag
@@ -42,30 +43,6 @@ function final_print($indent, $msg) {
 // ============================================================================
 // Core Implementations
 // ============================================================================
-
-class DiceRollerImpl implements DiceRoller {
-    public function roll($notation) {
-        if (preg_match('/^(\d+)D(\d+)$/', $notation, $matches)) {
-            $num_dice = intval($matches[1]);
-            $num_sides = intval($matches[2]);
-            $rolls = array();
-            $total = 0;
-            
-            for ($i = 0; $i < $num_dice; $i++) {
-                $roll = rand(1, $num_sides);
-                $rolls[] = $roll;
-                $total += $roll;
-            }
-            
-            return array(
-                'total' => $total,
-                'rolls' => $rolls
-            );
-        }
-        
-        return array('total' => 0, 'rolls' => array());
-    }
-}
 
 class TableManager implements TableResolver {
     private $dice_roller;
