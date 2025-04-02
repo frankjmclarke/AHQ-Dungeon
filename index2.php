@@ -5,12 +5,9 @@ ini_set('display_errors', 1);
 
 // Global constants and variables
 define('MAX_DEPTH', 50);         // Maximum recursion depth
-define('DEFAULT_DICE', "1D12");   // Global default dice (if no block-specific notation is provided)
 define('MONSTER_CACHE_TTL', 3600); // 60 minutes cache TTL for monster records
 $VERBOSE = false;                // Global verbosity flag
 $resolved_stack = array();       // Global resolved stack for cycle detection
-global $table2die;
-$table2die = array();
 
 // Cache for tables and named blocks
 $table_cache = array();
@@ -398,7 +395,7 @@ function resolve_table($name, $tables, $named_rules = array(), $depth = 0) {
         debug_print("[Good entry for ROLL {$diceNotation}]");
     } else {
         debug_print("[Bad entry for ROLL {$name}]");
-        $result = roll_dice(DEFAULT_DICE);
+        $result = roll_dice("1D12");  // Default to 1D12 if no notation found
     }
     
     $roll = $result['total'];
@@ -483,7 +480,7 @@ function parse_named_block($lines) {
     $stack = array();
     $current = array();
     $parsed_tables = array();  // Each element: [dice_notation, table]
-    $dice_notation = null;
+    $dice_notation = "1D12";  // Default to 1D12 if not specified
     
     // First pass: find dice notation in the second line
     if (count($lines) > 1) {
@@ -523,7 +520,7 @@ function parse_named_block($lines) {
             return "";
         }
         list($notation, $outer) = $parsed_tables[0];
-        $roll_notation = ($name == "spell" && $notation === null) ? "2D12" : ($notation !== null ? $notation : DEFAULT_DICE);
+        $roll_notation = ($name == "spell" && $notation === null) ? "2D12" : ($notation !== null ? $notation : $dice_notation);
         debug_print("Using dice notation '{$roll_notation}' for block '{$name}'");
         
         // Check for composite entries (using '&')
