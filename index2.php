@@ -11,6 +11,62 @@ $resolved_stack = array();       // Global resolved stack for cycle detection
 global $table2die;
 $table2die = array();
 
+// Cache for tables and named blocks
+$table_cache = array();
+$named_blocks_cache = array();
+$cache_ttl = 300; // 5 minutes cache TTL
+
+/**
+ * Get cached table or load it if not in cache
+ * @param string $name Table name
+ * @param string|null $subdir Subdirectory path
+ * @return array Table data
+ */
+function get_cached_table($name, $subdir = null) {
+    global $table_cache, $cache_ttl;
+    
+    $cache_key = $subdir ? "{$subdir}/{$name}" : $name;
+    
+    if (isset($table_cache[$cache_key]) && 
+        isset($table_cache[$cache_key]['timestamp']) && 
+        (time() - $table_cache[$cache_key]['timestamp'] < $cache_ttl)) {
+        return $table_cache[$cache_key]['data'];
+    }
+    
+    $table = parse_tab_file($subdir ? "{$subdir}/{$name}.tab" : "{$name}.tab");
+    $table_cache[$cache_key] = array(
+        'data' => $table,
+        'timestamp' => time()
+    );
+    
+    return $table;
+}
+
+/**
+ * Get cached named blocks or load them if not in cache
+ * @param string|null $subdir Subdirectory path
+ * @return array Named blocks data
+ */
+function get_cached_named_blocks($subdir = null) {
+    global $named_blocks_cache, $cache_ttl;
+    
+    $cache_key = $subdir ?: 'root';
+    
+    if (isset($named_blocks_cache[$cache_key]) && 
+        isset($named_blocks_cache[$cache_key]['timestamp']) && 
+        (time() - $named_blocks_cache[$cache_key]['timestamp'] < $cache_ttl)) {
+        return $named_blocks_cache[$cache_key]['data'];
+    }
+    
+    $blocks = extract_named_blocks($subdir);
+    $named_blocks_cache[$cache_key] = array(
+        'data' => $blocks,
+        'timestamp' => time()
+    );
+    
+    return $blocks;
+}
+
 // --- Helper printing functions ---
 function debug_print($msg) {
     global $VERBOSE;
@@ -142,7 +198,7 @@ function load_tables($subdir = null) {
         $files = glob($subdir . "/*.tab");
         foreach ($files as $filepath) {
             $name = strtolower(pathinfo(basename($filepath), PATHINFO_FILENAME));
-            $tables[$name] = parse_tab_file($filepath);
+            $tables[$name] = get_cached_table($name, $subdir);
             if ($VERBOSE) {
                 debug_print("Loaded table '{$name}' from subdirectory: {$filepath}");
             }
@@ -153,7 +209,7 @@ function load_tables($subdir = null) {
     foreach ($files as $filepath) {
         $name = strtolower(pathinfo(basename($filepath), PATHINFO_FILENAME));
         if (!isset($tables[$name])) {
-            $tables[$name] = parse_tab_file($filepath);
+            $tables[$name] = get_cached_table($name);
             if ($VERBOSE) {
                 debug_print("Loaded table '{$name}' from top-level: {$filepath}");
             }
@@ -512,81 +568,141 @@ function parse_named_block($lines) {
     return array($name, $resolve_nested);
 }
 
-function main() {
-    global $VERBOSE;
-    
-    // Sanitize and validate input parameters
+/**
+ * Sanitize and validate input parameters
+ * @return array Sanitized parameters
+ */
+function get_sanitized_params() {
     $params = array();
     foreach ($_GET as $key => $value) {
         $params[$key] = is_string($value) ? htmlspecialchars($value, ENT_QUOTES, 'UTF-8') : '';
     }
-    
-    // Set verbosity based on sanitized input
-    if (isset($params['verbose']) && $params['verbose'] === "1") {
-        $VERBOSE = true;
+    return $params;
+}
+
+/**
+ * Validate and sanitize subdirectory path
+ * @param string|null $subdir Raw subdirectory path
+ * @return string|null Sanitized subdirectory path or null if invalid
+ */
+function validate_subdir($subdir) {
+    if (!$subdir) {
+        return null;
     }
     
-    // Validate required parameters
-    if (!isset($params['tables']) || empty(trim($params['tables']))) {
-        echo "Usage: index2.php?tables=TableName1,TableName2[,...]&verbose=1&subdir=your_subdir (optional)";
+    $sanitized = preg_replace('/[^a-zA-Z0-9\/\-_]/', '', $subdir);
+    if (!is_dir($sanitized)) {
+        throw new Exception("Invalid subdirectory '{$subdir}'");
+    }
+    return $sanitized;
+}
+
+/**
+ * Load and initialize tables and named rules
+ * @param string|null $subdir Subdirectory path
+ * @return array Tuple of [tables, named_rules]
+ */
+function load_tables_and_rules($subdir) {
+    $tables = load_tables($subdir);
+    $named_rules = array();
+    $raw_blocks = get_cached_named_blocks($subdir);
+    
+    foreach ($raw_blocks as $name => $block_lines) {
+        list($key, $fn) = parse_named_block($block_lines);
+        $named_rules[$key] = $fn;
+    }
+    
+    return array($tables, $named_rules);
+}
+
+/**
+ * Process a single user input table
+ * @param string $user_input User input table name
+ * @param array $tables Available tables
+ * @param array $named_rules Available named rules
+ * @param bool $verbose Verbosity flag
+ */
+function process_user_table($user_input, $tables, $named_rules, $verbose) {
+    $normalized = strtolower(str_replace(array("-", "_"), "", $user_input));
+    $candidates = array();
+    
+    foreach ($tables as $key => $value) {
+        $normalized_key = strtolower(str_replace(array("-", "_"), "", $key));
+        if ($normalized_key === $normalized) {
+            $candidates[] = $key;
+        }
+    }
+    
+    if (empty($candidates)) {
+        echo "[Table '{$user_input}' not found. Available: " . implode(", ", array_keys($tables)) . "]<br>";
         return;
     }
     
-    // Sanitize subdirectory path
-    $subdir = null;
-    if (isset($params['subdir'])) {
-        $subdir = preg_replace('/[^a-zA-Z0-9\/\-_]/', '', $params['subdir']);
-        if (!is_dir($subdir)) {
-            echo "[Error: Invalid subdirectory '{$subdir}']";
-            return;
-        }
+    $table_name = $candidates[0];
+    if ($verbose) {
+        echo "<br>--- Resolving table '{$user_input}' ---<br>";
     }
+    
+    resolve_table($table_name, $tables, $named_rules);
+    
+    if ($verbose) {
+        echo "<br>" . str_repeat("=", 50) . "<br>";
+    }
+}
 
-    // Start output buffering
-    ob_start();
+/**
+ * Process all user input tables
+ * @param string $tables_param Comma-separated list of table names
+ * @param array $tables Available tables
+ * @param array $named_rules Available named rules
+ * @param bool $verbose Verbosity flag
+ */
+function process_user_tables($tables_param, $tables, $named_rules, $verbose) {
+    $user_tables = array_map('trim', explode(",", $tables_param));
+    foreach ($user_tables as $user_input) {
+        process_user_table($user_input, $tables, $named_rules, $verbose);
+    }
+}
 
+function main() {
+    global $VERBOSE;
+    
     try {
-        // Load tables and named blocks
-        $tables = load_tables($subdir);
-        $named_rules = array();
-        $raw_blocks = extract_named_blocks($subdir);
-        foreach ($raw_blocks as $name => $block_lines) {
-            list($key, $fn) = parse_named_block($block_lines);
-            $named_rules[$key] = $fn;
+        // Get and validate parameters
+        $params = get_sanitized_params();
+        
+        // Set verbosity
+        if (isset($params['verbose']) && $params['verbose'] === "1") {
+            $VERBOSE = true;
         }
         
-        // Process user input tables
-        $user_tables = array_map('trim', explode(",", $params['tables']));
-        foreach ($user_tables as $user_input) {
-            $normalized = strtolower(str_replace(array("-", "_"), "", $user_input));
-            $candidates = array();
-            foreach ($tables as $key => $value) {
-                $normalized_key = strtolower(str_replace(array("-", "_"), "", $key));
-                if ($normalized_key === $normalized) {
-                    $candidates[] = $key;
-                }
-            }
-            if (empty($candidates)) {
-                echo "[Table '{$user_input}' not found. Available: " . implode(", ", array_keys($tables)) . "]<br>";
-            } else {
-                $table_name = $candidates[0];
-                if ($VERBOSE) {
-                    echo "<br>--- Resolving table '{$user_input}' ---<br>";
-                }
-                resolve_table($table_name, $tables, $named_rules);
-                if ($VERBOSE) {
-                    echo "<br>" . str_repeat("=", 50) . "<br>";
-                }
-            }
+        // Validate required parameters
+        if (!isset($params['tables']) || empty(trim($params['tables']))) {
+            echo "Usage: index2.php?tables=TableName1,TableName2[,...]&verbose=1&subdir=your_subdir (optional)";
+            return;
         }
-
-        // Capture the output and generate CSV output if available
+        
+        // Validate subdirectory
+        $subdir = validate_subdir(isset($params['subdir']) ? $params['subdir'] : null);
+        
+        // Start output buffering
+        ob_start();
+        
+        // Load tables and rules
+        list($tables, $named_rules) = load_tables_and_rules($subdir);
+        
+        // Process user tables
+        process_user_tables($params['tables'], $tables, $named_rules, $VERBOSE);
+        
+        // Generate and output results
         $output = ob_get_clean();
         echo $output;
         echo generate_csv_output($output);
         
     } catch (Exception $e) {
-        ob_end_clean();
+        if (ob_get_level() > 0) {
+            ob_end_clean();
+        }
         echo "[Error: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . "]";
     }
 }
