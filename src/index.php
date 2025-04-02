@@ -5,10 +5,9 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Global constants
-define('MAX_DEPTH', 50);         // Maximum recursion depth
-define('DEFAULT_DICE', "1D12");   // Global default dice
-define('CSV_FILE', "skaven_bestiary.csv"); // CSV file for monster data
+require_once __DIR__ . '/config/constants.php';
+require_once __DIR__ . '/interfaces/CSVProcessor.php';
+require_once __DIR__ . '/classes/CSVProcessorImpl.php';
 
 // Global state
 $VERBOSE = false;                // Global verbosity flag
@@ -411,103 +410,6 @@ class TextProcessorImpl implements TextProcessor {
 }
 
 // ============================================================================
-// CSV Processing
-// ============================================================================
-
-class CSVProcessor {
-    private $parent_dir;
-    
-    public function __construct() {
-        $this->parent_dir = dirname(__DIR__);
-    }
-    
-    public function processOutput($output) {
-        $csvOutput = "";
-        if (preg_match_all('/\d+\s+([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) {
-            $names = array_map('trim', $matches[1]);
-            $names = array_filter($names, function($n) { return $n !== ""; });
-            $csvResults = $this->searchCSV($names);
-            if (!empty($csvResults)) {
-                $csvOutput = $this->generateCSVTable($csvResults);
-            }
-        }
-        return $csvOutput;
-    }
-    
-    private function searchCSV($names) {
-        $csvResults = array();
-        $csv_path = $this->parent_dir . "/" . CSV_FILE;
-        if (($handle = fopen($csv_path, "r")) !== false) {
-            while (($data = fgetcsv($handle)) !== false) {
-                if (isset($data[0])) {
-                    $csvName = trim($data[0]);
-                    foreach ($names as $name) {
-                        if ($this->matchName($csvName, $name)) {
-                            $csvResults[$name][] = $data;
-                        }
-                    }
-                }
-            }
-            fclose($handle);
-        } else {
-            debug_print("Warning: Could not open CSV file at: {$csv_path}");
-        }
-        return $csvResults;
-    }
-    
-    private function matchName($csvName, $name) {
-        if (strcasecmp($csvName, $name) === 0) {
-            return true;
-        }
-        if (substr($name, -1) === "s") {
-            $singular = substr($name, 0, -1);
-            if (strcasecmp($csvName, $singular) === 0) {
-                return true;
-            }
-        }
-        if (substr($name, -3) === "men") {
-            $singular = substr($name, 0, -3) . "man";
-            if (strcasecmp($csvName, $singular) === 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private function generateCSVTable($csvResults) {
-        $output = "##CSV_MARKER##";
-        $output .= "<table border='1' cellspacing='0' cellpadding='4' style='max-width:500px; margin:0 auto;'>";
-        $output .= "<tr>";
-        $output .= "<th>Monster</th>";
-        $output .= "<th>WS</th>";
-        $output .= "<th>BS</th>";
-        $output .= "<th>S</th>";
-        $output .= "<th>T</th>";
-        $output .= "<th>Sp</th>";
-        $output .= "<th>Br</th>";
-        $output .= "<th>Int</th>";
-        $output .= "<th>W</th>";
-        $output .= "<th>DD</th>";
-        $output .= "<th>PV</th>";
-        $output .= "<th>Equipment</th>";
-        $output .= "</tr>";
-        
-        foreach ($csvResults as $name => $rows) {
-            foreach ($rows as $row) {
-                $output .= "<tr>";
-                foreach ($row as $field) {
-                    $output .= "<td>" . htmlspecialchars($field) . "</td>";
-                }
-                $output .= "</tr>";
-            }
-        }
-        
-        $output .= "</table>";
-        return $output;
-    }
-}
-
-// ============================================================================
 // Main Application
 // ============================================================================
 
@@ -523,14 +425,14 @@ class DungeonGenerator {
         $this->table_manager = new TableManager($this->dice_roller);
         $this->named_block_manager = new NamedBlockManager();
         $this->text_processor = new TextProcessorImpl($this->dice_roller, $this->table_manager);
-        $this->csv_processor = new CSVProcessor();
+        $this->csv_processor = new CSVProcessorImpl(dirname(__DIR__));
     }
     
     public function run($params) {
         global $VERBOSE;
         
         if (!isset($params['tables']) || empty($params['tables'])) {
-            echo "Usage: index.php?tables=TableName1,TableName2[,...]&verbose=1&subdir=your_subdir (optional)";
+            echo "Usage: src/index.php?tables=TableName1,TableName2[,...]&verbose=1&subdir=your_subdir (optional)";
             return;
         }
         
@@ -659,11 +561,11 @@ class DungeonGenerator {
         if (strpos($line, "2D12") !== false) {
             $dice_notation = "2D12";
             $table2die[$name] = $dice_notation;
-            //debug_print("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
+            debug_print("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
         } elseif (strpos($line, "1D12") !== false) {
             $dice_notation = "1D12";
             $table2die[$name] = $dice_notation;
-            //debug_print("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
+            debug_print("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
         } elseif (strpos($line, "1D6") !== false) {
             $dice_notation = "1D6";
             $table2die[$name] = $dice_notation;
@@ -672,14 +574,14 @@ class DungeonGenerator {
     }
     
     private function createResolveFunction($parsed_tables, $name) {
+        global $table2die;
         return function() use ($parsed_tables, $name) {
             if (empty($parsed_tables)) {
                 return "";
             }
             
             list($notation, $outer) = $parsed_tables[0];
-            $roll_notation = ($name == "spell" && $notation === null) ? "2D12" : 
-                           ($notation !== null ? $notation : DEFAULT_DICE);
+            $roll_notation = isset($table2die[$name]) ? $table2die[$name] : DEFAULT_DICE;
             
             debug_print("Using dice notation '{$roll_notation}' for block '{$name}'");
             
