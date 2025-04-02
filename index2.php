@@ -169,14 +169,11 @@ function roll_dice($notation) {
 }
 
 // --- Lookup dice notation for a given table name ---
-function getDiceNotation($tableName) {
-    global $table2die;
-    if (isset($table2die[$tableName])) {
-        debug_print("[Table count: " . sizeof($table2die) . "]");
-        return $table2die[$tableName];
-    } else {
-        return null; // Or a default value.
+function getDiceNotation($tableName, $named_rules) {
+    if (isset($named_rules[$tableName])) {
+        return $named_rules[$tableName]['dice_notation'];
     }
+    return null;
 }
 
 // --- Parsing an inline table from a set of lines ---
@@ -334,7 +331,7 @@ function process_and_resolve_text($text, $tables, $named_rules, $depth, $parent_
             $name_candidate = strtolower($matches[1]);
             if (isset($named_rules[$name_candidate])) {
                 debug_print(str_repeat("  ", $depth) . "→ Resolving named block: " . $line);
-                $result = $named_rules[$name_candidate]();
+                $result = $named_rules[$name_candidate]['resolve']();
                 process_and_resolve_text($result, $tables, $named_rules, $depth + 1, $parent_table, $name_candidate);
                 continue;
             }
@@ -349,7 +346,7 @@ function process_and_resolve_text($text, $tables, $named_rules, $depth, $parent_
                 } else {
                     $resolved_stack[] = $lower_line;
                     debug_print(str_repeat("  ", $depth) . "→ Resolving named block: " . $line);
-                    $result = $named_rules[$lower_line]();
+                    $result = $named_rules[$lower_line]['resolve']();
                     process_and_resolve_text($result, $tables, $named_rules, $depth + 1, $parent_table, $lower_line);
                     array_pop($resolved_stack);
                 }
@@ -372,7 +369,7 @@ function process_and_resolve_text($text, $tables, $named_rules, $depth, $parent_
                 }
                 $resolved_stack[] = $match_lower;
                 if (isset($named_rules[$match_lower])) {
-                    $result = $named_rules[$match_lower]();
+                    $result = $named_rules[$match_lower]['resolve']();
                     process_and_resolve_text($result, $tables, $named_rules, $depth + 1, $parent_table, $match_lower);
                 } elseif (isset($tables[$match_lower])) {
                     resolve_table($match_lower, $tables, $named_rules, $depth + 1);
@@ -392,16 +389,18 @@ function resolve_table($name, $tables, $named_rules = array(), $depth = 0) {
         return;
     }
     $table = $tables[$name];
-    // Roll the dice using the proper dice notation.
-    $diceNotation = getDiceNotation($name);
+    
+    // Get dice notation from named rules
+    $diceNotation = getDiceNotation($name, $named_rules);
     
     if ($diceNotation !== null) {
         $result = roll_dice($diceNotation);
         debug_print("[Good entry for ROLL {$diceNotation}]");
     } else {
         debug_print("[Bad entry for ROLL {$name}]");
-        $result = roll_dice(DEFAULT_DICE);  // Use the default dice notation instead of undefined variable
+        $result = roll_dice(DEFAULT_DICE);
     }
+    
     $roll = $result['total'];
     $rolls = $result['rolls'];
     $entry = null;
@@ -480,13 +479,28 @@ function generate_monster_stats_table($output) {
 
 // --- Parse a named block into a closure ---
 function parse_named_block($lines) {
-    global $table2die;
     $name = strtolower(trim($lines[0]));
     $stack = array();
     $current = array();
     $parsed_tables = array();  // Each element: [dice_notation, table]
     $dice_notation = null;
     
+    // First pass: find dice notation in the second line
+    if (count($lines) > 1) {
+        $second_line = trim($lines[1]);
+        if (strpos($second_line, "2D12") !== false) {
+            $dice_notation = "2D12";
+        } elseif (strpos($second_line, "1D12") !== false) {
+            $dice_notation = "1D12";
+        } elseif (strpos($second_line, "1D6") !== false) {
+            $dice_notation = "1D6";
+        }
+        if ($dice_notation) {
+            debug_print("Found dice notation '{$dice_notation}' in second line for block '{$name}'");
+        }
+    }
+    
+    // Second pass: parse the tables
     for ($i = 1; $i < count($lines); $i++) {
         $line = $lines[$i];
         if (strpos(trim($line), "(") === 0) {
@@ -494,42 +508,17 @@ function parse_named_block($lines) {
             $current = array();
         } elseif (strpos(trim($line), ")") === 0) {
             if (!empty($current)) {
-                // Check for a dice notation in the first line of the current block.
-                $first_line = trim($current[0]);
-                $tokens = preg_split('/\s+/', $first_line);
-                if (!empty($tokens) && preg_match('/^\d+[dD]\d+$/', $tokens[0])) {
-                    $dice_notation = $tokens[0];
-                    array_shift($tokens);
-                    $current[0] = !empty($tokens) ? implode(" ", $tokens) : "";
-                }
+                $parsed = parse_inline_table($current);
+                $current = count($stack) > 0 ? array_pop($stack) : array();
+                $parsed_tables[] = array($dice_notation, $parsed);
             }
-            $parsed = parse_inline_table($current);
-            $current = count($stack) > 0 ? array_pop($stack) : array();
-            $parsed_tables[] = array($dice_notation, $parsed);
-            $dice_notation = null;
         } else {
             $current[] = $line;
         }
-        
-        // Check the second line for possible dice notation.
-        if ($i == 1) {
-            if (strpos($line, "2D12") !== false) {
-                $dice_notation = "2D12";
-                $table2die[$name] = $dice_notation;
-                debug_print("Using dice notation '{$dice_notation}' for block '{$name}'");
-            } elseif (strpos($line, "1D12") !== false) {
-                $dice_notation = "1D12";
-                $table2die[$name] = $dice_notation;
-                debug_print("Using dice notation '{$dice_notation}' for block '{$name}'");
-            } elseif (strpos($line, "1D6") !== false) {
-                $dice_notation = "1D6";
-                $table2die[$name] = $dice_notation;
-                debug_print("Using dice notation '{$dice_notation}' for block '{$name}'");
-            }
-        }
     }
+    
     // The closure that, when called, resolves this block.
-    $resolve_nested = function() use ($parsed_tables, $name) {
+    $resolve_nested = function() use ($parsed_tables, $name, $dice_notation) {
         if (empty($parsed_tables)) {
             return "";
         }
@@ -599,7 +588,8 @@ function parse_named_block($lines) {
         }
         return $final_output;
     };
-    return array($name, $resolve_nested);
+    
+    return array($name, $resolve_nested, $dice_notation);
 }
 
 /**
@@ -642,8 +632,11 @@ function load_tables_and_rules($subdir) {
     $raw_blocks = get_cached_named_blocks($subdir);
     
     foreach ($raw_blocks as $name => $block_lines) {
-        list($key, $fn) = parse_named_block($block_lines);
-        $named_rules[$key] = $fn;
+        list($key, $resolve_fn, $dice_notation) = parse_named_block($block_lines);
+        $named_rules[$key] = array(
+            'resolve' => $resolve_fn,
+            'dice_notation' => $dice_notation
+        );
     }
     
     return array($tables, $named_rules);
