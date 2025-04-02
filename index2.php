@@ -362,47 +362,51 @@ function resolve_table($name, $tables, $named_rules = array(), $depth = 0) {
     process_and_resolve_text($entry, $tables, $named_rules, $depth, $name, null);
 }
 
-// --- Generate CSV output from the main output ---
-function generate_csv_output($output) {
-    $csvOutput = "";
+/**
+ * Generate HTML table output from monster data in CSV file
+ * @param string $output The main output text containing monster names
+ * @return string HTML table containing monster stats or empty string if no matches
+ */
+function generate_monster_stats_table($output) {
+    $tableOutput = "";
     if (preg_match_all('/\d+\s+([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) {
         $names = array_map('trim', $matches[1]);
         $names = array_filter($names, function($n) { return $n !== ""; });
-        $csvResults = array();
+        $monsterResults = array();
         
         $csvFile = "skaven_bestiary.csv";
         if (!file_exists($csvFile)) {
-            debug_print("[Error: CSV file '{$csvFile}' does not exist]");
+            debug_print("[Error: Monster data file '{$csvFile}' does not exist]");
             return "";
         }
         
         $handle = @fopen($csvFile, "r");
         if ($handle === false) {
-            debug_print("[Error: Could not open CSV file '{$csvFile}']");
+            debug_print("[Error: Could not open monster data file '{$csvFile}']");
             return "";
         }
         
         try {
             while (($data = fgetcsv($handle)) !== false) {
                 if (isset($data[0])) {
-                    $csvName = trim($data[0]);
+                    $monsterName = trim($data[0]);
                     foreach ($names as $name) {
                         // Try exact match.
-                        if (strcasecmp($csvName, $name) === 0) {
-                            $csvResults[$name][] = $data;
+                        if (strcasecmp($monsterName, $name) === 0) {
+                            $monsterResults[$name][] = $data;
                         } 
                         // If name ends with "s", try the singular form.
                         else if (substr($name, -1) === "s") {
                             $singular = substr($name, 0, -1);
-                            if (strcasecmp($csvName, $singular) === 0) {
-                                $csvResults[$name][] = $data;
+                            if (strcasecmp($monsterName, $singular) === 0) {
+                                $monsterResults[$name][] = $data;
                             }
                         }
                         // Handle names ending with "men".
                         else if (substr($name, -3) === "men") {
                             $singular = substr($name, 0, -3) . "man";
-                            if (strcasecmp($csvName, $singular) === 0) {
-                                $csvResults[$name][] = $data;
+                            if (strcasecmp($monsterName, $singular) === 0) {
+                                $monsterResults[$name][] = $data;
                             }
                         }
                     }
@@ -412,10 +416,10 @@ function generate_csv_output($output) {
             fclose($handle);
         }
         
-        if (!empty($csvResults)) {
-            $csvOutput .= "##CSV_MARKER##";
-            $csvOutput .= "<table border='1' cellspacing='0' cellpadding='4' style='max-width:500px; margin:0 auto;'>";
-            $csvOutput .= "<tr>
+        if (!empty($monsterResults)) {
+            $tableOutput .= "##CSV_MARKER##";
+            $tableOutput .= "<table border='1' cellspacing='0' cellpadding='4' style='max-width:500px; margin:0 auto;'>";
+            $tableOutput .= "<tr>
                 <th>Monster</th>
                 <th>WS</th>
                 <th>BS</th>
@@ -429,19 +433,19 @@ function generate_csv_output($output) {
                 <th>PV</th>
                 <th>Equipment</th>
             </tr>";
-            foreach ($csvResults as $name => $rows) {
+            foreach ($monsterResults as $name => $rows) {
                 foreach ($rows as $row) {
-                    $csvOutput .= "<tr>";
+                    $tableOutput .= "<tr>";
                     foreach ($row as $field) {
-                        $csvOutput .= "<td>" . htmlspecialchars($field) . "</td>";
+                        $tableOutput .= "<td>" . htmlspecialchars($field) . "</td>";
                     }
-                    $csvOutput .= "</tr>";
+                    $tableOutput .= "</tr>";
                 }
             }
-            $csvOutput .= "</table>";
+            $tableOutput .= "</table>";
         }
     }
-    return $csvOutput;
+    return $tableOutput;
 }
 
 // --- Parse a named block into a closure ---
@@ -697,7 +701,7 @@ function main() {
         // Generate and output results
         $output = ob_get_clean();
         echo $output;
-        echo generate_csv_output($output);
+        echo generate_monster_stats_table($output);
         
     } catch (Exception $e) {
         if (ob_get_level() > 0) {
