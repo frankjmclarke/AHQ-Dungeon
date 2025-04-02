@@ -7,7 +7,9 @@ ini_set('display_errors', 1);
 
 require_once __DIR__ . '/config/constants.php';
 require_once __DIR__ . '/interfaces/CSVProcessor.php';
+require_once __DIR__ . '/interfaces/DungeonGenerator.php';
 require_once __DIR__ . '/classes/CSVProcessorImpl.php';
+require_once __DIR__ . '/classes/DungeonGeneratorImpl.php';
 
 // Global state
 $VERBOSE = false;                // Global verbosity flag
@@ -29,14 +31,14 @@ interface DiceRoller {
  * Interface for table resolution
  */
 interface TableResolver {
-    public function resolve($name, $tables, $named_rules = array(), $depth = 0);
+    public function resolveTable($name, $tables, $named_rules, $depth);
 }
 
 /**
  * Interface for text processing
  */
 interface TextProcessor {
-    public function process($text, $tables, $named_rules, $depth, $parent_table = null, $current_named = null);
+    public function process($text, $tables, $named_rules, $depth);
 }
 
 // ============================================================================
@@ -49,7 +51,7 @@ interface TextProcessor {
 function debug_print($msg) {
     global $VERBOSE;
     if ($VERBOSE) {
-        echo $msg . "<br>";
+        echo "DEBUG: {$msg}\n";
     }
 }
 
@@ -66,108 +68,74 @@ function final_print($indent, $msg) {
 }
 
 // ============================================================================
-// Dice Rolling Implementation
+// Core Implementations
 // ============================================================================
 
 class DiceRollerImpl implements DiceRoller {
     public function roll($notation) {
-        if (preg_match('/^(\d+)[dD](\d+)$/', $notation, $matches)) {
-            $num = intval($matches[1]);
-            $sides = intval($matches[2]);
-            $total = 0;
+        if (preg_match('/^(\d+)D(\d+)$/', $notation, $matches)) {
+            $num_dice = intval($matches[1]);
+            $num_sides = intval($matches[2]);
             $rolls = array();
-            for ($i = 0; $i < $num; $i++) {
-                $r = random_int(1, $sides);
-                $rolls[] = $r;
-                $total += $r;
+            $total = 0;
+            
+            for ($i = 0; $i < $num_dice; $i++) {
+                $roll = rand(1, $num_sides);
+                $rolls[] = $roll;
+                $total += $roll;
             }
-            return array('total' => $total, 'rolls' => $rolls);
-        } else {
-            $r = random_int(1, 12);
-            return array('total' => $r, 'rolls' => array($r));
+            
+            return array(
+                'total' => $total,
+                'rolls' => $rolls
+            );
         }
+        
+        return array('total' => 0, 'rolls' => array());
     }
 }
 
-// ============================================================================
-// Table Management
-// ============================================================================
-
-class TableManager {
-    private $parent_dir;
+class TableManager implements TableResolver {
     private $dice_roller;
+    private $parent_dir;
     
     public function __construct($dice_roller) {
-        $this->parent_dir = dirname(__DIR__);
         $this->dice_roller = $dice_roller;
-    }
-    
-    public function getDiceNotation($tableName) {
-        global $table2die;
-        if (isset($table2die[$tableName])) {
-            $size = sizeof($table2die);
-            debug_print("[SIZE  {$size}]");
-            return $table2die[$tableName];
-        }
-        return null;
+        $this->parent_dir = dirname(__DIR__);
     }
     
     public function loadTables($subdir = null) {
-        global $VERBOSE;
         $tables = array();
         
-        // Load files from the subdirectory (if provided)
-        if ($subdir && is_dir($this->parent_dir . "/" . $subdir)) {
-            $files = glob($this->parent_dir . "/" . $subdir . "/*.tab");
-            foreach ($files as $filepath) {
-                $filename = basename($filepath);
-                $name = strtolower(pathinfo($filename, PATHINFO_FILENAME));
-                $tables[$name] = $this->parseTabFile($filepath);
-                if ($VERBOSE) {
-                    //debug_print("Loaded table '{$name}' from subdirectory: {$filepath}");
+        // Load files from parent directory
+        $files = glob($this->parent_dir . "/*.tab");
+        foreach ($files as $file) {
+            $table_name = basename($file, ".tab");
+            $tables[$table_name] = file_get_contents($file);
+        }
+        
+        // Load files from subdirectory if specified
+        if ($subdir !== null) {
+            $subdir_path = $this->parent_dir . "/" . $subdir;
+            if (is_dir($subdir_path)) {
+                $subdir_files = glob($subdir_path . "/*.tab");
+                foreach ($subdir_files as $file) {
+                    $table_name = basename($file, ".tab");
+                    $tables[$table_name] = file_get_contents($file);
                 }
             }
         }
         
-        // Load from parent directory
-        $files = glob($this->parent_dir . "/*.tab");
-        foreach ($files as $filepath) {
-            $filename = basename($filepath);
-            $name = strtolower(pathinfo($filename, PATHINFO_FILENAME));
-            if (!isset($tables[$name])) {
-                $tables[$name] = $this->parseTabFile($filepath);
-                if ($VERBOSE) {
-                    //debug_print("Loaded table '{$name}' from parent directory: {$filepath}");
-                }
-            }
-        }
         return $tables;
     }
     
-    private function parseTabFile($filename) {
-        $table = array();
-        $lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        foreach ($lines as $line) {
-            $line = trim($line);
-            if ($line === "" || strpos($line, '#') === 0) {
-                continue;
-            }
-            if (preg_match('/^(\d+)(?:-(\d+))?\s+(.+)$/', $line, $matches)) {
-                $start = intval($matches[1]);
-                $end = isset($matches[2]) ? intval($matches[2]) : $start;
-                $content = trim($matches[3]);
-                for ($roll = $start; $roll <= $end; $roll++) {
-                    $table[] = array($roll, $content);
-                }
-            }
+    public function resolveTable($name, $tables, $named_rules, $depth) {
+        if (isset($tables[$name])) {
+            return $tables[$name];
         }
-        return $table;
+        return null;
     }
 }
-
-// ============================================================================
-// Named Block Management
-// ============================================================================
 
 class NamedBlockManager {
     private $parent_dir;
@@ -177,80 +145,57 @@ class NamedBlockManager {
     }
     
     public function extractNamedBlocks($subdir = null) {
-        global $VERBOSE;
-        $blocks = array();
+        $named_blocks = array();
         
-        // Get files from parent directory
-        $files_top = array_merge(glob($this->parent_dir . "/*.tab"), glob($this->parent_dir . "/*.txt"));
-        // Get files from the subdirectory (if provided)
-        $files_sub = ($subdir && is_dir($this->parent_dir . "/" . $subdir)) 
-            ? array_merge(glob($this->parent_dir . "/" . $subdir . "/*.tab"), glob($this->parent_dir . "/" . $subdir . "/*.txt"))
-            : array();
-        
-        // Build an associative array keyed by lowercased basename
-        $files_assoc = array();
-        foreach ($files_top as $filepath) {
-            $key = strtolower(basename($filepath));
-            $files_assoc[$key] = $filepath;
-        }
-        foreach ($files_sub as $filepath) {
-            $key = strtolower(basename($filepath));
-            $files_assoc[$key] = $filepath;
+        // Load files from parent directory
+        $files = glob($this->parent_dir . "/*.txt");
+        foreach ($files as $file) {
+            $content = file_get_contents($file);
+            $blocks = $this->extractBlocks($content);
+            $named_blocks = array_merge($named_blocks, $blocks);
         }
         
-        // Process each file
-        foreach ($files_assoc as $filepath) {
-            if ($VERBOSE) {
-                debug_print("Processing named blocks from file: {$filepath}");
+        // Load files from subdirectory if specified
+        if ($subdir !== null) {
+            $subdir_path = $this->parent_dir . "/" . $subdir;
+            if (is_dir($subdir_path)) {
+                $subdir_files = glob($subdir_path . "/*.txt");
+                foreach ($subdir_files as $file) {
+                    $content = file_get_contents($file);
+                    $blocks = $this->extractBlocks($content);
+                    $named_blocks = array_merge($named_blocks, $blocks);
+                }
             }
-            $blocks = array_merge($blocks, $this->processFile($filepath));
         }
-        return $blocks;
+        
+        return $named_blocks;
     }
     
-    private function processFile($filepath) {
+    private function extractBlocks($content) {
         $blocks = array();
-        $lines_raw = file($filepath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        $lines = array();
-        foreach ($lines_raw as $line) {
-            $trimmed = trim($line);
-            if ($trimmed === "" || strpos($trimmed, '#') === 0) {
-                continue;
+        $lines = explode("\n", $content);
+        $current_block = null;
+        $current_lines = array();
+        
+        foreach ($lines as $line) {
+            if (preg_match('/^@(\w+)/', $line, $matches)) {
+                if ($current_block !== null) {
+                    $blocks[$current_block] = $current_lines;
+                    $current_lines = array();
+                }
+                $current_block = $matches[1];
+            } elseif ($current_block !== null) {
+                $current_lines[] = $line;
             }
-            $lines[] = $trimmed;
         }
         
-        $i = 0;
-        while ($i < count($lines)) {
-            $line = $lines[$i];
-            if (preg_match('/^[A-Za-z_][A-Za-z0-9_\-]*$/', $line)) {
-                $name = strtolower($line);
-                $i++;
-                if ($i < count($lines) && strpos($lines[$i], '(') === 0) {
-                    $depth = 1;
-                    $block_lines = array($line, $lines[$i]);
-                    $i++;
-                    while ($i < count($lines) && $depth > 0) {
-                        $block_lines[] = $lines[$i];
-                        $depth += substr_count($lines[$i], '(');
-                        $depth -= substr_count($lines[$i], ')');
-                        $i++;
-                    }
-                    $blocks[$name] = $block_lines;
-                } else {
-                    $i++;
-                }
-            } else {
-                $i++;
-            }
+        if ($current_block !== null) {
+            $blocks[$current_block] = $current_lines;
         }
+        
         return $blocks;
     }
 }
-
-// ============================================================================
-// Text Processing Implementation
-// ============================================================================
 
 class TextProcessorImpl implements TextProcessor {
     private $dice_roller;
@@ -261,151 +206,105 @@ class TextProcessorImpl implements TextProcessor {
         $this->table_manager = $table_manager;
     }
     
-    public function process($text, $tables, $named_rules, $depth, $parent_table = null, $current_named = null) {
+    public function process($text, $tables, $named_rules, $depth) {
         global $resolved_stack;
-        if ($depth > MAX_DEPTH) {
-            debug_print(str_repeat("  ", $depth) . "[Maximum recursion depth reached]");
-            return;
+        
+        if ($depth >= MAX_DEPTH) {
+            return "MAX_DEPTH reached";
         }
         
+        $resolved_stack[] = $text;
         $lines = explode("\n", $text);
+        $output = array();
+        
         foreach ($lines as $line) {
-            $this->processLine($line, $tables, $named_rules, $depth, $parent_table, $current_named);
-        }
-    }
-    
-    private function processLine($line, $tables, $named_rules, $depth, $parent_table, $current_named) {
-        $line = trim($line);
-        
-        // Handle named block calls
-        if (preg_match('/^([A-Za-z0-9_\-]+)\(\)$/', $line, $matches)) {
-            $this->handleNamedBlockCall($matches[1], $named_rules, $depth, $parent_table, $tables);
-            return;
-        }
-        
-        // Handle direct named block references
-        $lower_line = strtolower($line);
-        if (isset($named_rules[$lower_line])) {
-            $this->handleNamedBlockReference($line, $lower_line, $current_named, $named_rules, $depth, $parent_table, $tables);
-            return;
-        }
-        
-        // Handle literal text
-        if (substr($line, 0, 1) === '"' && substr($line, -1) === '"') {
-            final_print(str_repeat("  ", $depth), substr($line, 1, -1));
-        } else {
-            final_print(str_repeat("  ", $depth), $line);
-        }
-        
-        // Handle inline references
-        $this->handleInlineReferences($line, $tables, $named_rules, $depth, $parent_table, $current_named);
-    }
-    
-    private function handleNamedBlockCall($name, $named_rules, $depth, $parent_table, $tables) {
-        $name_candidate = strtolower($name);
-        if (isset($named_rules[$name_candidate])) {
-            debug_print(str_repeat("  ", $depth) . "→ Resolving named block: " . $name);
-            $result = $named_rules[$name_candidate]();
-            $this->process($result, $tables, $named_rules, $depth + 1, $parent_table, $name_candidate);
-        }
-    }
-    
-    private function handleNamedBlockReference($line, $lower_line, $current_named, $named_rules, $depth, $parent_table, $tables) {
-        if ($current_named !== null && $lower_line === $current_named) {
-            final_print(str_repeat("  ", $depth), $line);
-            return;
-        }
-        
-        global $resolved_stack;
-        if (in_array($lower_line, $resolved_stack)) {
-            debug_print(str_repeat("  ", $depth) . "→ [Cycle detected: " . $line . "]");
-            return;
-        }
-        
-        $resolved_stack[] = $lower_line;
-        debug_print(str_repeat("  ", $depth) . "→ Resolving named block: " . $line);
-        $result = $named_rules[$lower_line]();
-        $this->process($result, $tables, $named_rules, $depth + 1, $parent_table, $lower_line);
-        array_pop($resolved_stack);
-    }
-    
-    private function handleInlineReferences($line, $tables, $named_rules, $depth, $parent_table, $current_named) {
-        if (preg_match_all('/([A-Za-z0-9_\-]+)\(\)/', $line, $all_matches)) {
-            foreach ($all_matches[1] as $match) {
-                $match_lower = strtolower($match);
-                if ($current_named !== null && $match_lower === $current_named) {
-                    continue;
-                }
-                
-                global $resolved_stack;
-                if (in_array($match_lower, $resolved_stack)) {
-                    continue;
-                }
-                
-                $resolved_stack[] = $match_lower;
-                if (isset($named_rules[$match_lower])) {
-                    $result = $named_rules[$match_lower]();
-                    $this->process($result, $tables, $named_rules, $depth + 1, $parent_table, $match_lower);
-                } elseif (isset($tables[$match_lower])) {
-                    $this->resolveTable($match_lower, $tables, $named_rules, $depth + 1);
-                }
-                array_pop($resolved_stack);
+            $line = trim($line);
+            if (empty($line)) continue;
+            
+            if (strpos($line, "|") !== false) {
+                $output[] = $this->processTableLine($line, $tables, $named_rules, $depth);
+            } elseif (strpos($line, "@") === 0) {
+                $output[] = $this->processNamedBlockCall($line, $named_rules, $depth, $text);
+            } else {
+                $output[] = $line;
             }
         }
+        
+        array_pop($resolved_stack);
+        return implode("\n", $output);
     }
     
-    public function resolveTable($name, $tables, $named_rules, $depth) {
-        $indent = str_repeat("  ", $depth);
-        $name = strtolower($name);
-        if (!isset($tables[$name])) {
-            debug_print($indent . "[Table '{$name}' not found]");
-            return;
+    private function processTableLine($line, $tables, $named_rules, $depth) {
+        $parts = explode("|", $line);
+        $notation = trim($parts[0]);
+        $entries = array();
+        
+        foreach (array_slice($parts, 1) as $entry) {
+            $entry = trim($entry);
+            if (empty($entry)) continue;
+            
+            if (preg_match('/^(\d+)\s*-\s*(\d+)\s*:\s*(.+)$/', $entry, $matches)) {
+                $start = intval($matches[1]);
+                $end = intval($matches[2]);
+                $text = trim($matches[3]);
+                
+                for ($i = $start; $i <= $end; $i++) {
+                    $entries[] = array($i, $text);
+                }
+            } elseif (preg_match('/^(\d+)\s*:\s*(.+)$/', $entry, $matches)) {
+                $entries[] = array(intval($matches[1]), trim($matches[2]));
+            }
         }
         
-        $table = $tables[$name];
-        $diceNotation = $this->table_manager->getDiceNotation($name);
-        
-        if ($diceNotation !== null) {
-            $result = $this->dice_roller->roll($diceNotation);
-            debug_print("[Good entry for ROLL {$diceNotation}]");
-        } else {
-            debug_print("[Bad entry for ROLL {$name}]");
-            $result = $this->dice_roller->roll(DEFAULT_DICE);
-        }
-        
+        $result = $this->dice_roller->roll($notation);
         $roll = $result['total'];
         $rolls = $result['rolls'];
-        $entry = null;
         
-        foreach ($table as $tuple) {
+        $entry_val = null;
+        foreach ($entries as $tuple) {
             if ($tuple[0] == $roll) {
-                $entry = $tuple[1];
+                $entry_val = $tuple[1];
                 break;
             }
         }
         
-        debug_print($indent . "Rolled {$roll} on {$name}: {$entry} (rolls: " . implode(",", $rolls) . ")");
-        if (!$entry) {
-            debug_print($indent . "[No entry for roll {$roll}]");
-            return;
-        }
-        
-        if (substr($entry, 0, 1) === '"' && substr($entry, -1) === '"') {
-            final_print($indent, substr($entry, 1, -1));
-            return;
-        }
-        
-        if (substr($entry, 0, 2) === '[[' && substr($entry, -2) === ']]') {
-            $inner = substr($entry, 2, -2);
-            $parts = array_map('trim', explode("&", $inner));
-            foreach ($parts as $part) {
-                $part_normalized = strtolower(str_replace(array("(", ")"), "", $part));
-                $this->resolveTable($part_normalized, $tables, $named_rules, $depth + 1);
+        if ($entry_val !== null) {
+            if (strpos($entry_val, "&") !== false) {
+                return $this->processCompositeEntry($entry_val, $tables, $named_rules, $depth);
             }
-            return;
+            return $entry_val;
         }
         
-        $this->process($entry, $tables, $named_rules, $depth, $name, null);
+        return "";
+    }
+    
+    private function processNamedBlockCall($line, $named_rules, $depth, $parent_table) {
+        if (preg_match('/^@(\w+)/', $line, $matches)) {
+            $name = $matches[1];
+            if (isset($named_rules[$name])) {
+                $fn = $named_rules[$name];
+                return $fn();
+            }
+        }
+        return "";
+    }
+    
+    private function processCompositeEntry($entry_val, $tables, $named_rules, $depth) {
+        $parts = explode("&", $entry_val);
+        $output_parts = array();
+        
+        foreach ($parts as $part) {
+            $part = trim($part);
+            if (empty($part)) continue;
+            
+            if (strpos($part, "@") === 0) {
+                $output_parts[] = $this->processNamedBlockCall($part, $named_rules, $depth, null);
+            } else {
+                $output_parts[] = $part;
+            }
+        }
+        
+        return implode(" ", $output_parts);
     }
 }
 
