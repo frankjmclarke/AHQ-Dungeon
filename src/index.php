@@ -11,9 +11,11 @@ require_once __DIR__ . '/interfaces/DungeonGenerator.php';
 require_once __DIR__ . '/interfaces/DiceRoller.php';
 require_once __DIR__ . '/interfaces/TableResolver.php';
 require_once __DIR__ . '/interfaces/TextProcessor.php';
+require_once __DIR__ . '/interfaces/TableManager.php';
 require_once __DIR__ . '/classes/CSVProcessorImpl.php';
 require_once __DIR__ . '/classes/DungeonGenerator.php';
 require_once __DIR__ . '/classes/DiceRollerImpl.php';
+require_once __DIR__ . '/classes/TableManager.php';
 
 // Global state
 $VERBOSE = false;                // Global verbosity flag
@@ -43,48 +45,6 @@ function final_print($indent, $msg) {
 // ============================================================================
 // Core Implementations
 // ============================================================================
-
-class TableManager implements TableResolver {
-    private $dice_roller;
-    private $parent_dir;
-    
-    public function __construct($dice_roller) {
-        $this->dice_roller = $dice_roller;
-        $this->parent_dir = dirname(__DIR__);
-    }
-    
-    public function loadTables($subdir = null) {
-        $tables = array();
-        
-        // Load files from parent directory
-        $files = glob($this->parent_dir . "/*.tab");
-        foreach ($files as $file) {
-            $table_name = basename($file, ".tab");
-            $tables[$table_name] = file_get_contents($file);
-        }
-        
-        // Load files from subdirectory if specified
-        if ($subdir !== null) {
-            $subdir_path = $this->parent_dir . "/" . $subdir;
-            if (is_dir($subdir_path)) {
-                $subdir_files = glob($subdir_path . "/*.tab");
-                foreach ($subdir_files as $file) {
-                    $table_name = basename($file, ".tab");
-                    $tables[$table_name] = file_get_contents($file);
-                }
-            }
-        }
-        
-        return $tables;
-    }
-    
-    public function resolveTable($name, $tables, $named_rules, $depth) {
-        if (isset($tables[$name])) {
-            return $tables[$name];
-        }
-        return null;
-    }
-}
 
 class NamedBlockManager {
     private $parent_dir;
@@ -262,7 +222,9 @@ class TextProcessorImpl implements TextProcessor {
 // ============================================================================
 
 if (basename(__FILE__) == basename($_SERVER['SCRIPT_FILENAME'])) {
-    $generator = new DungeonGeneratorImpl();
+    $dice_roller = new DiceRollerImpl();
+    $table_manager = new TableManagerImpl($dice_roller);
+    $generator = new DungeonGeneratorImpl($dice_roller, $table_manager);
     $generator->run($_GET);
 }
 ?> 
