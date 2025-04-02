@@ -3,9 +3,86 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Global constants and variables
+// Global constants
 define('MAX_DEPTH', 50);         // Maximum recursion depth
+define('CACHE_TTL', 300);        // 5 minutes cache TTL for tables and named blocks
 define('MONSTER_CACHE_TTL', 3600); // 60 minutes cache TTL for monster records
+define('DEFAULT_DICE', "1D12");   // Default dice notation
+
+// Configuration class for managing global state
+class DungeonConfig {
+    private static $instance = null;
+    private $verbose = false;
+    private $resolvedStack = [];
+    private $cache = [
+        'tables' => [],
+        'named_blocks' => [],
+        'monsters' => []
+    ];
+    
+    private function __construct() {}
+    
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+    
+    public function setVerbose($verbose) {
+        $this->verbose = $verbose;
+    }
+    
+    public function isVerbose() {
+        return $this->verbose;
+    }
+    
+    public function getResolvedStack() {
+        return $this->resolvedStack;
+    }
+    
+    public function addToResolvedStack($item) {
+        $this->resolvedStack[] = $item;
+    }
+    
+    public function removeFromResolvedStack() {
+        array_pop($this->resolvedStack);
+    }
+    
+    public function isInResolvedStack($item) {
+        return in_array($item, $this->resolvedStack);
+    }
+    
+    public function getCache($type) {
+        return $this->cache[$type] ?? null;
+    }
+    
+    public function setCache($type, $key, $data, $ttl) {
+        $this->cache[$type][$key] = [
+            'data' => $data,
+            'timestamp' => time(),
+            'ttl' => $ttl
+        ];
+    }
+    
+    public function getCachedData($type, $key, $ttl) {
+        if (!isset($this->cache[$type][$key])) {
+            return null;
+        }
+        
+        $cache = $this->cache[$type][$key];
+        if (!isset($cache['timestamp']) || (time() - $cache['timestamp'] >= $ttl)) {
+            return null;
+        }
+        
+        return $cache['data'];
+    }
+}
+
+// Initialize global configuration
+$config = DungeonConfig::getInstance();
+
+// Global constants and variables
 $VERBOSE = false;                // Global verbosity flag
 $resolved_stack = array();       // Global resolved stack for cycle detection
 
@@ -22,21 +99,17 @@ $cache_ttl = 300; // 5 minutes cache TTL
  * @return array Table data
  */
 function get_cached_table($name, $subdir = null) {
-    global $table_cache, $cache_ttl;
+    global $config;
     
     $cache_key = $subdir ? "{$subdir}/{$name}" : $name;
     
-    if (isset($table_cache[$cache_key]) && 
-        isset($table_cache[$cache_key]['timestamp']) && 
-        (time() - $table_cache[$cache_key]['timestamp'] < $cache_ttl)) {
-        return $table_cache[$cache_key]['data'];
+    $cached_data = $config->getCachedData('tables', $cache_key, CACHE_TTL);
+    if ($cached_data !== null) {
+        return $cached_data;
     }
     
     $table = parse_tab_file($subdir ? "{$subdir}/{$name}.tab" : "{$name}.tab");
-    $table_cache[$cache_key] = array(
-        'data' => $table,
-        'timestamp' => time()
-    );
+    $config->setCache('tables', $cache_key, $table, CACHE_TTL);
     
     return $table;
 }
@@ -47,21 +120,17 @@ function get_cached_table($name, $subdir = null) {
  * @return array Named blocks data
  */
 function get_cached_named_blocks($subdir = null) {
-    global $named_blocks_cache, $cache_ttl;
+    global $config;
     
     $cache_key = $subdir ?: 'root';
     
-    if (isset($named_blocks_cache[$cache_key]) && 
-        isset($named_blocks_cache[$cache_key]['timestamp']) && 
-        (time() - $named_blocks_cache[$cache_key]['timestamp'] < $cache_ttl)) {
-        return $named_blocks_cache[$cache_key]['data'];
+    $cached_data = $config->getCachedData('named_blocks', $cache_key, CACHE_TTL);
+    if ($cached_data !== null) {
+        return $cached_data;
     }
     
     $blocks = extract_named_blocks($subdir);
-    $named_blocks_cache[$cache_key] = array(
-        'data' => $blocks,
-        'timestamp' => time()
-    );
+    $config->setCache('named_blocks', $cache_key, $blocks, CACHE_TTL);
     
     return $blocks;
 }
@@ -73,27 +142,24 @@ function get_cached_named_blocks($subdir = null) {
  * @return array Array of monster records keyed by name
  */
 function get_cached_monster_records($csvFile, $names) {
-    global $monster_cache;
+    global $config;
     
     $cache_key = md5($csvFile . implode('|', $names));
     
-    if (isset($monster_cache[$cache_key]) && 
-        isset($monster_cache[$cache_key]['timestamp']) && 
-        (time() - $monster_cache[$cache_key]['timestamp'] < MONSTER_CACHE_TTL)) {
-        return $monster_cache[$cache_key]['data'];
+    $cached_data = $config->getCachedData('monsters', $cache_key, MONSTER_CACHE_TTL);
+    if ($cached_data !== null) {
+        return $cached_data;
     }
     
     $monsterResults = array();
     
     if (!file_exists($csvFile)) {
-        debug_print("[Error: Monster data file '{$csvFile}' does not exist]");
-        return array();
+        throw new RuntimeException("Monster data file '{$csvFile}' does not exist");
     }
     
     $handle = @fopen($csvFile, "r");
     if ($handle === false) {
-        debug_print("[Error: Could not open monster data file '{$csvFile}']");
-        return array();
+        throw new RuntimeException("Could not open monster data file '{$csvFile}'");
     }
     
     try {
@@ -126,43 +192,55 @@ function get_cached_monster_records($csvFile, $names) {
         fclose($handle);
     }
     
-    $monster_cache[$cache_key] = array(
-        'data' => $monsterResults,
-        'timestamp' => time()
-    );
+    $config->setCache('monsters', $cache_key, $monsterResults, MONSTER_CACHE_TTL);
     
     return $monsterResults;
 }
 
 // --- Helper printing functions ---
 function debug_print($msg) {
-    global $VERBOSE;
-    if ($VERBOSE) {
+    global $config;
+    if ($config->isVerbose()) {
         echo $msg . "<br>";
     }
 }
 
 function final_print($indent, $msg) {
-    echo $indent . ($GLOBALS['VERBOSE'] ? "→ Output: " : "") . $msg . "<br>";
+    global $config;
+    echo $indent . ($config->isVerbose() ? "→ Output: " : "") . $msg . "<br>";
 }
 
-// --- Dice rolling ---
+// --- Dice rolling with improved error handling ---
 function roll_dice($notation) {
-    if (preg_match('/^(\d+)[dD](\d+)$/', $notation, $matches)) {
-        $num = intval($matches[1]);
-        $sides = intval($matches[2]);
-        $total = 0;
-        $rolls = array();
-        for ($i = 0; $i < $num; $i++) {
-            $r = random_int(1, $sides);
-            $rolls[] = $r;
-            $total += $r;
-        }
-        return array('total' => $total, 'rolls' => $rolls);
-    } else {
-        $r = random_int(1, 12);
-        return array('total' => $r, 'rolls' => array($r));
+    if (!is_string($notation)) {
+        throw new InvalidArgumentException("Dice notation must be a string");
     }
+    
+    if (!preg_match('/^(\d+)[dD](\d+)$/', $notation, $matches)) {
+        throw new InvalidArgumentException("Invalid dice notation format: {$notation}");
+    }
+    
+    $num = intval($matches[1]);
+    $sides = intval($matches[2]);
+    
+    if ($num < 1 || $num > 100) {
+        throw new InvalidArgumentException("Number of dice must be between 1 and 100");
+    }
+    
+    if ($sides < 1 || $sides > 100) {
+        throw new InvalidArgumentException("Number of sides must be between 1 and 100");
+    }
+    
+    $total = 0;
+    $rolls = array();
+    
+    for ($i = 0; $i < $num; $i++) {
+        $r = random_int(1, $sides);
+        $rolls[] = $r;
+        $total += $r;
+    }
+    
+    return array('total' => $total, 'rolls' => $rolls);
 }
 
 // --- Lookup dice notation for a given table name ---
@@ -192,7 +270,7 @@ function parse_inline_table($lines) {
 
 // --- Extract named blocks from .tab or .txt files ---
 function extract_named_blocks($subdir = null) {
-    global $VERBOSE;
+    global $config;
     $blocks = array();
     
     // Get files from top-level and optionally a subdirectory.
@@ -212,10 +290,13 @@ function extract_named_blocks($subdir = null) {
     
     // Process each file in $files_assoc
     foreach ($files_assoc as $filepath) {
-        if ($VERBOSE) {
+        if ($config->isVerbose()) {
             debug_print("Processing named blocks from file: {$filepath}");
         }
         $lines_raw = file($filepath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        if ($lines_raw === false) {
+            throw new RuntimeException("Could not read file '{$filepath}'");
+        }
         $lines = array();
         foreach ($lines_raw as $line) {
             $trimmed = trim($line);
@@ -254,27 +335,33 @@ function extract_named_blocks($subdir = null) {
 
 // --- Load tables from .tab files ---
 function load_tables($subdir = null) {
-    global $VERBOSE;
+    global $config;
     $tables = array();
     
     // Load files from the subdirectory first.
     if ($subdir && is_dir($subdir)) {
         $files = glob($subdir . "/*.tab");
+        if ($files === false) {
+            throw new RuntimeException("Could not list files in directory '{$subdir}'");
+        }
         foreach ($files as $filepath) {
             $name = strtolower(pathinfo(basename($filepath), PATHINFO_FILENAME));
             $tables[$name] = get_cached_table($name, $subdir);
-            if ($VERBOSE) {
+            if ($config->isVerbose()) {
                 debug_print("Loaded table '{$name}' from subdirectory: {$filepath}");
             }
         }
     }
     // Then load from top-level without overriding.
     $files = glob("*.tab");
+    if ($files === false) {
+        throw new RuntimeException("Could not list files in current directory");
+    }
     foreach ($files as $filepath) {
         $name = strtolower(pathinfo(basename($filepath), PATHINFO_FILENAME));
         if (!isset($tables[$name])) {
             $tables[$name] = get_cached_table($name);
-            if ($VERBOSE) {
+            if ($config->isVerbose()) {
                 debug_print("Loaded table '{$name}' from top-level: {$filepath}");
             }
         }
@@ -285,15 +372,13 @@ function load_tables($subdir = null) {
 // --- Parse a single .tab file into a table ---
 function parse_tab_file($filename) {
     if (!file_exists($filename)) {
-        debug_print("[Error: File '{$filename}' does not exist]");
-        return array();
+        throw new RuntimeException("File '{$filename}' does not exist");
     }
     
     $table = array();
     $lines = @file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     if ($lines === false) {
-        debug_print("[Error: Could not read file '{$filename}']");
-        return array();
+        throw new RuntimeException("Could not read file '{$filename}'");
     }
     
     foreach ($lines as $line) {
@@ -315,11 +400,13 @@ function parse_tab_file($filename) {
 
 // --- Process text with possible nested named blocks and table references ---
 function process_and_resolve_text($text, $tables, $named_rules, $depth, $parent_table = null, $current_named = null) {
-    global $resolved_stack;
+    global $config;
+    
     if ($depth > MAX_DEPTH) {
         debug_print(str_repeat("  ", $depth) . "[Maximum recursion depth reached]");
         return;
     }
+    
     $lines = explode("\n", $text);
     foreach ($lines as $line) {
         $line = trim($line);
@@ -338,14 +425,14 @@ function process_and_resolve_text($text, $tables, $named_rules, $depth, $parent_
             if ($current_named !== null && $lower_line === $current_named) {
                 final_print(str_repeat("  ", $depth), $line);
             } else {
-                if (in_array($lower_line, $resolved_stack)) {
+                if ($config->isInResolvedStack($lower_line)) {
                     debug_print(str_repeat("  ", $depth) . "→ [Cycle detected: " . $line . "]");
                 } else {
-                    $resolved_stack[] = $lower_line;
+                    $config->addToResolvedStack($lower_line);
                     debug_print(str_repeat("  ", $depth) . "→ Resolving named block: " . $line);
                     $result = $named_rules[$lower_line]['resolve']();
                     process_and_resolve_text($result, $tables, $named_rules, $depth + 1, $parent_table, $lower_line);
-                    array_pop($resolved_stack);
+                    $config->removeFromResolvedStack();
                 }
             }
             continue;
@@ -361,17 +448,17 @@ function process_and_resolve_text($text, $tables, $named_rules, $depth, $parent_
                 if ($current_named !== null && $match_lower === $current_named) {
                     continue;
                 }
-                if (in_array($match_lower, $resolved_stack)) {
+                if ($config->isInResolvedStack($match_lower)) {
                     continue;
                 }
-                $resolved_stack[] = $match_lower;
+                $config->addToResolvedStack($match_lower);
                 if (isset($named_rules[$match_lower])) {
                     $result = $named_rules[$match_lower]['resolve']();
                     process_and_resolve_text($result, $tables, $named_rules, $depth + 1, $parent_table, $match_lower);
                 } elseif (isset($tables[$match_lower])) {
                     resolve_table($match_lower, $tables, $named_rules, $depth + 1);
                 }
-                array_pop($resolved_stack);
+                $config->removeFromResolvedStack();
             }
         }
     }
@@ -689,7 +776,7 @@ function process_user_tables($tables_param, $tables, $named_rules, $verbose) {
 }
 
 function main() {
-    global $VERBOSE;
+    global $config;
     
     try {
         // Get and validate parameters
@@ -697,7 +784,7 @@ function main() {
         
         // Set verbosity
         if (isset($params['verbose']) && $params['verbose'] === "1") {
-            $VERBOSE = true;
+            $config->setVerbose(true);
         }
         
         // Validate required parameters
@@ -716,7 +803,7 @@ function main() {
         list($tables, $named_rules) = load_tables_and_rules($subdir);
         
         // Process user tables
-        process_user_tables($params['tables'], $tables, $named_rules, $VERBOSE);
+        process_user_tables($params['tables'], $tables, $named_rules, $config->isVerbose());
         
         // Generate and output results
         $output = ob_get_clean();
