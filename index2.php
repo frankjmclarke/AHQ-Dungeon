@@ -7,7 +7,6 @@ ini_set('display_errors', 1);
 define('MAX_DEPTH', 50);         // Maximum recursion depth
 define('CACHE_TTL', 300);        // 5 minutes cache TTL for tables and named blocks
 define('MONSTER_CACHE_TTL', 3600); // 60 minutes cache TTL for monster records
-define('DEFAULT_DICE', "1D12");   // Default dice notation
 
 // Configuration class for managing global state
 class DungeonConfig {
@@ -647,7 +646,7 @@ function parse_named_block($lines) {
                 }
                 if (strpos($part, "(") === 0 && count($parsed_tables) > 1) {
                     list($notation2, $subtable) = $parsed_tables[1];
-                    $roll_notation2 = $notation2 !== null ? $notation2 : DEFAULT_DICE;
+                    $roll_notation2 = $notation2 !== null ? $notation2 : $dice_notation;
                     $result2 = roll_dice($roll_notation2);
                     $subroll = $result2['total'];
                     $sub_rolls = $result2['rolls'];
