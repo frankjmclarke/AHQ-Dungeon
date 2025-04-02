@@ -6,6 +6,7 @@ ini_set('display_errors', 1);
 // Global constants and variables
 define('MAX_DEPTH', 50);         // Maximum recursion depth
 define('DEFAULT_DICE', "1D12");   // Global default dice (if no block-specific notation is provided)
+define('MONSTER_CACHE_TTL', 3600); // 60 minutes cache TTL for monster records
 $VERBOSE = false;                // Global verbosity flag
 $resolved_stack = array();       // Global resolved stack for cycle detection
 global $table2die;
@@ -75,13 +76,13 @@ function get_cached_named_blocks($subdir = null) {
  * @return array Array of monster records keyed by name
  */
 function get_cached_monster_records($csvFile, $names) {
-    global $monster_cache, $cache_ttl;
+    global $monster_cache;
     
     $cache_key = md5($csvFile . implode('|', $names));
     
     if (isset($monster_cache[$cache_key]) && 
         isset($monster_cache[$cache_key]['timestamp']) && 
-        (time() - $monster_cache[$cache_key]['timestamp'] < $cache_ttl)) {
+        (time() - $monster_cache[$cache_key]['timestamp'] < MONSTER_CACHE_TTL)) {
         return $monster_cache[$cache_key]['data'];
     }
     
