@@ -41,9 +41,9 @@ AddType text/csv .csv
 </Directory>
 
 # Base directory for the application
-RewriteBase /test/
+RewriteBase / ahq/
 
 # Only redirect to src if the file doesn't exist in the root
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ /test/src/$1 [L] 
+RewriteRule ^(.*)$ / ahq/src/$1 [L] 
