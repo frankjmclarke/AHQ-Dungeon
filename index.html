@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,56 +12,78 @@
         body {
             margin: 0;
             padding: 20px;
-            font-family: Arial, sans-serif;
+            font-family: 'MedievalSharp', Arial, sans-serif; /* Use a thematic font */
+            background: url('src/images/tiles2.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
         }
 
         .logo {
             display: block;
-            margin: 0 auto 5px auto;
-            max-width: 100%;
+            margin: 0 auto 20px auto;
+            max-width: 300px;
             height: auto;
+            border: 3px solid #fff;
+            border-radius: 10px;
         }
 
         h1 {
             text-align: center;
-            font-size: 2em;
+            font-size: 2.5em;
             margin-top: 0;
             margin-bottom: 20px;
+            color: #eeeeee; /* Gold color for headings */
+            text-shadow: 2px 2px 5px #000;
         }
 
-            h1 a.help-icon {
-                text-decoration: none;
-                font-size: 0.9em;
-                vertical-align: middle;
-                margin-left: 10px;
-                color: red;
-            }
+        h1 a.help-icon {
+            text-decoration: none;
+            font-size: 0.9em;
+            vertical-align: middle;
+            margin-left: 10px;
+            color: #ff0000;
+        }
 
         .button-container {
             display: flex;
             flex-direction: column;
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto 20px auto;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
         }
 
         button {
-            width: 100%;
+            width: 80%;
+            max-width: 300px;
             padding: 15px;
-            margin: 5px 0;
             font-size: 1.2em;
             cursor: pointer;
+            background: #444;
+            color: #eeeeee;
+            border: 2px solid #eeeeee;
+            border-radius: 5px;
+            text-shadow: 1px 1px 3px #000;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background: #eeeeee;
+            color: #000;
+            transform: scale(1.05);
         }
 
         .result-area {
-            width: 100%;
-            max-width: 500px;
+            width: 90%;
+            max-width: 600px;
             min-height: 200px;
-            border: 1px solid #ccc;
+            border: 2px solid #eeeeee;
             padding: 10px;
-            margin: 0 auto;
+            margin: 20px auto;
             white-space: pre-wrap;
-            background: #f9f9f9;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #eeeeee;
         }
 
         select, .switch-container {
@@ -71,6 +93,8 @@
             font-size: 1.1em;
             margin: 20px auto 0 auto;
             display: block;
+            background: black;
+            color: #eeeeee;
         }
 
 
@@ -95,6 +119,7 @@
         #csv-area {
             width: 100%;
             overflow-x: auto; /* Allows horizontal scrolling if the table is too wide */
+            background: black;
         }
 
             #csv-area table {
@@ -113,7 +138,7 @@
     </style>
 </head>
 <body>
-    <img src="logo.webp" alt="Advanced Heroquest Logo" class="logo">
+    <img src="src/images/logo.webp" alt="Advanced Heroquest Logo" class="logo">
 
     <h1>
         Generating the Dungeon
@@ -133,7 +158,7 @@
     <div id="csv-area"></div>
 
     <select id="subdir-dropdown">
-        <option value="">Select a directory</option>
+        <option value="">Select an Adventure</option>
     </select>
 
     <script>
@@ -204,10 +229,13 @@
                 const subdirs = await response.json();
                 const dropdown = document.getElementById('subdir-dropdown');
                 subdirs.forEach(dir => {
-                    const option = document.createElement('option');
-                    option.value = dir;
-                    option.textContent = dir;
-                    dropdown.appendChild(option);
+                    // Skip the "src" directory as it has no data
+                    if (dir !== "src") {
+                        const option = document.createElement('option');
+                        option.value = dir;
+                        option.textContent = dir;
+                        dropdown.appendChild(option);
+                    }
                 });
             } catch (error) {
                 console.error("Error fetching subdirectories:", error);
