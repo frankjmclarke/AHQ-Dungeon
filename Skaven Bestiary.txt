@@ -1,0 +1,3811 @@
+Skaven
+Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
+
+C 
+Blazing Skeleton 6 4 5 5 6 10 2 3 3 4
+Flames of Death
+C 
+Gargoyle 6 0 7 7 3 9 4 4 3 3 
+C 
+Ghoul Ravenloft 6 2 5 6 6 8 2 4 3 2 
+C 
+Kobold Skirmisher 6 6 5 7 11 6 6 3 3 2 
+Sentry
+C 
+Rat Swarm Ravenloft 6 0 4 4 12 12 1 12 3 5 
+*FLIGHT
+C 
+Skeleton Ravenloft 6 4 5 5 6 10 2 3 3 2 
+C 
+Spider 6 0 3 3 7 5 1 2 3 2 
+C 
+Wolf Ravenloft 8 0 4 7 9 8 7 4 3 3 
+C 
+Wraith 6 1 5 5 12 10 4 6 3 6 
+*INVULNERABLE *FEARSOME
+C 
+Zombie Ravenloft 5 1 5 4 6 11 1 3 3 1 
+*CAUSE DISEASE
+
+ 
+ 
+C 
+Count Strahd 10 6 6 8 7 8 8 6 5 10 Flight
+*FEARSOME
+Hypnotize
+C 
+Flesh Golem 7 0 7 9 4 9 1 6 5 8
+*BERSERKER 
+*LARGE
+C 
+Gravestorm 8 0 8 10 6 8 2 8 6 12
+Inferno of Doom 
+*LARGE
+C 
+Howling Hag 3 0 3 3 4 7 5 3 3 5
+Flight
+Sentry
+C 
+Klack 4 5 3 5 5 5 7 3 3 7
+Still air
+Sentry
+C 
+Werewolf 8 0 7 8 11 9 5 3 5 8 
+Flaming Hand
+C 
+Young Vampire 8 5 7 8 8 7 6 6 5 8
+Flight
+Hypnotize
+C 
+Zombie Dragon 8 0 7 6 5 11 1 6 5 7
+Dragon Armor
+*LARGE Fireballs
+
+C Giant Rat 5 -- 4* 5 12 5 3 2 2* ½
+Claws & Fangs (F:1/C:--)
+*Optional: ST5/DD3
+C Giant Rat(WD 159) 5 -- 3 5 10 6 6 1 2* ½
+Claws & Fangs (F:1/C:--)
+*Should be DD1 given its ST
+C Rabid Giant Rat 6 -- 4 5 12 5 3 2 2 ½
+Claws & Fangs (F:1/C:--)
+C Skaven Slave 5 4 5 6 10 3 3 2 3 ½
+Morning Star
+Heater Shield
+Slave
+C
+Skaven Slave
+(*)
+5 4 4 6 10 3 3 2 2 ½
+Morning Star
+Heater Shield
+Slave
+C
+Skaven Slave
+(**)
+5 3 5 7 9 3 3 2 3 ½
+Morning Star
+Heater Shield
+Leather Jack
+Slave
+C
+Clanrat Warden
+6 4 5 7 9 6 6 3 2 1
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+Heater Shield
+Leather Jack
+C
+Clanrat Warden
+(*)
+6 5 5 6 10 6 6 3 2 1
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+Heater Shield
+C
+Clanrat Warrior
+6 4 5 7 9 6 6 3 3 1
+Arming Sword
+Heater Shield
+Leather Jack
+C
+Clanrat Warrior
+(*)
+6 5 5 6 10 6 6 3 3 1
+Arming Sword
+Heater Shield
+C
+Clanrat Warrior
+Archer
+6 6 5 5 10 6 6 3 1 1
+Knife (M/T)
+(R4/D1/EX7/Swift Shot)
+Footman’s Bow
+(R24/D3/EX4/Great/Swift Shot)
+C
+Clanrat Warrior
+Archer
+(*)
+6 5 5 6 9 6 6 3 1 1
+Knife (M/T)
+(R4/D1/EX7/Swift Shot)
+Footman’s Bow
+(R24/D3/EX4/Great/Swift Shot)
+Leather Jack
+C
+Skaven Warrior
+(AHQ)
+6 5 5 7 10 6 6 3 3 1
+Arming Sword
+Leather Jack
+Heater Shield
+C
+Slave Champion
+6 4 5 6 10 3 3 3 3 1
+Morning Star
+Heater Shield
+Slave
+C
+Slave Champion
+(*)
+6 3 5 7 9 3 3 3 3 1
+Morning Star
+Heater Shield
+Leather Jack
+Slave
+C
+Warp Rat
+(WD 134)
+4 0 3 2 8 3 3 1 2 1
+Claws & Fangs (F:1/C:--)
+Cause Disesease
+Warp Rat
+C
+Clanrat Sentry
+6 6 5 6 10 6 6 3 3 2*
+Arming Sword
+Heater Shield
+Sentry
+*Optional: PV1
+C
+Clanrat Warden
+Champion
+7 5 6 7 9 6 6 4* 3 2
+Lugged Spear (R)
+(R8/D2/EX7/Throw/Swift Shot)
+Heater Shield
+Leather Jack
+*Optional: W3
+C
+Clanrat Warden
+Champion
+(*)
+7 5 6 8 8 6 6 4* 3 2
+Lugged Spear (R)
+(R8/D2/EX7/Throw/Swift Shot)
+Heater Shield
+Chain Coat
+*Optional: W3
+C
+Clanrat Warrior
+Champion
+7 5 6 7 9 6 6 4* 4 2
+Arming Sword
+Heater Shield
+Leather Jack
+*Optional: W3
+C
+Clanrat Warrior
+Champion
+(*)
+7 5 6 8 8 6 6 4* 4 2
+Arming Sword
+Heater Shield
+Chain Coat
+*Optional: W3
+C Night Runner 6 6 5 5 12 6 7 3 3 2
+Arming Sword
+Herdsman’s Sling
+(R12/D1/Swift Shot/Unreliable)
+Alert
+C
+Night Runner
+(*)
+6 4 5 7 11 6 7 3 3 2
+Arming Sword
+Heater Shield
+Leather Jack
+Alert
+C
+Skaven
+Champion
+(AHQ)
+7 5 6 8 9 8 6 3 4 2
+Arming Sword
+Heater Shield
+Chain Coat
+C
+Skaven Sentry
+(AHQ)
+6 6 5 6 11 6 6 3 3 2
+Arming Sword
+Heater Shield
+Alert
+Sentry
+C
+Storm Vermin
+7 6 5 7 8 7 6 4 3 2
+Scythe (R)
+(F:1-2/C:11+/Great)
+Chain Coat
+C
+Storm Vermin
+(*)
+7 5 5 8 8 7 6 4 3 2
+Arming Sword
+Heater Shield
+Chain Coat
+C
+Nightrunner
+Champion
+7 7 5 5 12 6 7 4 3 3
+Arming Sword
+Herdsman’s Sling
+(R12/D1/Swift Shot/Unreliable)
+Alert
+C
+Nightrunner
+Champion
+(*)
+7 5 5 7 11 6 7 4 3 3
+Arming Sword
+Heater Shield
+Leather Jack
+Alert
+C
+Storm Vermin
+Claw Champion
+8 5 6 8 8 7 6 4* 4 4
+Arming Sword
+Heater Shield
+Chain Coat
+*Optional: W5
+C
+Storm Vermin
+Claw Champion
+(*)
+8 6 6 7 8 7 6 4* 5 4
+Claymore (R) (F:1-2/C:11+)
+(Cleaving/Great)
+Chain Coat
+*Optional: W5
+C
+Storm Vermin
+Fang Champion
+8 6 6 7 8 7 6 4* 4 4
+Scythe (R)
+(F:1-2/C:11+/Great)
+Chain Coat
+*Optional: W5
+C
+Storm Vermin
+Paw Champion
+8 6 6 7 8 7 6 4* 4 4
+Arming Sword
+Naval Pistol (R12/D4/F:1-2/C:--
+/Slow Fire/Unreliable)
+Chain Coat
+*Optional: W5
+C Rat Swarm 6 -- 4 4 12 12 1 12 2 5
+Claws and Fangs
+(F:1/C:--)
+Blade Fury
+Large
+C
+Skaven Warlord
+(AHQ)
+8 5 7 8 9 9 7 4 6* 6
+Bloodthirsty Glaive (R)
+(D+1*/F:1-2/C:11+)
+Chain Coat (?)
+E
+Skaven Slave
+(WD 134)
+5 5 5 7 11 5 5 3 1* ½
+Morning Star
+Heater Shield
+Leather Jack
+Slave
+*Should be DD3 given its ST
+E
+Packmaster
+6 5 5 6 11 7 5 3 3 2
+Whip (R)
+(F:1-2/C:12/Unreliable)
+Leather Jack
+Beastmaster
+Slavemaster
+E
+Skaven
+Gutter Runner
+(AHQ)
+6 6 5 5 12 6 6 3 3 2
+Arming Sword
+Alert
+E Gutter Runner 7 7 5 5 12 7 8 3 3 3
+Arming Sword
+Herdsman’s Sling
+(R12/D1/Swift Shot/Unreliable)
+Alert
+Blade Fury
+E
+Gutter Runner
+(*)
+7 6 5 6 11 7 8 3 3 3
+Arming Sword
+Herdsman’s Sling
+(R12/D1/Swift Shot/Unreliable)
+Leather Jack
+Alert/Blade Fury
+E
+Poisoned Wind
+Globadier
+6 5 5 7 7 5 7 3 3 3
+Arming Sword
+Poisoned Wind Globe x2
+(R12/D6/F:1/C:-/Armor Piercing/
+Blast/Cleaving)
+Chain Coat
+E
+Skaven
+Beastmaster
+(WD 134)
+7 5 6 6 10 7 5 3 3* 3
+Lash (M)
+(F:1-2/C:11-12/Unreliable)
+Leather Jack
+Beastmaster
+*Should be DD4 given its ST
+E
+Skaven
+Gutter Runner
+(WD 134)
+5 6 5 5 10 6 6 3 3 3
+Arming Sword
+Herdsman’s Sling
+(R12/D1/Swift Shot/Unreliable)
+Alert
+E
+Skaven
+Night Runner
+(AHQ)
+7 7 5 5 12 6 6 3 3 3
+Arming Sword
+Alert
+E
+Skaven
+Slavemaster
+(WD 134)
+7 5 5 5 10 6 5 3 3 3
+Lash (M)
+(F:1-2/C:11-12/Unreliable)
+Leather Jack
+Slavemaster
+E
+Deathrunner
+7 7 5 5 12 8 7 3 4* 4
+Arming Sword (BladeFury/Blade
+Venom +1DD*)
+Herdsman’s Sling
+(R12/D1/Swift Shot/Unreliable)
+Alert
+E
+Deathrunner
+(*)
+7 6 5 7 11 8 7 3 4* 4
+Arming Sword (BladeFury/Blade
+Venom: +1DD*)
+Herdsman’s Sling
+(R12/D1/Swift Shot/Unreliable)
+Chain Coat
+Alert
+E
+Gutter Runner
+Champion
+8 8 5 5 12 7 8 4 3 4
+Arming Sword
+Herdsman’s Sling
+(R12/D1/Swift Shot/Unreliable)
+Alert
+Blade Fury
+E
+Gutter Runner
+Champion
+(*)
+8 7 5 7 11 7 8 4 3 4
+Arming Sword
+Herdsman’s Sling
+(R12/D1/Swift Shot/Unreliable)
+Chain Coat
+Alert
+Blade Fury
+E
+Plague Censer
+Bearer
+6 6 5 6 11 7 5 4 3 4
+Arming Sword
+Modfied Plague Censer (R) x1
+(D2/F:1-2/C:12/Armor Piercing/
+Blast)
+Berserker
+E
+Plague Monk
+6 6 5 6 10 7 5 4 3 4
+Arming Sword
+Magic Scroll (Dark Magic)
+Berserker
+E
+Deathrunner
+Champion
+8 8 5 5 12 8 7 4 4* 5
+Arming Sword (Blade Venom:
++1DD*)
+Herdsman’s Sling
+(R12/D1/Swift Shot/Unreliable)
+Alert
+Blade Fury (w/sword)
+E
+Deathrunner
+Champion
+(*)
+8 7 5 7 11 8 7 4 4* 5
+Arming Sword (Blade Venom:
++1DD*)
+Herdsman’s Sling
+(R12/D1/Swift Shot/Unreliable)
+Chain Coat
+Alert/Blade Fury (w/sword)
+E
+Plague Censer
+Bearer
+Champion
+7 6 5 7 11 7 5 4 3 5
+Arming Sword
+Modfied Plague Censer (R) x1
+(D2/F:1-2/C:12/Armor Piercing/
+Blast)
+Berserker
+E
+Plague Censer
+Bearer Champion
+(*)
+7 5 5 9 9 7 5 4 3 5
+Arming Sword
+Modfied Plague Censer (R) x1
+(D2/F:1-2/C:12/Armor Piercing/
+Blast)
+Chain Coat
+Berserker
+E
+Plague Monk
+Champion
+7 7 5 6 10 7 5 4* 3 5
+Arming Sword
+Magic Scroll (Dark Magic)
+Berserker
+*Optional: W5
+E
+Skaven
+Jezzailachis
+Team
+(AHQ)
+6 6 6* 4 10 6 6 3 2* 6
+Arming Sword
+Warplock Jezzail
+(R48/D6/F:1-2/C:--/ArmorPiercin
+/Clumsy/Slow Fire/Team)
+*Should be either ST4 or DD4
+Special Rules (see AHQ)
+E
+Skaven Poisoned
+Wind Globadier
+(AHQ)
+6 6 3 5 10 6 6 3 2 6
+Voulge (R) (F:1-2/C:11+)
+Poisoned Wind Globe x6
+(R12/D6/F:1/C:--/ArmorPiercing/
+Blast/Cleaving)
+Special Rules (see AHQ)
+E Skaven Jezzail Team 6 6 5 5 10 5 7 4 3 7
+Arming Sword
+Warplock Jezzail
+(R48/D6/F:1-2/C:--/ArmorPiercin
+/Clumsy/SlowFire/Team)
+E Jezzail 6 6 5 5 10 5 7 4 3 7
+Arming Sword
+Warplock Jezzail
+(R48/D6/F:1-2/C:--/ArmorPiercin
+/Clumsy/SlowFire/Team)
+E
+Jezzail
+(*)
+6 5 5 7 8 5 7 4 3 7
+Arming Sword
+Warplock Jezzail
+(R48/D6/F:1-2/C:--/ArmorPiercin
+/Clumsy/Slow Fire/Team)
+Chain Coat
+E
+Rat Ogre
+(WD 134)
+7 3 8 8 7 8 4 7 6 7
+Claws and Fangs (F:1/C:--)
+Fearsome
+Large
+Run Amok
+E
+Jezzail
+Champion
+6 7 5 5 10 5 7 4 3 8
+Arming Sword
+Warplock Jezzail
+(R48/D6/F:1-2/C:--/ArmorPiercin
+/Clumsy/Slow Fire/Team)
+E
+Jezzail
+Champion
+(*)
+6 6 5 7 8 5 7 4 3 8
+Arming Sword
+Warplock Jezzail
+(R48/D6/F:1-2/C:--/ArmorPiercin
+/Clumsy/Slow Fire/Team)
+Chain Coat
+E Rat Ogre 6 3 7 6 11 8 4 9 5 8
+Claws and Fangs (F:1/C:--)
+Blade Fury
+Fearsome
+Large
+Run Amok
+E
+Skaven Warpfire-Thrower Team
+(AHQ)
+6 6 4 4 10 6 6 3 2 10
+Arming Sword
+Warpfire Thrower
+(MR12/D5/F:1-2/C:--/Blast/
+Clumsy/Flaming/Team)
+Special Rules (see AHQ)
+E Doom Flayer 6 5 5 7 8 5 7 4 3 11
+Arming Sword
+Doom-Flayer (D4/F:--/C:9+/
+Blade Fury/Team/To-Hit vs
+Target’s Speed)
+Chain Coat
+E Warp Grinder 6 5 5 7 8 5 7 4 3 11
+Arming Sword
+Warp-Grinder (D4/F:--/C:12/
+Armor Piercing Bolt/Team)
+Chain Coat
+E
+Poisoned Wind
+Mortar
+6 5 5 7 8 5 7 4 3 12
+Arming Sword
+Poisoned Wind Mortar
+(R24/D8/F:1-2/C:--/ArmorPiercin
+/Blast/Cleaving/Team)
+Chain Coat
+E Rattling Gun 6 5 5 7 8 5 7 4 3 14
+Arming Sword
+Rattling Gun (R24/D4/F:1-2/C:-
+/Blade Fury-Ranged/Clumsy/
+Swift Shot/Team)
+Chain Coat
+E Warpfire Thrower 6 5 5 7 8 5 7 4 3 14
+Arming Sword
+Warpfire Thrower
+(MR12/D5/F:1-2/C:--/Blast/
+Clumsy/Flaming/Team)
+Chain Coat
+CH
+Clan Mors
+Warlord Shaffat
+(WD134)
+8 5 7 8 9 9 7 4 6* 6
+Bloodthirsty Glaive (R)
+(D+1*/F:1-2/C:11+)
+CH
+Clan Pestilens
+Plague Censer
+Bearer
+(AHQ)
+6 6 4 5 10 6 6 3 2 6
+Arming Sword
+Plague Censer (R)
+(D1/F:1-2/C:12/Armor Piercing/
+Blast)
+Special Rules (see AHQ)
+CH
+Clan Pestilens
+Plague Monk
+(AHQ)
+6 6 4 5 10 6 8 3 2* 6
+Knife (M/T)
+(R4/D2*/EX7/Swift Shot)
+Special Rules (see AHQ)
+*Should be DD1 given its ST
+CH
+Clan Skryre
+Warpweaver
+(AHQ)
+5 6 4 5 10 6 9 3 1 6
+Knife (M/T)
+(R4/D1/EX7/Swift Shot)
+Spellcaster (Dark Magic)
+Firebal
+Flaming Skull of Terror
+CH Master Moulder 8 6 6 8 10 8 8 4 4 6
+Things-Catcher (R)
+(F:1-2/C:11-12/Bash/Great)
+Chain Coat
+CH
+Warlock
+Apprentice
+6 6 5 6 9 6 8 4 3 6
+Arming Sword
+Naval Pistol
+(R12/D4/F:1-2/C:--/Slow Fire/
+Unreliable)
+CH
+Warlock
+Warpweaver
+6 6 5 6 9 6 8 4 3 6
+Arming Sword
+Spellcaster (Dark Magic)
+Miniature Silver Dagger
+Pinch of Warpstone
+CH
+Warlock
+Engineer
+6 5 5 8 8 6 8 4 3 7
+Arming Sword
+Warplock Pistol
+(R24/D4/F:1-2/C:--/ArmorPiercin
+/Clumsy/Swift Shot/Unreliable)
+Chain Coat
+CH
+Clan Eshin
+Assassin
+(AHQ)
+9 9 5 7 12 9 7 4 3 8
+Arming Sword
+Alert x2
+Special Rules (see AHQ)
+CH
+Clan Eshin
+Assassin
+Kheewyzz
+(WD 134)
+9 9 5 7 12 9 7 4 3 8
+Arming Sword
+Alert x2
+Special Rules (see WD 134).
+CH Claw Chieftain 8 4 7 10 8 8 6 5 5 9
+Arming Sword
+Heater Shield
+Knight’s Plate
+Blade Fury
+CH
+Claw Chieftain
+(*)
+8 5 7 9 8 8 6 5 6 9
+Claymore (R) (F:1-2/C:11+)
+(Cleaving/Great)
+Knight’s Plate
+Blade Fury
+CH Fang Chieftain 8 4 7 10 8 8 6 5 5 9
+Voulge (R)
+(F:1-2/C:11+)
+Heater Shield
+Knight’s Plate
+Blade Fury
+CH
+Clan Mors
+Warlord
+(AHQ)
+10* 5 9* 8 9 9 7 4 7* 10
+Sigil Sword
+(ST+2/DD+2/F:1/C:11+/Aim x2
+/Runeblade)*
+Chain Coat
+Heater Shield
+CH
+Clan Skryre
+White Skaven
+Sorcerer
+(AHQ)
+5 7 5 5 10 6 10 4 1 10
+Knife (M/T)
+(R4/D1/EX7/Swift Shot)
+Spellcaster (Dark Magic)
+Choke
+Fireball x2
+Flaming Skull of Terror
+Special Rules (see AHQ)
+CH
+Clan Skyre
+Sorcerer Tsekkaz
+(WD 134)
+5 7 5 5 10 6 10 4 1 10
+Knife (M/T) (R4/D1/EX7/Swift
+Shot)
+Spellcaster (Dark Magic)
+Choke
+Fireball x2
+Flaming Skull of Terror
+Special Rules (see WD 134)
+CH Claw Warlord 9 4 7 10 8 9 7 6 5 10
+Arming Sword
+Heater Shield
+Knight’s Plate
+CH Fang Warlord 9 4 7 10 8 9 7 6 5 10
+Voulge (R)
+(F:1-2/C:11+)
+Heater Shield
+Knight’s Plate
+Blade Fury
+CH Paw Warlord 9 5 7 9 8 9 7 6 5 10
+Arming Sword
+Naval Pistol
+(R12/D4/F:1-2/C:--/Slow Fire/
+Unreliable)
+Knight’s Plate
+Blade Fury
+CH Plague Priest 8 6 6 7 11 7 7 4 4 10
+Arming Sword
+Berserker
+Spellcaster (Dark Magic)
+Pinch of Warpstone
+Vial of Swamp Gas
+CH Paw Chieftain 8 5 7 9 8 8 6 5 5 11
+Arming Sword
+Naval Pistol
+(R12/D4/F:1-2/C:--/Slow Fire/
+Unreliable)
+Knight’s Plate
+Blade Fury (w/sword)
+CH Plague Deacon 8 6 6 7 11 7 8 4 4 11
+Arming Sword
+Berserker
+Spellcaster (Dark Magic)
+Golden Statue of a Daemon
+Pinch of Warpstone
+Vial of Swamp Gas x2
+CH Assassin 9 8 6 7 12 9 7 4 5* 12
+Arming Sword x2* (Blade
+Venom: +1DD*)
+Throwing Knives x2
+(R4/D2*/EX6/Cleaving/Blade
+Venom: +1 DD)
+Alert
+Blade Fury
+CH Plague Dervish 8 6 6 7 11 7 7 4 4* 12
+Arming Sword x2*
+Blade Fury
+Berserker
+Spellcaster (Dark Magic)
+Pinch of Warpstone
+Vial of Swamp Gas
+CH Plague Chanter 8 6 6 7 11 7 7 4 3 14
+Modfied Plague Censer (R) x1
+(D2/F:1-2/C:12/Armor Piercing/
+Blast)
+Berserker
+Spellcaster (Dark Magic)
+Pinch of Warpstone
+Vial of Swamp Gas
+CH Grey Seer 6 6 5 6 10 8 9 4 3 15
+Arming Sword
+Spellcaster (Dark Magic)
+Channeling/Enhancing/Focusing
+Pinch of Warp Stone x2
+Golden Statue of a Daemon
+Heart of a Hero
+Miniature Sever Dagger
+Vial of Swamp Gas
+CH
+Hell Pit
+Abomination
+7 2 8 7 10 11 7 15 6 18
+Claws and Fangs
+(F:1/C:--)
+Berserker
+Blade Fury
+Fearsome
+Large
+Regeneration
+CH
+Praznagar Prince
+of Agony
+(AHQ)
+9 7 8* 8 9 9 9 5 6 --
+Chaos Sword (+2ST*/F:--/C:12)
+Leather Jack
+Fearsome
+Undead
+Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
+C
+Giant Vampire
+Bat
+(WD 159)
+6 - 3 6 12 8 7 1 2
+½
+Claws and Fangs (F:1/C:--)
+Bloodsucking Bite
+C
+Zombie*
+3 1 5 4 6 11 1 3 3 ½
+Morning Star
+Fearsome
+*Converted from Reforged
+C
+Zombie
+(*)
+5 1 5 4 6 11 1 3 3 1
+Morning Star
+Fearsome
+C
+Zombie
+(AHQ)
+6 1 5 4 6 10 2 3 3 1
+Morning Star*
+Fearsome
+*Optional: Cleaver
+(F:1/C:--/D2/Cleaving)
+C Dire Wolf 6 1 5 5 12 7 4 3 3 2
+Claws and Fangs (F:1/C:--)
+Fearsome
+C
+Ghoul
+6 2 5 6 6 8 2 4 3 2
+Morning Star
+Fearsome
+C
+Ghoul
+(WD 159)
+6 2 5 6 6 8 2 4 4* 2
+Claws and Fangs (F:1/C:--)
+Fearsome
+*Poisonous Talons +1DD
+C
+Skeleton
+(AHQ)
+6 4 5 5 6 10 2 3 3 2
+Scythe (R)
+(F:1-2/C:11+/Great)
+Fearsome
+C
+Skeleton
+Archer
+6 5 5 5 8 11 2 3 3 2
+Footman’s Bow
+(R24/D3/EX4/Great/Swift Shot)
+Morning Star
+Fearsome
+C
+Skeleton
+Sentry
+6 5 5 5 8 11 2 3 3 2
+Arming Sword
+Fearsome
+Sentry
+C
+Skeleton
+Sentry
+(*)
+6 4 5 6 7 11 2 3 3 2
+Arming Sword
+Leather Jack
+Fearsome
+Sentry
+C
+Skeleton
+Spearman
+6 5 5 5 8 11 2 3 2 2
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+Fearsome
+C
+Skeleton
+Spearman
+(*)
+6 4 5 6 7 11 2 3 2 2
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+Leather Jack
+Fearsome
+C
+Skeleton
+Swordsman
+6 5 5 5 8 11 2 3 3 2
+Arming Sword
+Fearsome
+C
+Skeleton
+Swordsman
+(*)
+6 4 5 6 7 11 2 3 3 2
+Arming Sword
+Leather Jack
+Fearsome
+C Doom Wolf 7 1 5 7 12 7 4 4 3 3
+Claws and Fangs
+(F:1/C:--)
+Blade Fury
+Fearsome
+C
+Skeleton
+Champion
+Spearman
+7 3 5 7 7 10 2 4 2 3
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+Heater Shield
+Leather Jack
+Fearsome
+C
+Skeleton
+Champion
+Spearman
+(*)
+7 3 5 8 6 10 2 4 2 3
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+Heater Shield
+Chain Coat
+Fearsome
+C
+Skeleton
+Champion
+Swordsman
+7 3 5 7 7 10 2 4 3 3
+Arming Sword
+Heater Shield
+Leather Jack
+Fearsome
+C
+Skeleton
+Champion
+Swordsman
+(*)
+7 3 5 8 6 10 2 4 3 3
+Arming Sword
+Heater Shield
+Chain Coat
+Fearsome
+C
+Wolf
+(WD 159)
+8 -- 4 7 9 8 7 4 3* 3
+Claws and Fangs (F:1/C:--)
+Fearsome (?)
+*Should be 2DD given its ST
+C
+Wight
+(WD 121)
+6 1 5 5 5 10 2 3 3 6
+Arming Sword (?)
+Fearsome
+Invulnerable
+C Bat Swarm 6 1 4 4 10 7 2 12 2 7
+Claws and Fangs (F:1/C:--)
+Fearsome
+Fly
+E Fell Bat 6 1 5 5 10 7 2 6 3 4
+Claws and Fangs (F:1/C:--)
+Fearsome
+Fly
+E Grave Guard 7 4 6 9 6 10 3 4 4 4
+Arming Sword (Cleaving)
+Heater Shield
+Chain Coat
+Fearsome
+E Tomb Guard 7 5 6 8 6 10 3 4 4 4
+Scythe (R)
+(F:1-2/C:11+/Great/Cleaving)
+Chain Coat
+Fearsome
+E Carrion 6 1 6 6 10 8 2 6 4 5
+Claws and Fangs (F:1/C:--)
+Fearsome
+Fly
+Large
+E
+Grave Guard
+Champion
+7 3 6 10 6 10 3 5 4 5
+Arming Sword (Cleaving)
+Knight’s Plate
+Heater Shield
+Fearsome
+E
+Tomb Guard
+Champion
+7 5 6 9 6 10 3 5 4 5
+Scythe (R)
+(F:1-2/C:11+/Great/Cleaving)
+Chain Coat
+Fearsome
+E
+Tomb Guard
+Champion
+(*)
+7 5 6 9 6 10 3 5 5 5
+Claymore (R)
+(F:1-2/C:11+/Cleaving/Great)
+Chain Coat
+Fearsome
+E Cairn Wraith 6 1 5 5 12 10 4 6 3 6
+Scythe (R)
+(F:1-2/C:11+/Great)
+Blade Fury
+Fearsome
+Invulnerable
+E
+Cairn Wraith
+(*)
+6 1 5 5 12 10 4 6 4 6
+Claymore (R)
+(F:1-2/C:11+/Cleaving/Great)
+Blade Fury
+Fearsome
+Invulnerable
+E
+Tomb Banshee 6 1 5 5 12 10 5 6 3 6
+Arming Sword
+Scream*
+(R8/D4/F:-/C:-/Armor Piercing)
+Fearsome
+Invulnerable
+*Use target’s BR (instead of TH)
+to resolve Damage
+E Tomb Swarm 6 -- 4 5 6 11 3 12 2 6
+Claws and Fangs
+(F:1/C:--/Cleaving)
+Fearsome
+E
+Spirit Host 6 1 5 5 12 9 4 10 3* 8
+Arming Sword x2*
+Blade Fury
+Cleaving
+Fearsome
+Invulnerable
+E
+Wight
+(TitD)
+9 4 6 9 7 10 6 6 4 8
+Arming Sword
+Chain Coat
+Fearsome
+Invulnerable
+Strenght Drain
+E
+Mummy
+(AHQ)
+7 1 6 8 6 10 5 4 4 10
+Claws and Fangs (F:1/C:--)
+Cause Disease
+Fearsome
+E
+Liche
+(TitD)
+9 7 7 9 7 10 10 8 4 12
+Staff/Lugged Spear (R)
+(R8/D2/EX7/Throw/Swift Shot)
+Fearsome
+Hypnotize
+Spellcaster (Dark Magic/Necro)
+Fireball x2/Flesh Flaying/Flight
+Inferno of Doom
+Strenghten Undead
+E
+Vampire
+(TitD)
+9 8 7 9 8 10 10 6 5 14
+Claws and Fangs (F:1/C:--)
+BladeFury/Fearsome/Hypnotize/
+Invulnerable/Regeneration/
+Strenght Drain
+Spellcaster (Dark Magic/Necro)
+Fireball
+Flight
+Inferno of Doom
+E Varghulf 9 1 7 7 12 9 5 12 5 18
+Claws and Fangs (F:1/C:--)
+Berserker
+Fearsome
+Fly
+Large
+Regeneration
+CH
+Alaric Von Loth
+Undead
+Champion
+(WD 150)
+8 1 6 8 6 10 3 4 5 6
+Magical Sword (White Reaver)
+(F:--/C:12/+1 Free Attack/turn)
+(Plate Mail?)
+Fearsome
+CH
+Undead
+Champion
+(AHQ)
+8 1 6 8 6 10 3 4 4 6
+Arming Sword
+Chain Coat
+Fearsome
+CH
+Apprentice
+Necromancer
+6 6 5 5 8 6 10 4 1 7
+Quarterstaff (R) (F:1/C:--/Great)
+Spellcaster (Necromantic)
+Grave Dust
+Miniature Silver Sarcophagus
+CH Necrotect 6 5 6 8 7 9 8 6 4 7
+Whip (R)
+(F:1-2/C:12/Unreliable)
+Leather Jack
+Cause Disease
+Fearsome
+Flammable
+CH
+Acolyte
+Liche Priest
+6 6 5 5 8 5 11 6 1 8
+Quarterstaff (R) (F:1/C:--/Great)
+Fearsome
+Spellcaster (Necromantic)
+Grave Dust
+Miniature Silver Sarcophagus
+CH
+Prince Karad
+(WD 121)
+10* 3 7* 9 6 10 7 4 5 8
+Magic Sword (+1 WS/+1 ST)
+Fearsome (?)
+CH Tomb Champion 7 3 6 9 6 10 9 6 4 8
+Lash (R)
+(F:1-2/C:11+/Unreliable)
+Chain Coat
+Heater Shield
+Cause Disease
+Fearsome
+Flammable
+CH Tomb Herald 7 3 6 9 6 10 9 6 4 8
+Arming Sword
+Chain Coat
+Heater Shield
+Cause Disease
+Fearsome
+Flammable
+CH Tomb Preceptor 7 3 6 9 6 10 9 6 3 8
+Lugged Spear (R)
+(R8/D2/EX7/Throw/Swift Shot)
+Chain Coat
+Heater Shield
+Cause Disease
+Fearsome
+Flammable
+CH
+Journeyman
+Necromancer
+6 6 5 5 8 6 10 6 1 9
+Quarterstaff (R) (F:1/C:--/Great)
+Fearsome
+Spellcaster (Necromantic)
+Corpse Blood
+Grave Dust
+Miniature Silver Sarcophagusx2
+CH Wight King 7 1 6 10 6 11 10 9 4 9
+Arming Sword (Cleaving)
+Heater Shield
+Knight’s Plate
+Fearsome
+Strength Drain
+CH Wight Lord 7 1 6 10 6 11 10 9 4* 9
+Arming Sword x2*
+Kmight’s Plate
+Fearsome
+Blade Fury
+Cleaving
+Strength Drain
+CH Crypt Vampire 9 7 7 6 12 9 8 6 5 10
+Arming Sword
+Blood Powers
+Fearsome
+Spellcaster (Necromantic)
+Grave Dust
+Miniature Golden Ankh
+CH Dark Vampire 9 7 7 6 12 9 8 6 5 10
+Arming Sword
+Blood Powers
+Fearsome
+Spellcaster (Dark Magic)
+Miniature Silver Dagger
+Vial of Swamp Gas
+CH
+Initiate Liche
+Priest
+6 6 5 5 8 5 11 6 1 10
+Quarterstaff (R) (F:1/C:--/Great)
+Fearsome
+Spellcaster (Necromantic)
+Grave Dust x2
+Heart of a Hero
+Miniature Silver Sarcophagus
+CH
+Liche Priest
+Adept
+6 6 5 5 8 5 11 6 1 10
+Quarterstaff (R) (F:1/C:--/Great)
+Fearsome
+Spellcaster (Necromantic)
+Channeling
+Grave Dust
+Miniature Silver Sarcophagus
+CH
+Master
+Necromancer
+6 6 5 5 8 6 10 6 1 10
+Quarterstaff (R) (F:1/C:--/Great)
+Fearsome
+Spellcaster (Necromantic)
+Channeling
+Corpse Blood
+Grave Dust x2
+Miniature Silver Sarcophagus
+CH Tomb Emir 8 3 6 9 6 11 10 9 3 10
+Lugged Spear (R)
+(R8/D2/EX7/Throw/Swift Shot)
+Heater Shield
+Chain Coat
+Cause Disease
+Fearsome
+Flammable
+CH Tomb Noble 8 3 6 9 6 11 10 9 4 10
+Whip (R)
+(F:1-2/C:12/Unreliable)
+Heater Shield
+Chain Coat
+Cause Disease
+Fearsome
+Flammable
+CH
+High
+Necromancer
+6 6 5 5 8 6 10 6 1 11
+Quarterstaff (R) (F:1/C:--/Great)
+Fearsome
+Spellcaster (Necromantic)
+Channeling
+Corpse Blood
+Grave Dust x2
+Miniature Silver Sarcophagus
+CH
+Sorcerer of
+Nurgle
+(WD 121)
+7 3 5 7 8 9 10 4 3 11
+Arming Sword
+Spellbook (Jade) with:
+The Green Eye
+The Pool of Many Places
+The Cloack of Dainne
+The Emerald Waterfall
+CH Tomb Prince 8 3 6 10 6 11 10 9 4 11
+Arming Sword
+Heater Shield
+Chain Coat
+Cause Disease
+Fearsome
+Flammable
+CH
+Blood Dragon
+Vampire
+10 5 7 9 10 9 8 6 5* 12
+Arming Sword x2*
+Blade Fury
+Blood Powers
+Fearsome
+Spellcaster (Necromantic)
+Miniature Golden Ankh
+CH
+Greater Liche
+Priest
+6 6 5 6 8 7 11 9 1 12
+Quarterstaff (R) (F:1/C:--/Great)
+Fearsome
+Spellcaster (Necromantic)
+Grave Dust
+Miniature Silver Sarcophagus
+CH Lahmian Vampire 9 7 7 6 13 9 8 6 5 12
+Claws and Fangs (F:1/C:--)
+Fearsome
+Hypnotize
+Spellcaster (Dark Magic)
+Heart of a Hero
+Miniature Silver Dagger x2
+CH
+Lesser Liche
+Priest
+6 6 5 5 8 5 11 6 1 12
+Quarterstaff (R) (F:1/C:--/Great)
+Fearsome
+Spellcaster (Necromantic)
+Channeling
+Grave Dust x2
+Heart of a Hero
+Miniature Silver Sarcophagus
+CH Liche High Priest 6 6 5 6 8 7 11 9 1 12
+Quarterstaff (R) (F:1/C:--/Great)
+Fearsome
+Spellcaster (Necromantic)
+Grave Dust x2
+Heart of a Hero
+Miniature Silver Sarcophagus
+CH
+Liche Priest
+Lesser
+Hierophant
+6 6 5 6 8 7 11 9 1 12
+Quarterstaff (R) (F:1/C:--/Great)
+Fearsome
+Spellcaster (Necromantic)
+Channeling
+Grave Dust
+Miniature Silver Sarcophagus
+CH Tomb King 9 3 7 10 7 12 11 12 5 12
+Arming Sword
+Chain Coat
+Cause Disease
+Fearsome
+Flammable
+CH Tomb Pharaoh 9 3 7 9 7 12 11 12 4 12
+Lugged Spear (R)
+(R8/D2/EX7/Throw/Swift Shot)
+Chain Coat
+Cause Disease
+Fearsome
+Flammable
+CH Tomb Sovereign 9 3 7 10 7 12 11 12 5 12
+Whip (R)
+(F:1-2/C:12/Unreliable)
+Heater Shield
+Chain Coat
+Cause Disease
+Fearsome
+Flammable
+CH Strigoi Vampire 9 7 8 6 12 9 8 6 6 12
+Claws and Fangs (F:1/C:--)
+Blade Fury
+Blood Powers
+Cleaving
+Fearsome
+Spellcaster (Dark Magic)
+Miniature Silver Dagger
+Vial of Swamp Gas x2
+CH
+Liche Priest
+Grand
+Hierophant
+6 6 5 6 8 7 11 9 1 13
+Quarterstaff (R) (F:1/C:--/Great)
+Fearsome
+Spellcaster (Necromantic)
+Channeling
+Grave Dust x2
+Heart of a Hero
+Miniature Silver Sarcophagus
+CH Necrach Vampire 9 7 7 6 12 9 8 6 5 14
+Claws and Fangs (F:1/C:--)
+Blood Powers
+Fearsome
+Spellcaster (Necromantic)
+Channeling
+Heart of a Hero x2
+Miniature Golden Ankh
+Miniature Silver Sarcophagus
+CH
+Von Carstein
+Vampire
+9 4 7 10 10 9 10 6 5 14
+Arming Sword
+Heater Shield
+Kinght’s Plate
+Blood Powers/Fearsome/Fly
+Spellcaster (Dark Magic),
+Pinch of Warpstone
+Vial of Swamp Gas
+CH
+Blood Dragon
+Vampire Lord
+10 6 7 10 10 11 11 9 5* 16
+Arming Sword x2
+Blade Fury
+Blood Powers
+Fearsome
+Spellcaster (Necromantic)
+Miniature Golden Ankh
+CH
+Lahmian Vampire
+Lord
+10 8 7 7 13 11 11 9 5 16
+Claws and Fangs (F:1/C:--)
+Fearsome
+Hypnotize
+Spellcaster (Dark Magic)
+Heart of a Hero
+Miniature Silver Dagger x2
+Vial of Swamp Gas
+CH
+Necrach Vampire
+Lord
+10 8 7 7 12 11 11 9 5 18
+Claws and Fangs (F:1/C:--)
+Blood Powers/Fearsome
+Spellcaster (Necromantic)
+Channeling
+Grave Dust/Heart of a Hero
+Miniature Golden Ankh
+Miniature SilverSarcophagus x2
+CH
+Strigoi Vampire
+Lord
+10 8 8 7 12 11 11 9 6 19
+Claws and Fangs (F:1/C:--)
+Blade Fury
+Blood Powers
+Cleaving
+Fearsome
+Spellcaster (Dark Magic)
+Miniature Silver Dagger
+Vial of Swamp Gas x2
+CH
+Von Carstein
+Vampire Lord
+10 5 7 10 10 11 11 10 4* 20
+Arming Sword
+Heater Shield
+Knight’s Plate
+Blood Powers/Fearsome/Fly
+Spellcaster (Dark Magic)
+Pinch of Warpstone x2
+Vial of Swamp Gas x2
+CH
+Rutger Von
+Bleistift
+(WD 159)
+9 8 7 9 8 10 10 7 5 22
+Claws and Fangs (F:1/C:--)
+Blade Fury/Fearsome/Hypnotize
+Invulnerable/Regeneration
+Strenght Drain
+Blood Points x6 (see WD 159)
+Spellcaster (Dark Magic/Necro)
+Grave Dust x2
+Miniature Golden Ankh
+Pinch of Warpstone
+CH
+The Lichemaster
+(TitD)
+9 6 7 10 9 10 10 8 4 --
+Staff/Lugged Spear (R)
+(R8/D2/EX7/Throw/Swift Shot)
+Ring of Magic Protection (Lv2)
+Fate Points x2
+Fearsome
+Spellcaster (Dark Magic/Necro)
+Choke/Fireball x2/Flesh Flying
+Flight x2/Strengtem Undead/
+Inferno of Doom
+Greenskinz
+Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
+C
+Goblin
+(AHQ)
+5 5 4 5 6 5 5 2 2
+½
+Arming Sword
+C
+Goblin
+Archer
+5 6 4 5 7 5 5 2 1 ½
+Knife (M/T)
+(R4/D1/EX7/Swift Shot)
+Footman’s Bow
+(R24/D3/EX4/Great/Swift Shot)
+C
+Goblin
+Archer
+(*)
+5 5 5 6 7 5 5 2 1 ½
+Knife (M/T)
+(R4/D1/EX7/Swift Shot)
+Footman’s Bow
+(R24/D3/EX4/Great/Swift Shot)
+Leather Jack
+C
+Goblin Archer
+(AHQ)
+5 5 4 5 7 5 5 2 1
+½
+Knife (M/T)
+(R4/D1/EX7/Swift Shot)
+Footman’s Bow
+(R24/D3/EX4/Great/Swift Shot)
+C Goblin Spearman 5 5 4 5 7 5 5 2 1 ½
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+C
+Goblin Spearman
+(*)
+5 4 4 6 7 5 5 2 1 ½
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+Heater Shield
+C
+Goblin Spearman
+(**)
+5 4 5 6 7 5 5 2 2 ½
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+Heater Shield
+C
+Goblin
+Swordsman
+5 5 4 5 7 5 5 2 2 ½
+Arming Sword
+C
+Goblin
+Swordsman
+(*)
+5 4 4 6 7 5 5 2 2 ½
+Arming Sword
+Heater Shield
+C
+Goblin
+Swordsman
+(**)
+5 4 5 6 7 5 5 2 3 ½
+Arming Sword
+Heater Shield
+C Goblin Sentry 5 4 4 6 8 5 5 2 2 1
+Arming Sword
+Heater Shield
+Sentry
+C
+Hobgoblin
+Axeman
+6 5 5 6 7 5 5 3 3 1
+Hand Axe (Cleaving)
+Heater Shield
+C
+Hobgoblin
+Axeman
+(*)
+6 4 5 7 6 5 5 3 3 1
+Hand Axe (Cleaving)
+Heater Shield
+Leather Jack
+C
+Hobgoblin
+Spearman
+6 5 5 6 7 5 5 3 2 1
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+Heater Shield
+C
+Hobgoblin
+Spearman
+(*)
+6 4 5 7 6 5 5 3 2 1
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+Heater Shield
+Leather Jack
+C
+Hobgoblin
+Swordsman
+6 5 5 6 7 5 5 3 3 1
+Arming Sword
+Heater Shield
+C
+Hobgoblin
+Swordsman
+(*)
+6 4 5 7 6 5 5 3 3 1
+Arming Sword
+Heater Shield
+Leather Jack
+C
+Hobgoblin
+Sentry
+6 5 5 6 8 5 5 3 3 1
+Arming Sword
+Heater Shield
+Sentry
+C
+Orc
+(AHQ)
+6 5 5 7* 6 7 5 4 3 1
+Arming Sword
+Heater Shield
+Leather Jack
+*Corrected in TitD
+C Orc Axeman 6 5 5 7 6 7 5 4 3 1
+Axe (Cleaving)
+Heater Shield
+C
+Orc Axeman
+(*)
+6 3 5 8 5 7 5 4 3 1
+Axe (Cleaving)
+Heater Shield
+Leather Jack
+C Orc Spearman 6 4 5 7 6 7 5 4 2 1
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+Heater Shield
+C
+Orc Spearman
+(*)
+6 3 5 8 5 7 5 4 2 1
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+Heater Shield
+Leather Jack
+C Orc Swordsman 6 4 5 7 6 7 5 4 3 1
+Arming Sword
+Heater Shield
+C
+Orc Swordsman
+(*)
+6 3 5 8 5 7 5 4 3 1
+Arming Sword
+Heater Shield
+Leather Jack
+C
+Orc Champion
+(AHQ)
+7 5 6 8* 5 8 5 4 4 2
+Arming Sword
+Heater Shield
+Chain Coat (?)
+C Orc Sentry 6 4 5 7 8 7 5 4 3 2
+Arming Sword
+Heater Shield
+Sentry
+C
+Orc Sentry
+(WD 121)
+6 6 5 7 7 7 4 4 3 2
+Arming Sword
+Heater Shield
+Sentry
+C Big ‘Un 7 4 6 7 6 7 5 6 4 3
+Axe (Cleaving)
+Heater Shield
+C
+Big ‘Un
+(*)
+7 3 6 9 4 7 5 6 4 3
+Axe (Cleaving)
+Heater Shield
+Chain Coat
+C
+Orc Savage
+Axeman
+6 4 5 8 6 8 5 4 3 3
+Axe (Cleaving)
+Heater Shield
+Berserker
+C
+Orc Savage
+Spearman
+6 4 5 8 6 8 5 4 2 3
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+Heater Shield
+Berserker
+C
+Orc Savage
+Swordsman
+6 4 5 8 6 8 5 4 3 3
+Arming Sword
+Heater Shield
+Berserker
+C
+Orc Boss
+Axeman
+7 3 6 9 5 7 5 5 4 4
+Axe (Cleaving)
+Heater Shield
+Leather Jack
+C
+Orc Boss
+Swordsman
+7 3 6 9 5 7 5 5 4 4
+Arming Sword
+Heater Shield
+Leather Jack
+C
+Orc Warlord
+(AHQ)
+8 5 6 9 6 9 6 4 4 6*
+Arming Sword
+Heater Shield
+Chain Coat
+*Suggested: PV4
+E
+Black Orc
+Swordsman
+7 3 6 8 5 8 6 4 4 3
+Arming Sword
+Heater Shield
+Leather Jack
+E
+Black Orc
+Spearman
+7 3 6 8 5 8 6 4 3 3
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+Heater Shield
+Leather Jack
+E Squigg Hopper 6 3 6 5 6 5 2 4 4 3
+Morning star
+Claws and Fangs (F:1/C:--)
+Blade Fury
+E
+Black Orc
+Champion
+Axeman
+8 3 6 8 5 8 6 5 4 4
+Axe (Cleaving)
+Heater Shield
+Leather Jack
+E
+Black Orc
+Champion
+Swordsman
+8 3 6 8 5 8 6 5 4 4
+Arming Sword
+Heater Shield
+Leather Jack
+E Snotling Swarm 5 0 4 4 6 4 2 12 2 6
+Morning Star
+Blade Fury
+CH Goblin Big Boss 7 4 6 7 6 6 4 6 5 5
+Battle Axe (F:1-2/C:11-12)
+(Cleaving/Great)
+Leather Jack
+Blade Fury
+CH Goblin War Boss 8 3 6 8 6 7 5 8 4 6
+Axe (Cleaving)
+Heater Shield
+Leather Jack
+Blade Fury
+CH
+Goblin Great
+Shaman
+5 4 5 7 6 4 7 8 3 8
+Axe (Cleaving)
+Leather Jack
+Blade Fury
+Spellcaster (Dark Magic)
+Enhancing/Focusing
+Vial of Swamp Gas
+Pinch of Warpstone
+CH
+Orc Warchief
+(AHQ)
+9 3 6 9 6 10 7 4 5 8
+Oslop (F:1-2/C:11-12) (Great)
+Chain Coat
+CH Orc Shaman 6 4 5 7 5 5 7 6 3 10
+Axe (Cleaving)
+Leather Jack
+Blade Fury
+Spellcaster (Dark Magic)
+Enhancing/Focusing
+Vial of Swamp Gas x2
+Pinch of Warpstone x2
+Golden Statue of a Daemon.
+CH
+Great Orc
+Shaman
+6 4 6 8 5 6 8 9 4 12
+Axe (Cleaving)
+Leather Jack
+Blade Fury
+Spellcaster (Dark Magic)
+Enhancing/Focusing
+Vial of Swamp Gas x2
+Pinch of Warpstone x2
+Golden Statue of a Daemon x2
+CH
+Black Orc
+Warboss
+10 5 7 7 6 9 7 10 5 14
+Footman’s Hammer
+(R8/D5/EX7) (Throw/Swift Shot)
+Blade Fury
+Heater Shield
+Knight’s Plate
+Hordes of Chaos
+Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
+C
+Chaos Marauder
+Archer
+7 5 5 6 7 9 7 3 3 1
+Arming Sword
+Footman’s Bow
+(R24/D3/EX4/Great/Swift Shot)
+Leather Jack
+C
+Chaos Marauder
+Axeman
+7 4 5 7 7 9 7 3 3 1
+Axe (Cleaving)
+Heater Shield
+Leather Jack
+C
+Chaos Marauder
+Axeman
+(*)
+7 3 5 8 6 9 7 3 3 1
+Axe (Cleaving)
+Heater Shield
+Chain Coat
+C
+Chaos Marauder
+Spearman
+7 4 5 7 7 9 7 3 2 1
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+Heater Shield
+Leather Jack
+C
+Chaos Marauder
+Spearman
+(*)
+7 3 5 8 6 9 7 3 2 1
+Lugged Spear (R)
+(R8/D1/EX7/Throw/Swift Shot)
+Heater Shield
+Chain Coat
+C
+Chaos Marauder
+Swordsman
+7 4 5 7 7 9 7 3 3 1
+Arming Sword
+Heater Shield
+Leather Jack
+C
+Chaos Marauder
+Swordsman
+(*)
+7 3 5 8 6 9 7 3 3 1
+Arming Sword
+Heater Shield
+Chain Coat
+C
+Chaos Thug
+(AHQ)
+7 5 5 7 7 8 6 3 3 1
+Arming Sword
+Heater Shield
+Leather Jack
+C
+Chaos Sentry
+(WD 122 & 150)
+7 6 5 6 8 8 6 3 3 2
+Arming Sword
+Heater Shield
+Sentry
+C
+Chaos Warrior
+(AHQ)
+8 4 6 9 6 9 8 4 4* 4
+Axe (Cleaving)
+Heater Shield
+Knight’s Plate
+*Corrected in TitD
+C
+Chaos Warrior
+Axeman
+8 3 6 9 6 9 8 4 4 4
+Axe (Cleaving)
+Heater Shield
+Knights Plate
+C
+Chaos Warrior
+Axeman
+(*)
+8 3 6 10 6 9 8 4 4 4
+Axe (Cleaving)
+Heater Shield
+Knights Plate
+C
+Chaos Warrior
+Great Axe
+8 4 6 8 6 9 8 4 5 4
+Great Axe (F:1-2/C:11-12)
+(Cleaving/Great)
+Knight’s Plate
+C
+Chaos Warrior
+Great Axe
+(*)
+8 4 6 9 6 9 8 4 5 4
+Great Axe (F:1-2/C:11-12)
+(Cleaving/Great)
+Knight’s Plate
+C
+Chaos Warrior
+Great Sword
+8 4 6 8 6 9 8 4 5 4
+Claymore (R) (F:1-2/C:11-12)
+(Cleaving/Great)
+Knight’s Plate
+C
+Chaos Warrior
+Great Sword
+(*)
+8 4 6 9 6 9 8 4 5 4
+Claymore (R) (F:1-2/C:11-12)
+(Cleaving/Great)
+Knight’s Plate
+C
+Chaos Forsaken
+Axeman
+7 1 6 9 6 10 7 5 4 5
+Axe (Cleaving)
+Heater Shield
+Knights Plate
+Berserker
+C
+Chaos Forsaken
+Great Axe
+7 2 6 8 6 10 7 5 5 5
+Great Axe (F:1-2/C:11-12)
+(Cleaving/Great)
+Knight’s Plate
+Berserker
+C
+Chaos Forsaken
+Great Sword
+7 2 6 8 6 10 7 5 5 5
+Claymore (R) (F:1-2/C:11-12)
+(Cleaving/Great)
+Knight’s Plate
+Berserker
+C
+Chaos Forsaken
+Spearman
+7 1 6 9 6 10 7 5 3 5
+Lugged Spear (R)
+(R8/D2/EX7/Throw/Swift Shot)
+Heater Shield
+Knight’s Plate
+Berserker
+C
+Chaos Forsaken
+Swordsman
+7 1 6 9 6 10 7 5 4 5
+Arming Sword
+Heater Shield
+Knight’s Plate
+Berserker
+C
+Chaos Warrior
+Champion
+Axeman
+9 3 7 9 6 9 9 5 5 5
+Axe (Cleaving)
+Heater Shield
+Knights Plate
+C
+Chaos Warrior
+Champion
+Axeman
+(*)
+9 3 7 10 6 9 9 5 5 5
+Axe (Cleaving)
+Heater Shield
+Knights Plate
+C
+Chaos Warrior
+Champion
+Great Axeman
+9 3 7 9 6 9 9 5 6 5
+Great Axe (F:1-2/C:11-12)
+(Cleaving/Great)
+Heater Shield
+Knight’s Plate
+C
+Chaos Warrior
+Champion
+Great Axeman
+(*)
+9 3 7 10 6 9 9 5 6 5
+Great Axe (F:1-2/C:11-12)
+(Cleaving/Great)
+Heater Shield
+Knight’s Plate
+C
+Chaos Warrior
+Champion
+Spearman
+9 3 7 9 6 9 9 5 4 5
+Lugged Spear (R)
+(R8/D2/EX7/Throw/Swift Shot)
+Heater Shield
+Knight’s Plate
+C
+Chaos Warrior
+Champion
+Spearman
+(*)
+9 3 7 10 6 9 9 5 4 5
+Lugged Spear (R)
+(R8/D2/EX7/Throw/Swift Shot)
+Heater Shield
+Knight’s Plate
+C
+Chaos Warrior
+Champion
+Swordsman
+9 3 7 9 6 9 9 5 5 5
+Arming Sword
+Heater Shield
+Knight’s Plate
+C
+Chaos Warrior
+Champion
+Swordsman
+(*)
+9 3 7 10 6 9 9 5 5 5
+Arming Sword
+Heater Shield
+Knight’s Plate
+C
+Chaos Forsaken
+Axeman
+7 1 6 9 6 10 7 5 4 6
+Axe (Cleaving)
+Heater Shield
+Knights Plate
+Berserker
+Blade Fury
+C
+Chaos Forsaken
+Great Axeman
+7 2 6 8 6 10 7 5 5 6
+Great Axe (F:1-2/C:11-12)
+(Cleaving/Great)
+Knight’s Plate
+Berserker
+Blade Fury
+C
+Chaos Forsaken
+Great
+Swordsman
+7 2 6 8 6 10 7 5 5 6
+Claymore (R) (F:1-2/C:11-12)
+(Cleaving/Great)
+Knight’s Plate
+Berserker
+Blade Fury
+C
+Chaos Forsaken
+Spearman
+7 1 6 9 6 10 7 5 3 6
+Lugged Spear (R)
+(R8/D2/EX7/Throw/Swift Shot)
+Heater Shield
+Knight’s Plate
+Berserker
+Blade Fury
+C
+Chaos Forsaken
+Swordsman
+7 1 6 9 6 10 7 5 4 6
+Arming Sword
+Heater Shield
+Knight’s Plate
+Berserker
+Blade Fury
+C
+Chaos Champion
+(AHQ)
+10 4 6 10 6 10 8 4 5* 8
+Great Axe (F:1-2/C:11-12)
+(Cleaving/Great)
+Heater Shield
+Knight’s Plate
+*Sould be 6 for that weapon
+E Fimir 8 1 5 8 6 8 6 5 3 3
+Axe (Cleaving)
+Heater Shield
+Leather Jack
+Blade Fury
+E
+Chaos Chosen
+Axeman
+9 3 6 10 6 11 7 4 4 5
+Axe (Cleaving)
+Heater Shield
+Knights Plate
+E
+Chaos Chosen
+Great Axe
+9 4 6 9 6 11 7 4 5 5
+Great Axe (F:1-2/C:11-12)
+(Cleaving/Great)
+Knight’s Plate
+E
+Chaos Chosen
+Great Sword
+9 4 6 9 6 11 7 4 5 5
+Claymore (R) (F:1-2/C:11-12)
+(Cleaving/Great)
+Knight’s Plate
+E
+Chaos Chosen
+Spearman
+9 3 6 10 6 11 7 4 3 5
+Lugged Spear (R)
+(R8/D2/EX7/Throw/Swift Shot)
+Heater Shield
+Knight’s Plate
+E
+Chaos Chosen
+Swordsman
+9 3 6 10 6 11 7 4 4 5
+Arming Sword
+Heater Shield
+Knight’s Plate
+E
+Chaos Chosen
+Mark of Slaanesh
+Axeman
+9 3 6 10 6 11 7 4 4 6
+Axe (Cleaving)
+Heater Shield
+Knights Plate
+Accurate
+Alert
+E
+Chaos Chosen
+Mark of Slaanesh
+Swordsman
+9 3 6 10 6 11 7 4 4 6
+Arming Sword
+Heater Shield
+Knight’s Plate
+Accurate
+Alert
+E
+Chaos Chosen
+Champion
+Axeman
+10 3 7 10 6 10 7 5 5 7
+Axe (Cleaving)
+Heater Shield
+Knights Plate
+E
+Chaos Chosen
+Champion
+Great Axe
+10 4 7 9 6 10 7 5 6 7
+Great Axe (F:1-2/C:11-12)
+(Cleaving/Great)
+Knight’s Plate
+E
+Chaos Chosen
+Champion
+Great
+Swordsman
+10 4 7 9 6 10 7 5 6 7
+Claymore (R) (F:1-2/C:11-12)
+(Cleaving/Great)
+Knight’s Plate
+E
+Chaos Chosen
+Champion
+Spearman
+10 3 7 10 6 10 7 5 4 7
+Lugged Spear (R)
+(R8/D2/EX7/Throw/Swift Shot)
+Heater Shield
+Knight’s Plate
+E
+Chaos Chosen
+Champion
+Swordsman
+10 3 7 10 6 10 7 5 5 7
+Arming Sword
+Heater Shield
+Knight’s Plate
+E
+Chaos Chosen
+Mark of Khorne
+Axeman
+9 3 6 10 6 11 7 4 4 7
+Axe (Cleaving)
+Heater Shield
+Knights Plate
+Berserker
+E
+Chaos Chosen
+Mark of Khorne
+Swordsman
+9 3 6 10 6 11 7 4 4 7
+Arming Sword
+Heater Shield
+Knight’s Plate
+Berserker
+E
+Chaos Chosen
+Mark of Nurgle
+Axeman
+9 3 7 10 6 11 7 5 5 7
+Axe (Cleaving)
+Heater Shield
+Knights Plate
+E
+Chaos Chosen
+Mark of Nurgle
+Swordsman
+9 3 7 10 6 11 7 5 5 7
+Arming Sword
+Heater Shield
+Knight’s Plate
+E
+Fimir
+(AHQ)
+6 2 5 7 6 8 5 4 3 7*
+Axe (Cleaving)
+Leather Jack
+Blade Fury
+Large? Fearsome? (See TitD)
+*Suggested:PV2
+E
+Chaos Chosen
+Mark of Tzeench
+Axeman
+9 3 6 10 6 11 7 4 4 8
+Axe (Cleaving)
+Heater Shield
+Knights Plate
+Invulnerable
+E
+Chaos Chosen
+Mark of Tzeench
+Swordsman
+9 3 6 10 6 11 7 4 4 8
+Arming Sword
+Heater Shield
+Knight’s Plate
+Invulnerable
+E Chaos Spawn 6 1 6 7 12 12 1 12 4 8
+Claws & Fangs (F:1/C:--)
+Blade Fury
+E
+Chaos Spawn
+Mark of Khorne
+6 1 6 7 12 12 1 12 4 10
+Claws & Fangs (F:1/C:--)
+Berserker
+Blade Fury
+E
+Chaos Spawn
+Mark of Nurgle
+6 0 6 8 12 12 1 13 4 10
+Claws & Fangs (F:1/C:--)
+Blade Fury
+E Dragon Ogre 7 4 7 8 11 10 7 12 6 14
+Great Axe (F:1-2/C:11-12)
+(Cleaving/Great)
+Leather Jack
+Blade Fury
+Fearsome
+Large
+E
+Dragon Ogre
+Champion
+8 4 8 8 11 10 7 13 7 16
+Great Axe (F:1-2/C:11-12)
+(Cleaving/Great)
+Leather Jack
+Blade Fury
+Fearsome
+Large
+E Slaughterbrute 6 1 9 9 12 10 1 15 7 16
+Claws & Fangs (F:1/C:--)
+Blade Fury
+Fearsome
+Large
+E
+Mutalith
+Vortex Beast
+6 6 7 8 12 9 9 15 5 18
+Claws & Fangs (F:1/C:--)
+Fearsome
+Large
+Regeneration
+CH
+Edrin The Shifty
+Human Bandit
+(WD 150)
+7 9 6 5 9 8 9 3 5* 4
+Axe (Cleaving)
+6x Poisoned Knife (M/T)
+(R4/D1/EX7/Swift Shot) (Cause
+Disease)
+*Should be 4 given its ST
+CH
+One-Eyed
+Yadrey
+Human Bandit
+(WD 150)
+8 2 6 10 5 7 7 4 4 5
+Sword
+Shield
+Knight’s Plate
+CH
+Alaric Von Loth
+Undead
+Champion
+(WD150)
+8 1 6 8 6 10 3 4 5 6
+Magical Sword-White Reaver
+(F:--/C:12) (+1 free attack each
+turn)
+Fearsome
+Immune to damage for the first
+four turns (?)
+CH
+Grugnar
+Facebreaker
+Human Bandit
+(WD 150)
+8 2 6 10 5 7 7 4 7 5
+Bidenhander (Great)
+(F:1-2/C:11-12)
+Cain Coat
+CH
+Herman Zorin
+Follower of
+Tzeentch
+(WD150)
+9 7 7 8 6 9 8 5 5 8
+Sword
+Chain Coat
+Knife (M/T)
+(R4/D1/EX7/Swift Shot)
+Footman’s Crossbow
+(Ammunition-Bolt SlowFire/
+Swift Shot/) (R36/D4/EX4)
+Leaf Bolts x12
+Magical Crescent Ring
+(opponents suffer -1 To-Hit)
+CH
+Exalted Hero
+Axeman
+10 3 7 10 6 10 8 6 5 10
+Axe (Cleaving)
+Shield
+Kight’s Plate
+CH
+Exalted Hero
+Double Axeman
+10 4 7 9 6 10 8 6 6* 10
+Axe x2* (Cleaving)
+Kight’s Plate
+Blade Fury
+CH
+Exalted Hero
+Great
+Swordsman
+10 4 7 9 6 10 8 6 6 10
+Claymore (R) (F:1-2/C:11-12)
+(Cleaving/Great)
+Kight’s Plate
+CH
+Chaos Sorcerer
+(AHQ)
+7 3 5 7 8 9 10 4 3 11
+Scythe (R)
+(F:1-2/C:11+/Great)
+Spellcaster (Dark Magic)
+Choke
+Fireball
+Flamming Skull of Terror
+CH
+Bloodthirster
+(AHQ)
+5 3 8 10 10 8 5 6 6 12
+Claws & Fangs (F:1/C:--)
+Fearsome
+Flight
+Invulnerable
+Large
+CH
+Chaos Lord
+Double Axeman
+10 4 7 10 6 10 9 9 6 12
+Axe x2* (Cleaving)
+Kight’s Plate
+Blade Fury
+CH
+Chaos Lord
+Great Axeman
+10 4 7 10 6 10 9 9 6 12
+Great Axe (F:1-2/C:11-12)
+(Cleaving/Great)
+Kight’s Plate
+CH
+Chaos Lord
+of Tzeentch
+(WD 150)
+12 3 6 10 6 10 8 5 4 12
+Axe (Cleaving)
+Knight’s Plate
+Blade Fury
+Cleaving
+Mask of Tzeentch (Fearsome)
+CH
+Chaos Lord
+(AHQ)
+12 3 6 10 6 10 8 5 4* 12
+Axe x2* (Cleaving)
+Knight’s Plate
+Blade Fury
+CH Chaos Sorcerer 8 6 6 6 8 9 9 6 2 12
+Quarterstaff (R) (F:1/C:--/Great)
+Spellcaster (Dark Magic)
+Pinch of Warpstone
+Miniature Silver Dagger
+CH
+Daemonette
+(AHQ)
+8 1 5 7 10 10 6 4 3 12
+Claws & Fangs (F:1/C:--)
+Blade Fury
+Fearsome
+Invulnerable
+Fireball x1 (see TitD)
+CH
+Exalted Hero
+Mark of Khorne
+10 4 7 9 6 10 8 6 6 12
+Great Axe (F:1-2/C:11-12)
+(Cleaving/Great)
+Kight’s Plate
+Berserker
+CH
+Exalted Hero
+Mark of Nurgle
+10 4 7 10 6 10 8 7 6 12
+Great Axe (F:1-2/C:11-12)
+(Cleaving/Great)
+Kight’s Plate
+CH
+Chaos Lord
+Mark of Khorne
+10 4 7 10 6 10 9 9 6 14
+Claymore (R) (F:1-2/C:11-12)
+(Cleaving/Great)
+Kight’s Plate
+Berserker
+CH
+Chaos Lord
+Mark of Nurgle
+10 4 8 10 6 10 9 10 7 14
+Claymore (R) (F:1-2/C:11-12)
+(Cleaving/Great)
+Kight’s Plate
+CH
+Chaos Sorcerer
+Lord
+8 6 6 6 8 9 9 6 2 14
+Quarterstaff (R) (F:1/C:--/Great)
+Spellcaster (Dark Magic)
+Channeling/Focusing
+Miniature Silver Dagger x2
+Pinch of Warpstone x2
+CH
+Greater Daemon
+Of
+Tzeenetch
+(AHQ)
+7 1 8 9 8 10 -- 10 6 20
+Claws & Fangs (F:1/C:--)
+Blade Fury/Fearsome
+Invulnerabke/Large
+Spellcaster (Dark Magic)
+Choke x2
+Fireball x2
+Flaming Skull of Terror
+Beastmen
+Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
+C
+Beastman
+(WD 122)
+6 4 5 8 6 7 5 4 3 1*
+Arming Sword
+Heater Shield
+Leather Jack
+*PV should be 2
+C
+Ungor
+Axeman
+7 5 5 6 10 7 7 3 3 1
+Axe (Cleaving)
+Heater Shield
+C
+Ungor
+Axeman
+(*)
+7 4 5 7 9 7 7 3 3 1
+Axe (Cleaving)
+Heater Shield
+Leather Jack
+C
+Ungor
+Spearman
+7 5 5 6 10 7 7 3 2 1
+Lugged Spear (R) (Throw/Swift
+Shot) (MR8/D1/EX7)
+Heater Shield
+C
+Ungor
+Spearman
+(*)
+7 4 5 7 9 7 7 3 2 1
+Lugged Spear (R) (Throw/Swift
+Shot) (MR8/D1/EX7)
+Heater Shield
+Leather Jack
+C
+Ungor
+Swordsman
+7 5 5 6 10 7 7 3 3 1
+Arming Sword
+Heater Shield
+C
+Ungor
+Swordsman
+(*)
+7 4 5 7 9 7 7 3 3 1
+Arming Sword
+Heater Shield
+Leather Jack
+C Warhound 7 0 5 6 11 9 3 3 3 1
+Claws & Fangs (F:1/C:--)
+Leather Jack
+C
+Beastman
+(TitD)
+6 4 5 7 7 7 5 4 3 2
+Arming Sword
+C
+Beastman Sentry
+(TitD)
+6 5 5 7 8 7 6 4 3 2
+Arming Sword
+Sentry
+C
+Beastman Sentry
+(WD 122)
+6 5 5 7 7 7 5 4 3 2
+Arming Sword
+Heater Shield
+Sentry
+C
+Gor
+Archer
+8 5 5 7 9 9 7 4 3 2
+Footman’s Bow
+(Great/Swift Shot)
+(MR24/D3/EX4)
+Arming Sword
+Leather Jack
+C
+Gor
+Axeman
+8 5 5 7 10 9 7 4 3 2
+Axe (Cleaving)
+Heater Shield
+C
+Gor
+Axeman
+(*)
+8 4 5 8 9 9 7 4 3 2
+Axe (Cleaving)
+Heater Shield
+Leather Jack
+C
+Gor
+Spearman
+8 5 5 7 10 9 7 4 2 2
+Lugged Spear (R) (Throw/Swift
+Shot) (MR8/D1/EX7)
+Heater Shield
+C
+Gor
+Spearman
+(*)
+8 4 5 8 9 9 7 4 2 2
+Lugged Spear (R) (Throw/Swift
+Shot) (MR8/D1/EX7)
+Heater Shield
+Leather Jack
+C
+Gor
+Swordsman
+8 5 5 7 10 9 7 4 3 2
+Arming Sword
+Heater Shield
+C
+Gor
+Swordsman
+(*)
+8 4 5 8 9 9 7 4 3 2
+Arming Sword
+Heater Shield
+Leather Jack
+C
+Ungor Champion
+Axeman
+8 5 6 7 10 7 7 4 4 2
+Axe (Cleaving)
+Heater Shield
+C
+Ungor Champion
+Axeman
+(*)
+8 4 6 8 9 7 7 4 4 2
+Axe (Cleaving)
+Heater Shield
+Leather Jack
+C
+Ungor Champion
+Great
+Swordsman
+8 5 6 7 10 7 7 4 5 2
+Claymore (R) (F:1-2/C:11-12)
+(Cleaving/Great)
+Heater Shield
+C
+Ungor Champion
+Great
+Swordsman
+(*)
+8 4 6 8 9 7 7 4 5 2
+Claymore (R) (F:1-2/C:11-12)
+(Cleaving/Great)
+Heater Shield
+Leather Jack
+C
+Ungor Champion
+Spearman
+8 5 6 7 10 7 7 4 3 2
+Lugged Spear (R) (Throw/Swift
+Shot) (MR8/D1/EX7)
+Heater Shield
+C
+Ungor Champion
+Spearman
+(*)
+8 4 6 8 9 7 7 4 3 2
+Lugged Spear (R) (Throw/Swift
+Shot) (MR8/D1/EX7)
+Heater Shield
+Leather Jack
+C
+Ungor Champion
+Swordsman
+8 5 6 7 10 7 7 4 4 2
+Arming Sword
+Heater Shield
+C
+Ungor Champion
+Swordsman
+(*)
+8 4 6 8 9 7 7 4 4 2
+Arming Sword
+Heater Shield
+Leather Jack
+C Ungor Sentry 7 5 5 7 10 7 7 3 3 2
+Arming Sword
+Shield
+Sentry
+C
+Venomous
+Warhound
+7 0 5 7* 11 9 3 3 4* 2
+Claws & Fangs (F:1/C:--)
+Scaly Skin (+1TH)*
+Venomous (+1 DD)*
+Leather Jack
+C
+Gor Champion
+Axeman
+9 4 6 8 9 9 7 5 4 3
+Axe (Cleaving)
+Heater Shield
+Leather Jack
+C
+Gor Champion
+Great
+Swordsman
+9 4 6 8 9 9 7 5 5 3
+Claymore (R) (F:1-2/C:11-12)
+(Cleaving/Great)
+Heater Shield
+Leather Jack
+C
+Gor Champion
+Spearman
+9 4 6 8 9 9 7 5 3 3
+Lugged Spear (R) (Throw/Swift
+Shot) (MR8/D1/EX7)
+Heater Shield
+Leather Jack
+C
+Gor Champion
+Swordsman
+9 4 6 8 9 9 7 5 4 3
+Arming Sword
+Heater Shield
+Leather Jack
+C
+Beastman
+Champion
+(TitD)
+8 5 6 9 6 8 6 5 4 4
+Arming Sword
+Heater Shield
+Leather Jack
+E
+Bestigor
+Great Axeman
+8 4 6 9 8 10 6 3 5 3
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Knight’s Plate
+E
+Bestigor
+Great
+Swordsman
+8 4 6 9 8 10 6 3 5 3
+Bidenhander (Great)
+(F:1-2/C:11-12)
+Knight’s Plate
+E
+Bestigor
+Champion
+Great Axeman
+9 5 6 9 8 10 6 4 5 4
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Knight’s Plate
+E
+Cenigor
+Axeman
+7 3 6 9 11 10 6 6 4 5
+Axe (Cleaving)
+Heater Shield
+Leather Jack
+E
+Cenigor
+Great Axeman
+7 3 6 9 11 10 6 6 5 5
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Heater Shield
+Leather Jack
+E
+Cenigor
+Spearman
+7 3 6 9 11 10 6 6 3 5
+Lugged Spear (R) (Throw/Swift
+Shot) (MR8/D1/EX7)
+Heater Shield
+Leather Jack
+E
+Cenigor
+Swordsman
+7 3 6 9 11 10 6 6 4 5
+Arming Sword
+Heater Shield
+Leather Jack
+E
+Beastman
+Warlord
+(TitD)
+9 6 7 10 6 9 7 6 5 4
+Arming Sword
+Heater Shield
+Chain Mail
+E
+Cenigor
+Champion
+Great Axeman
+8 4 6 8 11 10 6 7 5 6
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Leather Jack
+E Chaos Spawn 6 0 6 7 8 12 1 9 4 8
+Claws & Fangs (R) (F:1/C:--)
+Accurate
+Blade Fury
+Fearsome
+E Razorgor 6 0 8 7 12 9 4 8 6 8
+Claws & Fangs (R) (F:1/C:--)
+Fearsome
+*Double Base
+E
+Minotaur
+(AHQ)
+7 4 7 8 8 8 4 9 7 9
+Huge Club* (Great)
+Berserker
+Fearsome
+Large
+*Damage Band G
+E
+Minotaur
+Great Axeman
+7 5 7 7 11 10 9 10 6 10
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Leather Jack
+Fearsome
+Large
+E Cygor 5 5 8 7 12 10 11 15 6 14
+Claws & Fangs (R) (F:1/C:--)
+Accurate
+Blade Fury
+Fearsome
+Large
+Special: Cleaving and Accurate
+vs spellcasters and models w/
+magic items that cast spells
+E Jabberslythe 7 7 7 7 12 11 10 15 5 16
+Claws & Fangs (R) (F:1/C:--)
+Accurate
+Blade Fury
+Cleaving
+Fearsome
+Fly
+Large
+E Ghorgon 6 0 8 8 12 12 11 18 6 20
+Claws & Fangs (R) (F:1/C:--)
+Accurate
+Blade Fury
+Berserker
+Cleaving
+Fearsome
+Large
+Regeneration
+CH Wargor 9 5 6 9 8 10 8 7 5 9
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Chain Coat
+CH Bray-Shaman 7 6 5 6 10 7 9 6 2 10
+Quarterstaff (R) (F:1/C:--/Great)
+Spellcaster (Dark Magic)
+Pinch of Warpstone x2
+Miniature Silver Dagger x2
+CH
+Minotaur Lord
+(AHQ)
+9 4 8 9 8 9 6 10 8 11
+Huge Club* (Great)
+Berserker
+Fearsome
+Large
+*Damage Band G
+CH Beastlord 10 5 7 9 8 11 9 9 6 12
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Chain Coat
+CH Gorebull 8 5 8 8 11 10 6 12 7 13
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Leather Jack
+Berserker
+Blade Fury
+Cleaving
+CH
+Great
+Bray-Shaman
+8 6 6 7 10 8 10 15 2 14
+Quarterstaff (R) (F:1/C:--/Great)
+Spellcaster (Dark Magic)
+Channeling
+Focusing
+Pinch of Warpstone
+Miniature Silver Dagger
+CH Doombull 9 5 9 8 11 11 7 15 8 16
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Leather Jack
+Berserker
+Blade Fury
+Cleaving
+Ogres & Trolls
+Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
+C
+Ogre Bull
+Great Axeman
+6 4 6 7 9 9 7 9 5 7
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Leather Jack
+Cleaving
+Fearsome
+Large
+C
+Ogre Bull
+Swordsman
+6 3 6 8 9 9 7 9 4 7
+Arming Sword
+Heater Shield
+Leather Jack
+Cleaving
+Fearsome
+Large
+C
+Ogre
+(AHQ)
+7 3 8 8 7 7 4 9 8 8
+Huge Club* (Great)
+Fearsome
+Large
+Regeneration
+*Damage Band G
+C
+Ogre Bull
+Crusher
+Double Axeman
+6 4 6 7 9 9 7 9 4 8
+Axe x2 (Cleaving)
+Leather Jack
+Blade Fury
+Cleaving
+Fearsome
+Large
+C
+Ogre Bull
+Crusher
+Great Axeman
+6 4 6 7 9 9 7 9 5 8
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Leather Jack
+Blade Fury
+Cleaving
+Fearsome
+Large
+C
+Ogre Bull
+Crusher
+Swordsman
+6 3 6 8 9 9 7 9 4 8
+Arming Sword
+Heater Shield
+Leather Jack
+Blade Fury
+Cleaving
+Fearsome
+Large
+C
+Ogre Bull
+Irongut
+Great Axeman
+6 3 6 9 8 9 7 9 5 8
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Knight’s Plate
+Cleaving
+Fearsome
+Large
+C
+Ogre Bull
+Irongut
+Swordsman
+6 2 6 10 8 9 7 9 4 8
+Arming Sword
+Heater Shield
+Knight’s Plate
+Cleaving
+Fearsome
+Large
+C Common Troll 6 4 7 6 12 6 2 9 6 8
+Great Club (Great)
+Troll Vomit (R) (ArmorPiercing/
+Blast) (MR3/D3/EX--)
+Fearsome
+Large
+Regeneration
+C
+Ogre Bull
+Champion
+Great Axeman
+7 4 7 7 9 9 7 10 6 9
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Leather Jack
+Cleaving
+Fearsome
+Large
+C
+Ogre Bull
+Champion
+Swordsman
+7 3 7 8 9 9 7 10 5 9
+Arming Sword
+Heater Shield
+Leather Jack
+Cleaving
+Fearsome
+Large
+C
+Troll
+(AHQ)
+5 1 9 8 7 6 4 9 9 9
+Huge Club* (Great)
+Fearsome
+Large
+Regeneration
+*Damage Band G
+C River Troll 6 4 7 6 12 6 2 9 6 8
+Great Club (Great)
+Troll Vomit (R) (ArmorPiercing/
+Blast) (MR3/D3/EX--)
+Fearsome
+Fly
+Large
+Regeneration
+C
+Ogre Bull
+Mark of Tzeentch
+Great Axeman
+6 4 6 7 9 9 7 9 5 10
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Leather Jack
+Cleaving
+Fearsome
+Invulnerable
+Large
+C Stone Troll 6 4 7 7 12 6 2 10 6 10
+Great Club (Great)
+Troll Vomit (R) (ArmorPiercing/
+Blast) (MR3/D3/EX--)
+Fearsome
+Large
+Regeneration
+E
+Ogre Maneater
+Great Axeman
+7 5 6 7 11 9 7 9 5 8
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Leather Jack
+Cleaving
+Fearsome
+Large
+E
+Ogre Maneater
+Great
+Swordsman
+7 5 6 7 11 9 7 9 5 8
+Bidenhander (Great)
+(F:1-2/C:11-12)
+Leather Jack
+Cleaving
+Fearsome
+Large
+E
+Ogre Maneater
+Swordsman
+7 4 6 8 11 9 7 9 4 8
+Arming Sword
+Leather Jack
+Heater Shield
+Cleaving
+Fearsome
+Large
+E
+Ogre Maneater
+Irongut
+Great Axe
+7 4 6 9 10 9 7 9 5 10
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Leather Jack
+Cleaving
+Fearsome
+Large
+E
+Ogre Maneater
+Irongut
+Great
+Swordsman
+7 4 6 9 10 9 7 9 5 10
+Bidenhander (Great)
+(F:1-2/C:11-12)
+Leather Jack
+Cleaving
+Fearsome
+Large
+E
+Ogre Maneater
+Irongut
+Swordsman
+7 3 6 10 10 9 7 9 4 10
+Arming Sword
+Leather Jack
+Heater Shield
+Cleaving
+Fearsome
+Large
+E Leadbelcher 7 5 6 7 11 9 7 9 5 11
+Great Club (Great)
+Leadbelcher Cannon (Blast/
+Cleaving)(MR24/D7)(F:1-2/C:12)
+Leather Jack
+Blade Fury
+Fearsome
+Large
+E
+Ogre Maneater
+Champion
+Great Axeman
+8 5 7 7 11 9 7 10 6 11
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Leather Jack
+Cleaving
+Fearsome
+Large
+E
+Ogre Maneater
+Champion
+Great
+Swordsman
+8 5 7 7 11 9 7 10 6 11
+Bidenhander (Great)
+(F:1-2/C:11-12)
+Leather Jack
+Cleaving
+Fearsome
+Large
+E
+Ogre Maneater
+Champion
+Swordsman
+8 4 7 8 11 9 7 10 5 11
+Arming Sword
+Leather Jack
+Heater Shield
+Cleaving
+Fearsome
+Large
+E
+Leadbelcher
+Irongut
+7 4 6 9 10 9 7 9 5 12
+Great Club (Great)
+Leadbelcher Cannon (Blast/
+Cleaving)(MR24/D7)(F:1-2/C:12)
+Knight’s Plate
+Blade Fury
+Fearsome
+Large
+E Gorger 7 0 7 7 12 12 7 12 5 13
+Claws and Fangs (F:1/C:--)
+Accurate/Berserker
+Cleaving
+Fearsome
+Large
+E
+Leadbelcher
+Champion
+8 6 6 7 11 9 7 10 5 13
+Great Club (Great)
+Leadbelcher Cannon (Blast/
+Cleaving)(MR24/D7)(F:1-2/C:12)
+Leather Jack
+Blade Fury
+Fearsome
+Large
+CH
+Ogre Chieftain
+(AHQ)
+9 1 9 10 5 8 6 10 9* 10
+Huge Club* (Great)
+Chain Coat
+*Damage Band G
+CH Ogre Hunter 9 6 7 8 11 11 8 10 5 12
+Great Club (Great)
+Footman’s Crossbow (Slow Fire/
+Swift Shot/Ammunition-Bolt)
+(R36/D4/EX4)
+Leather Jack
+Blade Fury
+Cleaving
+Fearsome
+Large
+CH
+Ogre Bruiser
+Double
+Swordsman
+9 5 7 8 11 11 7 12 5* 13
+Arming Sword x2*
+Leather Jack
+Berserker
+Blade Fury
+Fearsome
+Large
+CH
+Ogre Bruiser
+Great
+Swordsman
+9 5 7 8 11 11 7 12 6 13
+Leather Jack
+Bidenhander (Great)
+(F:1-2/C:11-12)
+Blade Fury
+Fearsome
+Large
+CH
+Ogre Bruiser
+Handgunner
+9 5 7 8 11 11 7 12 5 13
+Leather Jack
+Arming Sword
+Caliver Handgun (Ammunition/
+Slow Fire/Unreliable) (MR24/D5)
+Blade Fury
+Fearsome
+Large
+CH
+Ogre Bruiser
+Swordsman
+9 4 7 9 11 11 7 12 5 13
+Arming Sword
+Leather Jack
+Heater Shield
+Blade Fury
+Fearsome
+Large
+CH Ogre Butcher 7 5 6 7 12 8 8 12 4 14
+Arming Sword
+Blade Fury
+Cleaving
+Fearsome
+Large
+Spellcaster (Dark Magic)
+Golden Statue of a Daemon
+Vial of Swamp Gas
+CH
+Ogre Tyrant
+Double
+Swordsman
+10 6 7 8 11 10 8 15 5* 15
+Arming Sword x2*
+Leather Jack
+Berserker
+Blade Fury
+Fearsome
+Large
+CH
+Ogre Tyrant
+Great
+Swordsman
+10 6 7 8 11 9 7 15 6 15
+Bidenhander (Great)
+(F:1-2/C:11-12)
+Leather Jack
+Blade Fury
+Fearsome
+Large
+CH
+Ogre Tyrant
+Handgunner
+10 6 7 8 11 10 8 15 5 15
+Arming Sword
+Caliver Handgun (Ammunition/
+Slow Fire/Unreliable) (MR24/D5)
+Leather Jack
+Blade Fury
+Fearsome
+Large
+CH
+Ogre Tyrant
+Swordsman
+10 5 7 9 11 10 8 15 5 15
+Arming Sword
+Heater Shield
+Leather Jack
+Blade Fury
+Fearsome
+Large
+CH
+Ogre
+Slaughtermaster
+8 6 6 7 12 9 9 15 4 15
+Arming Sword
+Blade Fury
+Cleaving
+Fearsome
+Large
+Spellcaster (Dark Magic)
+A Pinch of Warpstone
+Golden Statue of a Daemon
+CH
+Ogre Tyrant
+Irongut
+Double
+Swordsman
+10 5 7 10 10 10 8 15 5* 17
+Arming Sword x2*
+Knight’s Plate
+Berserker
+Blade Fury
+Fearsome
+Large
+CH
+Ogre Tyrant
+Irongut
+Great
+Swordsman
+10 5 7 10 10 10 8 15 6 17
+Bidenhander (Great)
+(F:1-2/C:11-12)
+Knight’s Plate
+Blade Fury
+Fearsome
+Large
+CH
+Ogre Tyrant
+Irongut
+Swordsman
+10 5 7 10 10 10 8 15 5 17
+Arming Sword
+Heater Shield
+Knight’s Plate
+Blade Fury
+Fearsome
+Large
+CH
+Thulgul
+Chaos Troll
+(WD 125)
+9 1 10 10 8 6 3 10 8 --
+Claws & Fangs (F:1/C:--)
+Blade Fury
+Fearsome
+Invulnerable
+Large
+Regeneration
+Chaos Dwarves
+Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
+C
+Infernal Guard
+Axeman
+7 4 6 9 4 11 9 4 4 3
+Axe (Cleaving)
+Knight’s Plate
+C
+Infernal Guard
+Axeman
+(*)
+7 3 6 10 4 11 9 4 4 3
+Axe (Cleaving)
+Heater Shield
+Knight’s Plate
+C
+Infernal Guard
+Great Axeman
+7 4 6 9 4 11 9 4 5 3
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Knight’s Plate
+C
+Infernal Guard
+Swordsman
+7 4 6 9 4 11 9 4 4 3
+Arming Sword
+Knight’s Plate
+C
+Infernal Guard
+Swordsman
+(*)
+7 3 6 10 4 11 9 4 4 3
+Arming Sword
+Heater Shield
+Knight’s Plate
+C
+Infernal Guard
+Champion
+Great Axeman
+8 4 7 9 4 11 9 5 6 4
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Knight’s Plate
+C
+Infernal Guard
+Champion
+Swordsman
+8 4 7 9 4 11 9 5 5 4
+Arming Sword
+Knight’s Plate
+E
+Infernal
+Ironsworn
+Swordsman
+8 3 6 10 4 10 10 4 4 4
+Arming Sword
+Heater Shield
+Knight’s Plate
+Cleaving
+E
+Bull Centaur
+Render
+Axeman
+7 4 6 10 12 11 8 10 4 8
+Axe (Cleaving)
+Chain Coat
+Fearsome
+Large
+E
+Bull Centaur
+Render
+Axeman
+7 4 6 10 12 11 8 10 4 9
+Axe x2 (Cleaving)
+Chain Coat
+Blade Fury
+Fearsome
+Large
+E
+Bull Centaur
+Render
+Champion
+8 4 7 10 12 11 8 11 5 10
+Axe (Cleaving)
+Chain Coat
+Fearsome
+Large
+E
+Bull Centaur
+Render
+Great Axeman
+7 4 6 10 12 11 8 10 5 10
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Chain Coat
+Fearsome
+Large
+CH
+Daemonsmith
+Sorcerer
+7 7 6 7 5 9 11 6 4 10
+Axe (Cleaving)
+Spellcaster (Dark Magic)
+Pinch of Warpstone x2
+Vial of Swamp Gas x2
+CH Infernal Castellan 9 5 6 10 4 11 9 6 4 10
+Axe (Cleaving)
+Knight’s Plate
+Blade Fury
+CH Sorcerer-Prophet 8 7 6 7 5 10 12 9 4 12
+Axe (Cleaving)
+Spellcaster (Dark Magic)
+Pinch of Warpstone x2
+Vial of Swamp Gas x2
+CH
+Bull Centaur
+Taur’ruk
+8 5 7 9 12 11 9 12 5 13
+Axe (Cleaving)
+Chain Coat
+Blade Fury
+Cleaving
+Fearsome
+Large
+CH
+Bull Centaur
+Taur’ruk
+Great Axeman
+8 5 7 9 12 11 9 13 6 15
+Great Axe (Cleaving/Great)
+(F:1-2/C:11-12)
+Chain Coat
+Cleaving
+Fearsome
+Large
+Dark Elves
+Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
+C
+Dark Elf Warrior
+Spearman
+8 5 5 7 9 9 9 3 2 1
+Lugged Spear (R)
+(R8/D2/EX7/ /Swift Shot/Throw)
+Heater Shield
+Leather Jack
+C
+Dark Elf Warrior
+Swordsman
+8 5 5 7 9 9 9 3 3 1
+Arming Sword
+Heater Shield
+Leather Jack
+C
+Dark Elf Warrior
+Swordsman
+(*)
+8 5 5 8 8 9 9 3 3 1
+Arming Sword
+Heater Shield
+Leather Jack
+C
+Dark Elf Warrior
+Sentry
+8 5 5 7 10 9 9 3 3 2
+Arming Sword
+Heater Shield
+Leather Jack
+Alert
+Sentry
+C
+Dark Elf
+Champion
+Swordsman
+9 7 5 6 9 9 9 4 3 2
+Arming Sword
+Leather Jack
+C
+Dark Elf Warrior
+Crossbowman
+8 5 5 7 9 9 9 3 3 2
+Arming Sword
+Heater Shield
+Leather Jack
+Footman’s Crossbow (Slow Fire/
+Swift Shot/Ammunition-Bolt)
+(R36/D4/EX4)
+C
+Dark Elf Warrior
+Crossbowman
+Sentry
+8 6 5 6 9 9 9 3 3 3
+Arming Sword
+Leather Jack
+Footman’s Crossbow (Slow Fire/
+Swift Shot/Ammunition-Bolt)
+(R36/D4/EX4)
+Sentry
+C Dark Elf Witch 8 6 5 6 10 9 9 4 3 4
+Arming Sword
+Heater Shield
+Berserker
+Blade Fury
+Cleaving
+C
+Dark Elf Witch
+Champion
+9 7 5 5 10 9 9 4 3 5
+Arming Sword
+Berserker
+Blade Fury
+Cleaving
+E Beastmaster 8 7 5 5 12 9 9 3 3 2
+Whip (R)
+(F:1-2/C:12/Unreliable)
+Beastmaster
+E Black Guard 9 6 5 7 8 10 9 3 3 3
+Scythe (R)
+(F:1-2/C:10-12*/Great)
+Chain Coat
+Accurate*
+E Executioner 9 6 5 7 8 9 9 3 4 3
+Claymore (R) (F:1-2/C:11-12)
+(Cleaving/Great)
+Chain Coat
+E
+Shade
+8 6 5 6 10 9 9 3 3 3
+Arming Sword
+Leather Jack
+Footman’s Crossbow (Slow Fire/
+Swift Shot/Ammunition-Bolt)
+(R36/D4/EX4)
+E
+Shade Champion
+9 7 5 6 10 9 9 4 3 4
+Arming Sword
+Leather Jack
+Footman’s Crossbow (Slow Fire/
+Swift Shot/Ammunition-Bolt)
+(R36/D4/EX4)
+E
+Black Guard
+Champion
+10 6 5 7 8 11 9 4 3 4
+Arming Sword (F:1/C:11-12)
+Chain Coat
+Accurate
+Blade Fury
+E
+Executioner
+Champion
+10 7 6 7 8 9 9 4 5 4
+Claymore (R) (F:1-2/C:11-12)
+(Cleaving/Great)
+Chain Coat
+Berseker
+CH
+Dark Elf Master
+Swordsman
+10 8 6 6 9 10 10 6 4 6
+Arming Sword
+Leather Jack
+CH
+Dark Elf Master
+Great Sword
+10 6 6 8 7 9 9 6 5 8
+Claymore (R) (F:1-2/C:11-12)
+(Cleaving/Great)
+Chain Coat
+Berseker
+CH Sorceress 8 6 5 6 9 8 10 6 3 8
+Arming Sword
+Leather Jack
+Spellcaster (Dark Magic)
+Enhancing
+Pinch of Warpstone
+Vial of Swamp Gas
+CH Death Hag 10 8 6 6 9 10 9 6 4 10
+Arming Sword (F:1/C:11-12*)
+Leather Jack
+Accurate*
+Blade Fury
+Cleaving
+Frenzy (?)
+CH
+Supreme
+Sorceress
+8 6 5 6 9 9 11 9 3 10
+Arming Sword
+Leather Jack
+Spellcaster (Dark Magic)
+Enhancing
+Pinch of Warpstone
+Vial of Swamp Gas
+CH Dark Elf Master 10 7 6 7 9 9 9 9 4 11
+Arming Sword
+Heater Shield
+Leather JAck
+Blade Fury
+CH
+Dreadlord
+Swordsman
+11 7 6 7 9 10 10 9 4 11
+Arming Sword
+Heater Shield
+Leather Jack
+Blade Fury
+CH
+Dark Elf
+Assassin
+12 10 6 6 10 10 10 6 4 12
+Arming Sword (F:1/C:11-12*)
+Leather Jack
+Footman’s Crossbow (Slow Fire/
+Swift Shot/Ammunition-Bolt)
+(R36/D4/EX4)
+Accurate*
+Alert x2
+Blade Fury
+Cleaving
+CH
+Dreadlord
+Great
+Swordsman
+11 8 6 6 9 10 10 9 5 12
+Claymore (R) (F:1-2/C:11-12)
+(Cleaving/Great)
+Leather Jack
+Blade Fury
+CH
+Dreadlord
+Swordsman
+11 7 6 7 9 10 10 9 4 13
+Arming Sword
+Heater Shield
+Leather JAck
+Blade Fury
+Monstrous Creatures
+Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
+C Giant Spider 6 1 5 5 12 4 1 3 3 1
+Claws & Fangs (F:1/C:--)
+Fly
+C Harpy 6 1 5 5 12 5 8 3 3 1
+Claws & Fangs (F:1/C:--)
+Alert
+Fly
+C Cave Squig 7 1 7 5 8 7 1 3 5 2
+Claws & Fangs (F:1/C:--)
+C Cold One 6 1 6 8 12 6 1 3 4 3
+Claws & Fangs (F:1/C:--)
+Berserker
+Fearsome
+E Sabretusk 7 1 6 6 12 7 3 6 4 4
+Claws & Fangs (F:1/C:--)
+Blade Fury
+Fearsome
+E Cockatrice 7 8 6 7 9 7 7 12 4 10
+Claws & Fangs (F:1/C:--)
+Fearsome
+Large
+Petrifying Gaze (R:12/F:1/C:--)
+If hit, target must pass IN test or
+suffers an injury
+E Carnosaur 6 1 9 9 12 9 1 15 7 13
+Claws & Fangs (F:1/C:--)
+Berserker
+Fearsome
+Large
+E Wyvern 8 1 8 7 9 11 3 25 6 15
+Claws & Fangs (F:1/C:--)
+Armor Piercing
+Blade Fury
+Fearsome
+Large
+CH Manticore 8 1 7 6 12 7 5 12 5 10
+Claws & Fangs (F:1/C:--)
+Berserker
+Fearsome
+Large
+CH Chimera 7 1 8 7 12 7 5 12 6 11
+Claws & Fangs (F:1/C:--)
+Blade Fury
+Fearsome
+Large
+CH Hydra 7 1 7 7 12 9 5 15 5 13
+Claws & Fangs (F:1/C:--)
+Blade Fury
+Fearsome
+Flaming
+Large
+Regeneration
+CH Dragon 9 1 8 9 12 10 10 18 6 30
+Claws & Fangs (F:1/C:--)
+Blade Fury
+Channeling
+Fearsome
+Large
+Spellcaster (Dark Magic)
+Pinch of Warpstone x2
