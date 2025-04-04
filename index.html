@@ -176,7 +176,7 @@
         // Modify fetchTables to split the response.
         async function fetchTables(tables) {
             const subdir = document.getElementById('subdir-dropdown').value;
-            let url = 'src/index.php?tables=' + encodeURIComponent(tables);
+            let url = 'index4.php?tables=' + encodeURIComponent(tables);
             if (subdir !== "") {
                 url += "&subdir=" + encodeURIComponent(subdir);
             }
