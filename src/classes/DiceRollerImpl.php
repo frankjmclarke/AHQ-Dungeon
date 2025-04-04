@@ -1,11 +1,16 @@
 <?php
+
+namespace App\Classes;
+
 require_once __DIR__ . '/../interfaces/DiceRoller.php';
+
+use App\Interfaces\DiceRoller;
 
 /**
  * Implementation of dice rolling functionality
  */
 class DiceRollerImpl implements DiceRoller {
-    public function roll($notation) {
+    public function roll(string $notation): array {
         if (preg_match('/^(\d+)D(\d+)$/', $notation, $matches)) {
             $num_dice = intval($matches[1]);
             $num_sides = intval($matches[2]);

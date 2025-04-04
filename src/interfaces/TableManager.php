@@ -1,4 +1,7 @@
 <?php
+
+namespace App\Interfaces;
+
 /**
  * Interface for table management functionality
  */

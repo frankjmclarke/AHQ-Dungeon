@@ -1,4 +1,7 @@
 <?php
+
+namespace App\Interfaces;
+
 /**
  * Interface for CSV processing functionality
  */
@@ -8,5 +11,5 @@ interface CSVProcessor {
      * @param string $output The text output to process
      * @return string The formatted CSV data as HTML table
      */
-    public function processOutput($output);
+    public function processOutput(string $output): string;
 } 

@@ -1,12 +1,16 @@
 <?php
+
+namespace App\Interfaces;
+
 /**
  * Interface for dice rolling functionality
  */
 interface DiceRoller {
     /**
-     * Roll dice according to the given notation (e.g., "1D6", "2D12")
-     * @param string $notation The dice notation to roll
-     * @return array Array containing 'total' and 'rolls'
+     * Roll dice based on notation
+     * 
+     * @param string $notation The dice notation (e.g. "1D6", "2D12")
+     * @return array Array containing total and individual rolls
      */
-    public function roll($notation);
+    public function roll(string $notation): array;
 } 

@@ -1,4 +1,7 @@
 <?php
+
+namespace App\Interfaces;
+
 /**
  * Interface for named block management functionality
  */
@@ -9,4 +12,12 @@ interface NamedBlockManager {
      * @return array Array of block names to their contents
      */
     public function extractNamedBlocks($subdir = null);
+
+    /**
+     * Parse a named block from lines
+     * 
+     * @param array $lines Lines to parse
+     * @return array Array containing name and function
+     */
+    public function parseNamedBlock(array $lines): array;
 } 

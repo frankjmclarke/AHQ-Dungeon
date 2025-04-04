@@ -1,47 +1,34 @@
 <?php
+
+namespace App\Classes;
+
 require_once __DIR__ . '/../interfaces/TableManager.php';
+require_once __DIR__ . '/../interfaces/TableResolver.php';
+require_once __DIR__ . '/TableResolverImpl.php';
+
+use App\Classes\TableResolverImpl;
+use App\Interfaces\TableManager;
 
 /**
  * Implementation of table management functionality
  */
 class TableManagerImpl implements TableManager {
     private $dice_roller;
+    private $table_resolver;
     private $parent_dir;
     
     public function __construct($dice_roller) {
+        global $VERBOSE;
         $this->dice_roller = $dice_roller;
+        $this->table_resolver = new TableResolverImpl($VERBOSE);
         $this->parent_dir = dirname(__DIR__);
     }
     
     public function loadTables($subdir = null) {
-        $tables = array();
-        
-        // Load files from parent directory
-        $files = glob($this->parent_dir . "/*.tab");
-        foreach ($files as $file) {
-            $table_name = basename($file, ".tab");
-            $tables[$table_name] = file_get_contents($file);
-        }
-        
-        // Load files from subdirectory if specified
-        if ($subdir !== null) {
-            $subdir_path = $this->parent_dir . "/" . $subdir;
-            if (is_dir($subdir_path)) {
-                $subdir_files = glob($subdir_path . "/*.tab");
-                foreach ($subdir_files as $file) {
-                    $table_name = basename($file, ".tab");
-                    $tables[$table_name] = file_get_contents($file);
-                }
-            }
-        }
-        
-        return $tables;
+        return $this->table_resolver->loadTables($subdir);
     }
     
-    public function resolveTable($name, $tables, $named_rules, $depth) {
-        if (isset($tables[$name])) {
-            return $tables[$name];
-        }
-        return null;
+    public function resolveTable($name, $tables, $named_rules = [], $depth = 0) {
+        return $this->table_resolver->resolveTable($name, $tables, $named_rules, $depth);
     }
 } 

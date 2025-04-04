@@ -1,20 +1,25 @@
 <?php
+
+namespace App\Classes;
+
 require_once __DIR__ . '/../interfaces/CSVProcessor.php';
 require_once __DIR__ . '/../config/constants.php';
+
+use App\Interfaces\CSVProcessor;
 
 /**
  * Implementation of CSV processing functionality
  */
 class CSVProcessorImpl implements CSVProcessor {
-    private $parent_dir;
-    private $csv_file;
+    private string $parent_dir;
+    private string $csv_file;
     
     /**
      * Constructor
      * @param string $parent_dir The parent directory path
      * @param string $csv_file The CSV file path relative to parent directory
      */
-    public function __construct($parent_dir, $csv_file = CSV_FILE) {
+    public function __construct(string $parent_dir, string $csv_file = CSV_FILE) {
         $this->parent_dir = $parent_dir;
         $this->csv_file = $csv_file;
     }
@@ -24,7 +29,7 @@ class CSVProcessorImpl implements CSVProcessor {
      * @param string $output The text output to process
      * @return string The formatted CSV data as HTML table
      */
-    public function processOutput($output) {
+    public function processOutput(string $output): string {
         $csvOutput = "";
         if (preg_match_all('/\d+\s+([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) {
             $names = array_map('trim', $matches[1]);
@@ -39,10 +44,10 @@ class CSVProcessorImpl implements CSVProcessor {
     
     /**
      * Search the CSV file for matching names
-     * @param array $names Array of names to search for
-     * @return array Array of matching CSV results
+     * @param array<string> $names Array of names to search for
+     * @return array<string,array<array<string>>> Array of matching CSV results
      */
-    private function searchCSV($names) {
+    private function searchCSV(array $names): array {
         $csvResults = array();
         $csv_path = $this->parent_dir . "/" . $this->csv_file;
         if (($handle = fopen($csv_path, "r")) !== false) {
@@ -67,9 +72,9 @@ class CSVProcessorImpl implements CSVProcessor {
      * Match a CSV name with a search name
      * @param string $csvName The name from the CSV file
      * @param string $name The name to search for
-     * @return boolean Whether the names match
+     * @return bool Whether the names match
      */
-    private function matchName($csvName, $name) {
+    private function matchName(string $csvName, string $name): bool {
         if (strcasecmp($csvName, $name) === 0) {
             return true;
         }
@@ -90,10 +95,10 @@ class CSVProcessorImpl implements CSVProcessor {
     
     /**
      * Generate an HTML table from CSV results
-     * @param array $csvResults Array of CSV results
+     * @param array<string,array<array<string>>> $csvResults Array of CSV results
      * @return string HTML table string
      */
-    private function generateCSVTable($csvResults) {
+    private function generateCSVTable(array $csvResults): string {
         $output = "##CSV_MARKER##";
         $output .= "<table border='1' cellspacing='0' cellpadding='4' style='max-width:500px; margin:0 auto;'>";
         $output .= "<tr>";
