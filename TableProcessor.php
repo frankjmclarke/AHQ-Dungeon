@@ -21,15 +21,34 @@ class TableProcessor {
         $lines = explode("\n", $text);
         foreach ($lines as $line) {
             $line = trim($line);
+            
+            // Handle function calls like Room-Furnish()
             if (preg_match('/^([A-Za-z0-9_\-]+)\(\)$/', $line, $matches)) {
                 $name_candidate = strtolower($matches[1]);
                 if (isset($named_rules[$name_candidate])) {
-                    Logger::debug(str_repeat("  ", $depth) . "→ Resolving named block: " . $line);
+                    Logger::debug(str_repeat("  ", $depth) . "→ Resolving function call: " . $line);
                     $result = $named_rules[$name_candidate]();
                     self::processAndResolveText($result, $tables, $named_rules, $depth + 1, $parent_table, $name_candidate);
                     continue;
                 }
             }
+
+            // Handle composite entries with &
+            if (strpos($line, "&") !== false) {
+                $parts = array_map('trim', explode("&", $line));
+                foreach ($parts as $part) {
+                    self::processAndResolveText($part, $tables, $named_rules, $depth, $parent_table, $current_named);
+                }
+                continue;
+            }
+
+            // Handle quoted text
+            if (substr($line, 0, 1) === '"' && substr($line, -1) === '"') {
+                Logger::output(str_repeat("  ", $depth), substr($line, 1, -1));
+                continue;
+            }
+
+            // Handle named blocks and tables
             $lower_line = strtolower($line);
             if (isset($named_rules[$lower_line])) {
                 if ($current_named !== null && $lower_line === $current_named) {
@@ -47,30 +66,9 @@ class TableProcessor {
                 }
                 continue;
             }
-            if (substr($line, 0, 1) === '"' && substr($line, -1) === '"') {
-                Logger::output(str_repeat("  ", $depth), substr($line, 1, -1));
-            } else {
-                Logger::output(str_repeat("  ", $depth), $line);
-            }
-            if (preg_match_all('/([A-Za-z0-9_\-]+)\(\)/', $line, $all_matches)) {
-                foreach ($all_matches[1] as $match) {
-                    $match_lower = strtolower($match);
-                    if ($current_named !== null && $match_lower === $current_named) {
-                        continue;
-                    }
-                    if (TableManager::isInResolvedStack($match_lower)) {
-                        continue;
-                    }
-                    TableManager::pushResolvedStack($match_lower);
-                    if (isset($named_rules[$match_lower])) {
-                        $result = $named_rules[$match_lower]();
-                        self::processAndResolveText($result, $tables, $named_rules, $depth + 1, $parent_table, $match_lower);
-                    } elseif (isset($tables[$match_lower])) {
-                        self::resolveTable($match_lower, $tables, $named_rules, $depth + 1);
-                    }
-                    TableManager::popResolvedStack();
-                }
-            }
+
+            // Output regular text
+            Logger::output(str_repeat("  ", $depth), $line);
         }
     }
 
@@ -90,9 +88,9 @@ class TableProcessor {
 
         if ($diceNotation !== null) {
             $result = DiceRoller::roll($diceNotation);
-            Logger::debug("[Good entry for ROLL {$diceNotation}]");
+            Logger::debug("[Rolling {$diceNotation} for table {$name}]");
         } else {
-            Logger::debug("[Bad entry for ROLL {$name}]");
+            Logger::debug("[Using default dice for table {$name}]");
             $result = DiceRoller::roll(DEFAULT_DICE);
         }
         $roll = $result['total'];
@@ -131,127 +129,85 @@ class TableProcessor {
 
     public static function parseNamedBlock($lines) {
         $name = strtolower(trim($lines[0]));
-        $stack = array();
-        $current = array();
-        $parsed_tables = array();  // Each element: [dice_notation, table]
-        $dice_notation = null;
+        $stack = [];
+        $current = [];
+        $parsed_tables = [];
+        $current_dice = null;
+        $nested_level = 0;
+
         for ($i = 1; $i < count($lines); $i++) {
-            $line = $lines[$i];
-            if (strpos(trim($line), "(") === 0) {
-                $stack[] = $current;
-                $current = array();
-            } elseif (strpos(trim($line), ")") === 0) {
-                if (!empty($current)) {
-                    $first_line = trim($current[0]);
-                    $tokens = preg_split('/\s+/', $first_line);
-                    if (!empty($tokens) && preg_match('/^\d+[dD]\d+$/', $tokens[0])) {
-                        $dice_notation = $tokens[0];
-                        array_shift($tokens);
-                        if (!empty($tokens)) {
-                            $current[0] = implode(" ", $tokens);
-                        } else {
-                            array_shift($current);
-                        }
-                    }
-                }
-                $parsed = FileParser::parseInlineTable($current);
-                $current = count($stack) > 0 ? array_pop($stack) : array();
-                $parsed_tables[] = array($dice_notation, $parsed);
-                $dice_notation = null;
-            } else {
-                $current[] = $line;
+            $line = trim($lines[$i]);
+
+            // Handle opening bracket
+            if (strpos($line, "(") === 0) {
+                $nested_level++;
+                $stack[] = [$current, $current_dice];
+                $current = [];
+                $current_dice = null;
+                continue;
             }
-            if ($i == 1) {
-                // Check for each possible dice notation in the first line
-                if (strpos($line, "2D12") !== false) {
-                    $dice_notation = "2D12";
-                    TableManager::setDiceNotation($name, $dice_notation);
-                    //Logger::debug("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
-                } elseif (strpos($line, "1D12") !== false) {
-                    $dice_notation = "1D12";
-                    TableManager::setDiceNotation($name, $dice_notation);
-                    //Logger::debug("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
-                } elseif (strpos($line, "1D6") !== false) {
-                    $dice_notation = "1D6";
-                    TableManager::setDiceNotation($name, $dice_notation);
-                    //Logger::debug("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
+
+            // Handle closing bracket
+            if (strpos($line, ")") === 0) {
+                if (!empty($current)) {
+                    // Process dice notation
+                    $dice = self::extractDiceNotation($current);
+                    if ($dice !== null) {
+                        $current_dice = $dice;
+                    }
+
+                    // Parse the current block
+                    $parsed = FileParser::parseInlineTable($current);
+                    $parsed_tables[] = [$current_dice, $parsed, $nested_level];
                 }
+
+                // Restore previous state
+                if (!empty($stack)) {
+                    list($current, $current_dice) = array_pop($stack);
+                }
+                $nested_level--;
+                continue;
+            }
+
+            // Handle regular line
+            $current[] = $line;
+
+            // Check for dice notation in the line
+            if (preg_match('/(\d+[dD]\d+)/', $line, $matches)) {
+                $current_dice = strtoupper($matches[1]);
             }
         }
-        
-        // The closure that, when called, resolves this block
-        return array($name, function() use ($parsed_tables, $name) {
+
+        // Create the resolver function
+        return [$name, function() use ($parsed_tables, $name) {
             if (empty($parsed_tables)) {
                 return "";
             }
-            list($notation, $outer) = $parsed_tables[0];
-            
-            $roll_notation = $notation !== null ? $notation : DEFAULT_DICE;
-            Logger::debug("Using dice notation '{$roll_notation}' for block '{$name}'");
-            
-            $has_composite = false;
-            foreach ($outer as $entry) {
-                if (strpos($entry[1], "&") !== false) {
-                    $has_composite = true;
-                    break;
-                }
-            }
-            
-            $attempts = 0;
-            $entry_val = null;
-            while ($attempts < 100) {
-                $result = DiceRoller::roll($roll_notation);
-                $roll = $result['total'];
-                $rolls = $result['rolls'];
-                $entry_val = null;
-                foreach ($outer as $tuple) {
-                    if ($tuple[0] == $roll) {
-                        $entry_val = $tuple[1];
+
+            // Process each table in order
+            $result = "";
+            foreach ($parsed_tables as list($dice_notation, $table, $level)) {
+                $roll_notation = $dice_notation ?? DEFAULT_DICE;
+                Logger::debug("Using dice notation '{$roll_notation}' for level {$level} in block '{$name}'");
+                
+                $roll = DiceRoller::roll($roll_notation);
+                foreach ($table as $entry) {
+                    if ($entry[0] == $roll['total']) {
+                        $result .= $entry[1] . "\n";
                         break;
                     }
                 }
-                Logger::debug("  → [Nested roll in {$name}]: Rolled {$roll} (rolls: " . implode(",", $rolls) . ") resulting in: {$entry_val}");
-                if ($entry_val !== null && $has_composite && strtolower(trim($entry_val)) == $name) {
-                    $attempts++;
-                    continue;
-                }
-                break;
             }
-            
-            if ($entry_val !== null && strpos($entry_val, "&") !== false) {
-                $parts = array_map('trim', explode("&", $entry_val));
-                $output = array();
-                foreach ($parts as $part) {
-                    if (strtolower($part) == $name) {
-                        continue;
-                    }
-                    if (strpos($part, "(") === 0 && count($parsed_tables) > 1) {
-                        list($notation2, $subtable) = $parsed_tables[1];
-                        $roll_notation2 = $notation2 !== null ? $notation2 : DEFAULT_DICE;
-                        $result2 = DiceRoller::roll($roll_notation2);
-                        $subroll = $result2['total'];
-                        $sub_rolls = $result2['rolls'];
-                        $subentry = null;
-                        foreach ($subtable as $tuple) {
-                            if ($tuple[0] == $subroll) {
-                                $subentry = $tuple[1];
-                                break;
-                            }
-                        }
-                        $output[] = "[Nested roll in {$name} nested]: Rolled {$subroll} (rolls: " . implode(",", $sub_rolls) . ") resulting in: {$subentry}";
-                    } else {
-                        $output[] = $part;
-                    }
-                }
-                $final_output = implode("\n", $output);
-            } else {
-                $final_output = ($entry_val !== null) ? $entry_val : "";
+            return $result;
+        }];
+    }
+
+    private static function extractDiceNotation($lines) {
+        foreach ($lines as $line) {
+            if (preg_match('/(\d+[dD]\d+)/', $line, $matches)) {
+                return strtoupper($matches[1]);
             }
-            
-            if ($name == "hidden-treasure") {
-                return "[Hidden-Treasure]\n" . $final_output . "\n[/Hidden-Treasure]";
-            }
-            return $final_output;
-        });
+        }
+        return null;
     }
 } 
