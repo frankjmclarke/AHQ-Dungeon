@@ -14,13 +14,28 @@ define('DEFAULT_DICE', "1D12");   // Global default dice (if no block-specific n
 
 class TableProcessor {
     public static function processAndResolveText($text, $tables, $named_rules, $depth, $parent_table = null, $current_named = null) {
+        // Check for maximum recursion depth to prevent infinite loops
         if ($depth > MAX_DEPTH) {
             Logger::debug(str_repeat("  ", $depth) . "[Maximum recursion depth reached]");
             return;
         }
         $lines = explode("\n", $text);
+        $outputSet = []; // To track unique outputs
+        
+        // Helper function to normalize text (removing quotes) for comparison
+        $normalizeText = function($text) {
+            $text = trim($text);
+            if (substr($text, 0, 1) === '"' && substr($text, -1) === '"') {
+                return substr($text, 1, -1);
+            }
+            return $text;
+        };
+        
         foreach ($lines as $line) {
             $line = trim($line);
+            
+            // Debugging: Log the current line being processed
+            Logger::debug("Processing line: " . $line);
             
             // Handle function calls like Room-Furnish()
             if (preg_match('/^([A-Za-z0-9_\-]+)\(\)$/', $line, $matches)) {
@@ -28,7 +43,21 @@ class TableProcessor {
                 if (isset($named_rules[$name_candidate])) {
                     Logger::debug(str_repeat("  ", $depth) . "→ Resolving function call: " . $line);
                     $result = $named_rules[$name_candidate]();
-                    self::processAndResolveText($result, $tables, $named_rules, $depth + 1, $parent_table, $name_candidate);
+                    
+                    // Debugging: Log the result of the function call
+                    Logger::debug("Function call result: " . $result);
+                    
+                    // Process the result, don't recursively process each part again
+                    $parts = array_map('trim', explode("&", $result));
+                    foreach ($parts as $part) {
+                        $normalizedPart = $normalizeText($part);
+                        
+                        // Check if the normalized version is already in output set
+                        if (!in_array($normalizedPart, $outputSet)) {
+                            $outputSet[] = $normalizedPart;
+                            Logger::output(str_repeat("  ", $depth), $normalizedPart);
+                        }
+                    }
                     continue;
                 }
             }
@@ -37,14 +66,26 @@ class TableProcessor {
             if (strpos($line, "&") !== false) {
                 $parts = array_map('trim', explode("&", $line));
                 foreach ($parts as $part) {
-                    self::processAndResolveText($part, $tables, $named_rules, $depth, $parent_table, $current_named);
+                    $normalizedPart = $normalizeText($part);
+                    
+                    // Check if the normalized version is already in output set
+                    if (!in_array($normalizedPart, $outputSet)) {
+                        $outputSet[] = $normalizedPart;
+                        Logger::output(str_repeat("  ", $depth), $normalizedPart);
+                    }
                 }
                 continue;
             }
 
             // Handle quoted text
             if (substr($line, 0, 1) === '"' && substr($line, -1) === '"') {
-                Logger::output(str_repeat("  ", $depth), substr($line, 1, -1));
+                $normalizedLine = substr($line, 1, -1);
+                
+                // Check if the normalized version is already in output set
+                if (!in_array($normalizedLine, $outputSet)) {
+                    $outputSet[] = $normalizedLine;
+                    Logger::output(str_repeat("  ", $depth), $normalizedLine);
+                }
                 continue;
             }
 
@@ -52,15 +93,24 @@ class TableProcessor {
             $lower_line = strtolower($line);
             if (isset($named_rules[$lower_line])) {
                 if ($current_named !== null && $lower_line === $current_named) {
-                    Logger::output(str_repeat("  ", $depth), $line);
+                    if (!in_array($line, $outputSet)) {
+                        $outputSet[] = $line;
+                        Logger::output(str_repeat("  ", $depth), $line);
+                    }
                 } else {
+                    // Check for cycles using a stack to track resolved items
                     if (TableManager::isInResolvedStack($lower_line)) {
                         Logger::debug(str_repeat("  ", $depth) . "→ [Cycle detected: " . $line . "]");
                     } else {
+                        // Push the current item onto the stack
                         TableManager::pushResolvedStack($lower_line);
                         Logger::debug(str_repeat("  ", $depth) . "→ Resolving named block: " . $line);
                         $result = $named_rules[$lower_line]();
-                        self::processAndResolveText($result, $tables, $named_rules, $depth + 1, $parent_table, $lower_line);
+                        if ($result !== null) {
+                            // Recursively process the result
+                            self::processAndResolveText($result, $tables, $named_rules, $depth + 1, $parent_table, $lower_line);
+                        }
+                        // Pop the item from the stack after processing
                         TableManager::popResolvedStack();
                     }
                 }
@@ -68,7 +118,10 @@ class TableProcessor {
             }
 
             // Output regular text
-            Logger::output(str_repeat("  ", $depth), $line);
+            if (!in_array($line, $outputSet)) {
+                $outputSet[] = $line;
+                Logger::output(str_repeat("  ", $depth), $line);
+            }
         }
     }
 
@@ -88,9 +141,9 @@ class TableProcessor {
 
         if ($diceNotation !== null) {
             $result = DiceRoller::roll($diceNotation);
-            Logger::debug("[Rolling {$diceNotation} for table {$name}]");
+            Logger::debug("[Good entry for ROLL {$diceNotation}]");
         } else {
-            Logger::debug("[Using default dice for table {$name}]");
+            Logger::debug("[Bad entry for ROLL {$name}]");
             $result = DiceRoller::roll(DEFAULT_DICE);
         }
         $roll = $result['total'];
@@ -133,14 +186,12 @@ class TableProcessor {
         $current = array();
         $parsed_tables = array();  // Each element: [dice_notation, table]
         $dice_notation = null;
-
         for ($i = 1; $i < count($lines); $i++) {
-            $line = trim($lines[$i]);
-            if (strpos($line, "(") === 0) {
-                $stack[] = [$current, $dice_notation];  // Save both current lines and dice notation
+            $line = $lines[$i];
+            if (strpos(trim($line), "(") === 0) {
+                $stack[] = $current;
                 $current = array();
-                $dice_notation = null;  // Reset dice notation for new level
-            } elseif (strpos($line, ")") === 0) {
+            } elseif (strpos(trim($line), ")") === 0) {
                 if (!empty($current)) {
                     $first_line = trim($current[0]);
                     $tokens = preg_split('/\s+/', $first_line);
@@ -153,34 +204,33 @@ class TableProcessor {
                             array_shift($current);
                         }
                     }
-                    $parsed = FileParser::parseInlineTable($current);
-                    $parsed_tables[] = array($dice_notation, $parsed);
                 }
-                if (!empty($stack)) {
-                    list($current, $dice_notation) = array_pop($stack);
-                } else {
-                    $current = array();
-                    $dice_notation = null;
-                }
+                $parsed = FileParser::parseInlineTable($current);
+                $current = count($stack) > 0 ? array_pop($stack) : array();
+                $parsed_tables[] = array($dice_notation, $parsed);
+                $dice_notation = null;
             } else {
                 $current[] = $line;
             }
-
-            // Check for dice notation in first line of each block
-            if ($i == 1 || strpos($line, "(") === 0) {
+            if ($i == 1) {
+                // Check for each possible dice notation in the first line
                 if (strpos($line, "2D12") !== false) {
                     $dice_notation = "2D12";
                     TableManager::setDiceNotation($name, $dice_notation);
+                    //Logger::debug("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
                 } elseif (strpos($line, "1D12") !== false) {
                     $dice_notation = "1D12";
                     TableManager::setDiceNotation($name, $dice_notation);
+                    //Logger::debug("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
                 } elseif (strpos($line, "1D6") !== false) {
                     $dice_notation = "1D6";
                     TableManager::setDiceNotation($name, $dice_notation);
+                    //Logger::debug("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
                 }
             }
         }
         
+        // The closure that, when called, resolves this block
         return array($name, function() use ($parsed_tables, $name) {
             if (empty($parsed_tables)) {
                 return "";
@@ -199,58 +249,60 @@ class TableProcessor {
             }
             
             $attempts = 0;
-            do {
+            $entry_val = null;
+            while ($attempts < 100) {
                 $result = DiceRoller::roll($roll_notation);
                 $roll = $result['total'];
-                $entry = null;
+                $rolls = $result['rolls'];
+                $entry_val = null;
                 foreach ($outer as $tuple) {
                     if ($tuple[0] == $roll) {
-                        $entry = $tuple[1];
+                        $entry_val = $tuple[1];
                         break;
                     }
                 }
-                if ($entry !== null && (!$has_composite || strpos($entry, "hidden-treasure") === false)) {
-                    return $entry;
+                Logger::debug("  → [Nested roll in {$name}]: Rolled {$roll} (rolls: " . implode(",", $rolls) . ") resulting in: {$entry_val}");
+                if ($entry_val !== null && $has_composite && strtolower(trim($entry_val)) == $name) {
+                    $attempts++;
+                    continue;
                 }
-                $attempts++;
-            } while ($attempts < 100);
-            
-            return "Error: Maximum attempts reached";
-        });
-    }
-
-    private static function resolveNestedTable($parsed_tables, $current_level, $name) {
-        $result = "";
-        foreach ($parsed_tables as list($dice_notation, $table, $level)) {
-            if ($level !== $current_level) {
-                continue;
+                break;
             }
             
-            $roll_notation = $dice_notation ?? DEFAULT_DICE;
-            Logger::debug("Using dice notation '{$roll_notation}' for level {$level} in block '{$name}'");
-            
-            $roll = DiceRoller::roll($roll_notation);
-            foreach ($table as $entry) {
-                if ($entry[0] == $roll['total']) {
-                    $entry_text = $entry[1];
-                    // Process nested level if it exists
-                    if ($current_level + 1 < max(array_column($parsed_tables, 2))) {
-                        $entry_text .= self::resolveNestedTable($parsed_tables, $current_level + 1, $name);
+            if ($entry_val !== null && strpos($entry_val, "&") !== false) {
+                $parts = array_map('trim', explode("&", $entry_val));
+                $output = array();
+                foreach ($parts as $part) {
+                    if (strtolower($part) == $name) {
+                        continue;
                     }
-                    $result .= $entry_text . "\n";
-                    break;
+                    if (strpos($part, "(") === 0 && count($parsed_tables) > 1) {
+                        list($notation2, $subtable) = $parsed_tables[1];
+                        $roll_notation2 = $notation2 !== null ? $notation2 : DEFAULT_DICE;
+                        $result2 = DiceRoller::roll($roll_notation2);
+                        $subroll = $result2['total'];
+                        $sub_rolls = $result2['rolls'];
+                        $subentry = null;
+                        foreach ($subtable as $tuple) {
+                            if ($tuple[0] == $subroll) {
+                                $subentry = $tuple[1];
+                                break;
+                            }
+                        }
+                        $output[] = "[Nested roll in {$name} nested]: Rolled {$subroll} (rolls: " . implode(",", $sub_rolls) . ") resulting in: {$subentry}";
+                    } else {
+                        $output[] = $part;
+                    }
                 }
+                $final_output = implode("\n", $output);
+            } else {
+                $final_output = ($entry_val !== null) ? $entry_val : "";
             }
-        }
-        return $result;
-    }
-
-    private static function extractDiceNotation($lines) {
-        foreach ($lines as $line) {
-            if (preg_match('/(\d+[dD]\d+)/', $line, $matches)) {
-                return strtoupper($matches[1]);
+            
+            if ($name == "hidden-treasure") {
+                return "[Hidden-Treasure]\n" . $final_output . "\n[/Hidden-Treasure]";
             }
-        }
-        return null;
+            return $final_output;
+        });
     }
 } 
