@@ -14,113 +14,62 @@ define('DEFAULT_DICE', "1D12");   // Global default dice (if no block-specific n
 
 class TableProcessor {
     public static function processAndResolveText($text, $tables, $named_rules, $depth, $parent_table = null, $current_named = null) {
-        // Check for maximum recursion depth to prevent infinite loops
         if ($depth > MAX_DEPTH) {
             Logger::debug(str_repeat("  ", $depth) . "[Maximum recursion depth reached]");
             return;
         }
         $lines = explode("\n", $text);
-        $outputSet = []; // To track unique outputs
-        
-        // Helper function to normalize text (removing quotes) for comparison
-        $normalizeText = function($text) {
-            $text = trim($text);
-            if (substr($text, 0, 1) === '"' && substr($text, -1) === '"') {
-                return substr($text, 1, -1);
-            }
-            return $text;
-        };
-        
         foreach ($lines as $line) {
             $line = trim($line);
-            
-            // Debugging: Log the current line being processed
-            Logger::debug("Processing line: " . $line);
-            
-            // Handle function calls like Room-Furnish()
             if (preg_match('/^([A-Za-z0-9_\-]+)\(\)$/', $line, $matches)) {
                 $name_candidate = strtolower($matches[1]);
                 if (isset($named_rules[$name_candidate])) {
-                    Logger::debug(str_repeat("  ", $depth) . "→ Resolving function call: " . $line);
+                    Logger::debug(str_repeat("  ", $depth) . "→ Resolving named block: " . $line);
                     $result = $named_rules[$name_candidate]();
-                    
-                    // Debugging: Log the result of the function call
-                    Logger::debug("Function call result: " . $result);
-                    
-                    // Process the result, don't recursively process each part again
-                    $parts = array_map('trim', explode("&", $result));
-                    foreach ($parts as $part) {
-                        $normalizedPart = $normalizeText($part);
-                        
-                        // Check if the normalized version is already in output set
-                        if (!in_array($normalizedPart, $outputSet)) {
-                            $outputSet[] = $normalizedPart;
-                            Logger::output(str_repeat("  ", $depth), $normalizedPart);
-                        }
-                    }
+                    self::processAndResolveText($result, $tables, $named_rules, $depth + 1, $parent_table, $name_candidate);
                     continue;
                 }
             }
-
-            // Handle composite entries with &
-            if (strpos($line, "&") !== false) {
-                $parts = array_map('trim', explode("&", $line));
-                foreach ($parts as $part) {
-                    $normalizedPart = $normalizeText($part);
-                    
-                    // Check if the normalized version is already in output set
-                    if (!in_array($normalizedPart, $outputSet)) {
-                        $outputSet[] = $normalizedPart;
-                        Logger::output(str_repeat("  ", $depth), $normalizedPart);
-                    }
-                }
-                continue;
-            }
-
-            // Handle quoted text
-            if (substr($line, 0, 1) === '"' && substr($line, -1) === '"') {
-                $normalizedLine = substr($line, 1, -1);
-                
-                // Check if the normalized version is already in output set
-                if (!in_array($normalizedLine, $outputSet)) {
-                    $outputSet[] = $normalizedLine;
-                    Logger::output(str_repeat("  ", $depth), $normalizedLine);
-                }
-                continue;
-            }
-
-            // Handle named blocks and tables
             $lower_line = strtolower($line);
             if (isset($named_rules[$lower_line])) {
                 if ($current_named !== null && $lower_line === $current_named) {
-                    if (!in_array($line, $outputSet)) {
-                        $outputSet[] = $line;
-                        Logger::output(str_repeat("  ", $depth), $line);
-                    }
+                    Logger::output(str_repeat("  ", $depth), $line);
                 } else {
-                    // Check for cycles using a stack to track resolved items
                     if (TableManager::isInResolvedStack($lower_line)) {
                         Logger::debug(str_repeat("  ", $depth) . "→ [Cycle detected: " . $line . "]");
                     } else {
-                        // Push the current item onto the stack
                         TableManager::pushResolvedStack($lower_line);
                         Logger::debug(str_repeat("  ", $depth) . "→ Resolving named block: " . $line);
                         $result = $named_rules[$lower_line]();
-                        if ($result !== null) {
-                            // Recursively process the result
-                            self::processAndResolveText($result, $tables, $named_rules, $depth + 1, $parent_table, $lower_line);
-                        }
-                        // Pop the item from the stack after processing
+                        self::processAndResolveText($result, $tables, $named_rules, $depth + 1, $parent_table, $lower_line);
                         TableManager::popResolvedStack();
                     }
                 }
                 continue;
             }
-
-            // Output regular text
-            if (!in_array($line, $outputSet)) {
-                $outputSet[] = $line;
+            if (substr($line, 0, 1) === '"' && substr($line, -1) === '"') {
+                Logger::output(str_repeat("  ", $depth), substr($line, 1, -1));
+            } else {
                 Logger::output(str_repeat("  ", $depth), $line);
+            }
+            if (preg_match_all('/([A-Za-z0-9_\-]+)\(\)/', $line, $all_matches)) {
+                foreach ($all_matches[1] as $match) {
+                    $match_lower = strtolower($match);
+                    if ($current_named !== null && $match_lower === $current_named) {
+                        continue;
+                    }
+                    if (TableManager::isInResolvedStack($match_lower)) {
+                        continue;
+                    }
+                    TableManager::pushResolvedStack($match_lower);
+                    if (isset($named_rules[$match_lower])) {
+                        $result = $named_rules[$match_lower]();
+                        self::processAndResolveText($result, $tables, $named_rules, $depth + 1, $parent_table, $match_lower);
+                    } elseif (isset($tables[$match_lower])) {
+                        self::resolveTable($match_lower, $tables, $named_rules, $depth + 1);
+                    }
+                    TableManager::popResolvedStack();
+                }
             }
         }
     }
