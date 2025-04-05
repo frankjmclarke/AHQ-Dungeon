@@ -7,7 +7,8 @@ class CSVProcessor {
     // Returns an empty string if no matches are found
     public static function processCSVOutput($output) {
         $csvOutput = "";
-        if (preg_match_all('/\d+\s+([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) {
+        // Match sequences of words, ignoring numbers
+        if (preg_match_all('/([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) {
             $names = array_map('trim', $matches[1]);
             $names = array_filter($names, function($n) { return $n !== ""; });
             $csvResults = array();
