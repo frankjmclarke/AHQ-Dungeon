@@ -166,15 +166,15 @@ class TableProcessor {
                 if (strpos($line, "2D12") !== false) {
                     $dice_notation = "2D12";
                     TableManager::setDiceNotation($name, $dice_notation);
-                    Logger::debug("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
+                    //Logger::debug("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
                 } elseif (strpos($line, "1D12") !== false) {
                     $dice_notation = "1D12";
                     TableManager::setDiceNotation($name, $dice_notation);
-                    Logger::debug("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
+                    //Logger::debug("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
                 } elseif (strpos($line, "1D6") !== false) {
                     $dice_notation = "1D6";
                     TableManager::setDiceNotation($name, $dice_notation);
-                    Logger::debug("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
+                    //Logger::debug("YYYYYYY Using dice notation '{$dice_notation}' for block '{$name}'");
                 }
             }
         }

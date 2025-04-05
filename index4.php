@@ -64,8 +64,8 @@ class Application {
         }
 
         // Get the generated output
-        //$output = ob_get_clean(). "Klack";
-        echo $output;//This goes to the text box     
+        $output = ob_get_clean();
+        echo $output;//This goes to the text box      
 
         // Search CSV output for Monsters in the .csv file
         echo CSVProcessor::processCSVOutput($output);
