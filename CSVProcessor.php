@@ -53,6 +53,14 @@ class CSVProcessor {
                         $cache[$name] = $csvResults[$name]; // Cache the result
                     }
                 }
+                else if (substr($name, -3) === "ies") {
+                    $singular = substr($name, 0, -3) . "y";
+                    $index = self::binarySearch($csvData, $singular);
+                    if ($index !== -1) {
+                        $csvResults[$name][] = $csvData[$index];
+                        $cache[$name] = $csvResults[$name]; // Cache the result
+                    }
+                }
             }
 
             if (!empty($csvResults)) {

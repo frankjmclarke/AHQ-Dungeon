@@ -23,7 +23,7 @@ Black Orc Champion Axeman,8,3,6,8,5,8,6,5,4,4,Axe (Cleaving),Heater Shield,Leath
 Black Orc Champion Swordsman,8,3,6,8,5,8,6,5,4,4,Arming Sword,Heater Shield,Leather Jack
 Black Orc Spearman,7,3,6,8,5,8,6,4,3,3,Lugged Spear (R),(R8/D1/EX7/Throw/Swift Shot),Heater Shield,Leather Jack
 Black Orc Swordsman,7,3,6,8,5,8,6,4,4,3,Arming Sword,Heater Shield,Leather Jack
-Black Orc Warboss,10,5,7,7,6,9,7,10,5,14,Footman’s Hammer,(R8/D5/EX7) (Throw/Swift Shot),Blade Fury,Heater Shield,Knight’s Plate,
+Black Orc Warboss,10,5,7,7,6,9,7,10,5,14,Footman’s Hammer,(R8/D5/EX7) (Throw/Swift Shot),Blade Fury,Heater Shield,Knight’s Plate,Hordes of Chaos,Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
 Blazing Skeleton 6 4 5 5 6 10 2 3 3 4 Flames of Death
 Blood Dragon Vampire,10,5,7,9,10,9,8,6,5*,12,Arming Sword x2*,Blade Fury,Blood Powers,Fearsome,Spellcaster (Necromantic),Miniature Golden Ankh
 Blood Dragon Vampire Lord,10,6,7,10,10,11,11,9,5*,16,Arming Sword x2,Blade Fury,Blood Powers,Fearsome,Spellcaster (Necromantic),Miniature Golden Ankh
@@ -34,7 +34,7 @@ Bull Centaur Render Axeman,7,4,6,10,12,11,8,10,4,9,Axe x2 (Cleaving),Chain Coat,
 Bull Centaur Render Champion,8,4,7,10,12,11,8,11,5,10,Axe (Cleaving),Chain Coat,Fearsome,Large
 Bull Centaur Render Great Axeman,7,4,6,10,12,11,8,10,5,10,Great Axe (Cleaving/Great),(F:1-2/C:11-12),Chain Coat,Fearsome,Large
 Bull Centaur Taur’ruk,8,5,7,9,12,11,9,12,5,13,Axe (Cleaving),Chain Coat,Blade Fury,Cleaving,Fearsome,Large
-Bull Centaur Taur’ruk Great Axeman,8,5,7,9,12,11,9,13,6,15,Great Axe (Cleaving/Great),(F:1-2/C:11-12),Chain Coat,Cleaving,Fearsome,Large,,
+Bull Centaur Taur’ruk Great Axeman,8,5,7,9,12,11,9,13,6,15,Great Axe (Cleaving/Great),(F:1-2/C:11-12),Chain Coat,Cleaving,Fearsome,Large,Dark Elves,Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
 Cairn Wraith,6,1,5,5,12,10,4,6,3,6,Scythe (R),(F:1-2/C:11+/Great),Blade Fury,Fearsome,Invulnerable
 Cairn Wraith (*),6,1,5,5,12,10,4,6,4,6,Claymore (R),(F:1-2/C:11+/Cleaving/Great),Blade Fury,Fearsome,Invulnerable
 Carnosaur,6,1,9,9,12,9,1,15,7,13,Claws & Fangs (F:1/C:--),Berserker,Fearsome,Large
@@ -87,7 +87,7 @@ Chaos Marauder Spearman,7,4,5,7,7,9,7,3,2,1,Lugged Spear (R),(R8/D1/EX7/Throw/Sw
 Chaos Marauder Spearman (*),7,3,5,8,6,9,7,3,2,1,Lugged Spear (R),(R8/D1/EX7/Throw/Swift Shot),Heater Shield,Chain Coat
 Chaos Marauder Swordsman,7,4,5,7,7,9,7,3,3,1,Arming Sword,Heater Shield,Leather Jack
 Chaos Marauder Swordsman (*),7,3,5,8,6,9,7,3,3,1,Arming Sword,Heater Shield,Chain Coat
-Chaos Sentry,7,6,5,6,8,8,6,3,3,2,Arming Sword,Heater Shield,Sentry
+Chaos Sentry (WD 122 & 150),7,6,5,6,8,8,6,3,3,2,Arming Sword,Heater Shield,Sentry
 Chaos Sorcerer,8,6,6,6,8,9,9,6,2,12,Quarterstaff (R) (F:1/C:--/Great),Spellcaster (Dark Magic),Pinch of Warpstone,Miniature Silver Dagger
 Chaos Sorcerer,7,3,5,7,8,9,10,4,3,11,Scythe (R),(F:1-2/C:11+/Great),Spellcaster (Dark Magic),Choke,Fireball,Flamming Skull of Terror
 Chaos Sorcerer Lord,8,6,6,6,8,9,9,6,2,14,Quarterstaff (R) (F:1/C:--/Great),Spellcaster (Dark Magic),Channeling/Focusing,Miniature Silver Dagger x2,Pinch of Warpstone x2
@@ -166,13 +166,13 @@ Deathrunner Champion (*),8,7,5,7,11,8,7,4,4*,5,Arming Sword (Blade Venom:,+1DD*)
 Dire Wolf,6,1,5,5,12,7,4,3,3,2,Claws and Fangs (F:1/C:--),Fearsome
 Doom Flayer,6,5,5,7,8,5,7,4,3,11,Arming Sword,Doom-Flayer (D4/F:--/C:9+/,Blade Fury/Team/To-Hit vs,Target’s Speed),Chain Coat
 Doom Wolf,7,1,5,7,12,7,4,4,3,3,Claws and Fangs,(F:1/C:--),Blade Fury,Fearsome
-Doombull,9,5,9,8,11,11,7,15,8,16,Great Axe (Cleaving/Great),(F:1-2/C:11-12),Leather Jack,Berserker,Blade Fury,Cleaving,,
-Dragon,9,1,8,9,12,10,10,18,6,30,Claws & Fangs (F:1/C:--),Blade Fury,Channeling,Fearsome,Large,Spellcaster (Dark Magic),Pinch of Warpstone x2,Vial of Swamp Gas x2,,,
+Doombull,9,5,9,8,11,11,7,15,8,16,Great Axe (Cleaving/Great),(F:1-2/C:11-12),Leather Jack,Berserker,Blade Fury,Cleaving,Ogres & Trolls,Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
+Dragon,9,1,8,9,12,10,10,18,6,30,Claws & Fangs (F:1/C:--),Blade Fury,Channeling,Fearsome,Large,Spellcaster (Dark Magic),Pinch of Warpstone x2
 Dragon Ogre,7,4,7,8,11,10,7,12,6,14,Great Axe (F:1-2/C:11-12),(Cleaving/Great),Leather Jack,Blade Fury,Fearsome,Large
 Dragon Ogre Champion,8,4,8,8,11,10,7,13,7,16,Great Axe (F:1-2/C:11-12),(Cleaving/Great),Leather Jack,Blade Fury,Fearsome,Large
 Dreadlord Great Swordsman,11,8,6,6,9,10,10,9,5,12,Claymore (R) (F:1-2/C:11-12),(Cleaving/Great),Leather Jack,Blade Fury
 Dreadlord Swordsman,11,7,6,7,9,10,10,9,4,11,Arming Sword,Heater Shield,Leather Jack,Blade Fury
-Dreadlord Swordsman,11,7,6,7,9,10,10,9,4,13,Arming Sword,Heater Shield,Leather JAck,Blade Fury,
+Dreadlord Swordsman,11,7,6,7,9,10,10,9,4,13,Arming Sword,Heater Shield,Leather JAck,Blade Fury,Monstrous Creatures,Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
 Edrin The Shifty Human Bandit (WD 150),7,9,6,5,9,8,9,3,5*,4,Axe (Cleaving),6x Poisoned Knife (M/T),(R4/D1/EX7/Swift Shot) (Cause,Disease),*Should be 4 given its ST
 Exalted Hero Axeman,10,3,7,10,6,10,8,6,5,10,Axe (Cleaving),Shield,Kight’s Plate
 Exalted Hero Double Axeman,10,4,7,9,6,10,8,6,6*,10,Axe x2* (Cleaving),Kight’s Plate,Blade Fury
@@ -189,11 +189,11 @@ Fimir,6,2,5,7,6,8,5,4,3,7*,Axe (Cleaving),Leather Jack,Blade Fury,Large? Fearsom
 Flesh Golem 7 0 7 9 4 9 1 6 5 8 *BERSERKER  *LARGE
 Gargoyle 6 0 7 7 3 9 4 4 3 3
 Ghorgon,6,0,8,8,12,12,11,18,6,20,Claws & Fangs (R) (F:1/C:--),Accurate,Blade Fury,Berserker,Cleaving,Fearsome,Large,Regeneration
+Ghoul,6,2,5,6,6,8,2,4,3,2,Morning Star,Fearsome
 Ghoul (WD 159),6,2,5,6,6,8,2,4,4*,2,Claws and Fangs (F:1/C:--),Fearsome,*Poisonous Talons +1DD
 Ghoul Ravenloft 6 2 5 6 6 8 2 4 3 2
-Ghoul Terror,6,2,5,6,6,8,2,4,3,2,Morning Star,Fearsome
 Giant Rat,5,--,4*,5,12,5,3,2,2*,½,Claws & Fangs (F:1/C:--),*Optional: ST5/DD3
-Giant Rat (WD 159) 5 -- 3 5 10 6 6 1 2* ½ Claws & Fangs (F:1/C:--) *Should be DD1 given its ST
+Giant Rat(WD 159),5,--,3,5,10,6,6,1,2*,½,Claws & Fangs (F:1/C:--),*Should be DD1 given its ST
 Giant Spider,6,1,5,5,12,4,1,3,3,1,Claws & Fangs (F:1/C:--),Fly
 Giant Vampire Bat (WD 159),6,-,3,6,12,8,7,1,2,½,Claws and Fangs (F:1/C:--),Bloodsucking Bite
 Goblin,5,5,4,5,6,5,5,2,2,½,Arming Sword
@@ -228,7 +228,7 @@ Grave Guard Champion,7,3,6,10,6,10,3,5,4,5,Arming Sword (Cleaving),Knight’s Pl
 Gravestorm 8 0 8 10 6 8 2 8 6 12 Inferno of Doom  *LARGE
 Great Bray-Shaman,8,6,6,7,10,8,10,15,2,14,Quarterstaff (R) (F:1/C:--/Great),Spellcaster (Dark Magic),Channeling,Focusing,Pinch of Warpstone,Miniature Silver Dagger
 Great Orc Shaman,6,4,6,8,5,6,8,9,4,12,Axe (Cleaving),Leather Jack,Blade Fury,Spellcaster (Dark Magic),Enhancing/Focusing,Vial of Swamp Gas x2,Pinch of Warpstone x2,Golden Statue of a Daemon x2
-Greater Daemon Of Tzeenetch,7,1,8,9,8,10,--,10,6,20,Claws & Fangs (F:1/C:--),Blade Fury/Fearsome,Invulnerabke/Large,Spellcaster (Dark Magic),Choke x2,Fireball x2,Flaming Skull of Terror,,
+Greater Daemon Of Tzeenetch,7,1,8,9,8,10,--,10,6,20,Claws & Fangs (F:1/C:--),Blade Fury/Fearsome,Invulnerabke/Large,Spellcaster (Dark Magic),Choke x2,Fireball x2,Flaming Skull of Terror,Beastmen,Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
 Greater Liche Priest,6,6,5,6,8,7,11,9,1,12,Quarterstaff (R) (F:1/C:--/Great),Fearsome,Spellcaster (Necromantic),Grave Dust,Miniature Silver Sarcophagus
 Grey Seer,6,6,5,6,10,8,9,4,3,15,Arming Sword,Spellcaster (Dark Magic),Channeling/Enhancing/Focusing,Pinch of Warp Stone x2,Golden Statue of a Daemon,Heart of a Hero,Miniature Sever Dagger,Vial of Swamp Gas
 Grugnar Facebreaker Human Bandit (WD 150),8,2,6,10,5,7,7,4,7,5,Bidenhander (Great),(F:1-2/C:11-12),Cain Coat
@@ -379,6 +379,7 @@ Skaven Beastmaster (WD 134),7,5,6,6,10,7,5,3,3*,3,Lash (M),(F:1-2/C:11-12/Unreli
 Skaven Champion,7,5,6,8,9,8,6,3,4,2,Arming Sword,Heater Shield,Chain Coat
 Skaven Gutter Runner,6,6,5,5,12,6,6,3,3,2,Arming Sword,Alert
 Skaven Gutter Runner (WD 134),5,6,5,5,10,6,6,3,3,3,Arming Sword,Herdsman’s Sling,(R12/D1/Swift Shot/Unreliable),Alert
+Skaven Jezzail Team,6,6,5,5,10,5,7,4,3,7,Arming Sword,Warplock Jezzail,(R48/D6/F:1-2/C:--/ArmorPiercin,/Clumsy/SlowFire/Team)
 Skaven Jezzailachis Team,6,6,6*,4,10,6,6,3,2*,6,Arming Sword,Warplock Jezzail,(R48/D6/F:1-2/C:--/ArmorPiercin,/Clumsy/Slow Fire/Team),*Should be either ST4 or DD4,Special Rules (see AHQ)
 Skaven Night Runner,7,7,5,5,12,6,6,3,3,3,Arming Sword,Alert
 Skaven Poisoned Wind Globadier,6,6,3,5,10,6,6,3,2,6,Voulge (R) (F:1-2/C:11+),Poisoned Wind Globe x6,(R12/D6/F:1/C:--/ArmorPiercing/,Blast/Cleaving),Special Rules (see AHQ)
@@ -387,9 +388,9 @@ Skaven Slave,5,4,5,6,10,3,3,2,3,½,Morning Star,Heater Shield,Slave
 Skaven Slave (*),5,4,4,6,10,3,3,2,2,½,Morning Star,Heater Shield,Slave
 Skaven Slave (**),5,3,5,7,9,3,3,2,3,½,Morning Star,Heater Shield,Leather Jack,Slave
 Skaven Slave (WD 134),5,5,5,7,11,5,5,3,1*,½,Morning Star,Heater Shield,Leather Jack,Slave,*Should be DD3 given its ST
-Skaven Slavemaster,7,5,5,5,10,6,5,3,3,3,Lash (M),(F:1-2/C:11-12/Unreliable),Leather Jack,Slavemaster
+Skaven Slavemaster (WD 134),7,5,5,5,10,6,5,3,3,3,Lash (M),(F:1-2/C:11-12/Unreliable),Leather Jack,Slavemaster
 Skaven Warlord,8,5,7,8,9,9,7,4,6*,6,Bloodthirsty Glaive (R),(D+1*/F:1-2/C:11+),Chain Coat (?)
-Skaven Warpfire- Thrower Team,6,6,4,4,10,6,6,3,2,10,Arming Sword,Warpfire Thrower,(MR12/D5/F:1-2/C:--/Blast/,Clumsy/Flaming/Team),Special Rules (see AHQ)
+Skaven Warpfire-Thrower Team,6,6,4,4,10,6,6,3,2,10,Arming Sword,Warpfire Thrower,(MR12/D5/F:1-2/C:--/Blast/,Clumsy/Flaming/Team),Special Rules (see AHQ)
 Skaven Warrior,6,5,5,7,10,6,6,3,3,1,Arming Sword,Leather Jack,Heater Shield
 Skeleton,6,4,5,5,6,10,2,3,3,2,Scythe (R),(F:1-2/C:11+/Great),Fearsome
 Skeleton Archer,6,5,5,5,8,11,2,3,3,2,Footman’s Bow,(R24/D3/EX4/Great/Swift Shot),Morning Star,Fearsome
@@ -424,8 +425,8 @@ Storm Vermin Paw Champion,8,6,6,7,8,7,6,4*,4,4,Arming Sword,Naval Pistol (R12/D4
 Strigoi Vampire,9,7,8,6,12,9,8,6,6,12,Claws and Fangs (F:1/C:--),Blade Fury,Blood Powers,Cleaving,Fearsome,Spellcaster (Dark Magic),Miniature Silver Dagger,Vial of Swamp Gas x2
 Strigoi Vampire Lord,10,8,8,7,12,11,11,9,6,19,Claws and Fangs (F:1/C:--),Blade Fury,Blood Powers,Cleaving,Fearsome,Spellcaster (Dark Magic),Miniature Silver Dagger,Vial of Swamp Gas x2
 Supreme Sorceress,8,6,5,6,9,9,11,9,3,10,Arming Sword,Leather Jack,Spellcaster (Dark Magic),Enhancing,Pinch of Warpstone,Vial of Swamp Gas
-The Lichemaster,9,6,7,10,9,10,10,8,4,--,Staff/Lugged Spear (R),(R8/D2/EX7/Throw/Swift Shot),Ring of Magic Protection (Lv2),Fate Points x2,Fearsome,Spellcaster (Dark Magic/Necro),Choke/Fireball x2/Flesh Flying,Flight x2/Strengtem Undead/,Inferno of Doom,
-Thulgul Chaos Troll (WD 125),9,1,10,10,8,6,3,10,8,--,Claws & Fangs (F:1/C:--),Blade Fury,Fearsome,Invulnerable,Large,Regeneration,,
+The Lichemaster,9,6,7,10,9,10,10,8,4,--,Staff/Lugged Spear (R),(R8/D2/EX7/Throw/Swift Shot),Ring of Magic Protection (Lv2),Fate Points x2,Fearsome,Spellcaster (Dark Magic/Necro),Choke/Fireball x2/Flesh Flying,Flight x2/Strengtem Undead/,Inferno of Doom,Greenskinz,Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
+Thulgul Chaos Troll (WD 125),9,1,10,10,8,6,3,10,8,--,Claws & Fangs (F:1/C:--),Blade Fury,Fearsome,Invulnerable,Large,Regeneration,Chaos Dwarves,Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
 Tomb Banshee 6 1 5 5 12 10 5 6 3 6 Arming Sword Scream* (R8/D4/F:-/C:-/Armor Piercing) Fearsome Invulnerable *Use target’s BR (instead of TH) to resolve Damage
 Tomb Champion,7,3,6,9,6,10,9,6,4,8,Lash (R),(F:1-2/C:11+/Unreliable),Chain Coat,Heater Shield,Cause Disease,Fearsome,Flammable
 Tomb Emir,8,3,6,9,6,11,10,9,3,10,Lugged Spear (R),(R8/D2/EX7/Throw/Swift Shot),Heater Shield,Chain Coat,Cause Disease,Fearsome,Flammable
