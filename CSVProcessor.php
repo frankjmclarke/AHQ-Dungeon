@@ -18,6 +18,23 @@ class CSVProcessor {
             fclose($handle);
         }
 
+        // Remove unwanted strings from the output
+        $unwantedStrings = [
+            'Loaded table', 'from subdirectory', 'tab', 'br', 'room', 'from top',
+            'level', 'furnish', 'hazard', 'passage', 'end', 'feature', 'length',
+            'doors', 'SIZE', 'Good entry for ROLL', 'Rolled', 'on room', 'QUEST ROOM',
+            'Stairs Down', 'Quest', 'Matrix', 'Treasure', 'Using dice notation',
+            'for block', 'quest', 'rooms', 'matrix', 'Nested roll in quest', 'rolls',
+            'resulting in', "NORMAL ROOM", "HAZARD ROOM", "LAIR ROOM",
+            'Gold Crowns', 'Output', 'treasure', 'chest', 'Nested roll in treasure',
+            'Treasure Chest', 'hidden', 'Nested roll in hidden', 'Hidden Treasure',
+            'Resolving named block',  'Nested roll in gold', 'Hidden'
+        ];
+
+        foreach ($unwantedStrings as $unwanted) {
+            $output = str_ireplace($unwanted, '', $output);
+        }
+
         // Match sequences of words, ignoring numbers
         if (preg_match_all('/([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) {
             $names = array_map('trim', $matches[1]);
