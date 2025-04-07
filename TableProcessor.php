@@ -231,6 +231,12 @@ class TableProcessor {
                 }
             }
         }
+        /*
+         The $parsed_tables array is used to store the parsed results of the block lines, 
+         including any nested structures and dice notations. This data is then used by the 
+         resolveParsedTables method to perform dice rolls and determine the final output based 
+         on the parsed table entries.
+        */
         return $parsed_tables;
     }
 //This method resolves the parsed tables, including rolling dice and handling composite entries.
@@ -243,7 +249,7 @@ class TableProcessor {
         Logger::debug("Using dice notation '{$roll_notation}' for block '{$name}'");
         $has_composite = false;
         foreach ($outer as $entry) {
-            if (strpos($entry[1], "&") !== false) {
+            if (strpos($entry[1], "&") !== false) {//look for composite entries
                 $has_composite = true;
                 break;
             }
@@ -272,10 +278,10 @@ class TableProcessor {
             $parts = array_map('trim', explode("&", $entry_val));
             $output = array();
             foreach ($parts as $part) {
-                if (strtolower($part) == $name) {
+                if (strtolower($part) == $name) {//ignore self
                     continue;
                 }
-                if (strpos($part, "(") === 0 && count($parsed_tables) > 1) {
+                if (strpos($part, "(") === 0 && count($parsed_tables) > 1) {//look for nested roll
                     list($notation2, $subtable) = $parsed_tables[1];
                     $roll_notation2 = $notation2 !== null ? $notation2 : DEFAULT_DICE;
                     $result2 = DiceRoller::roll($roll_notation2);
