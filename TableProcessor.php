@@ -180,28 +180,27 @@ class TableProcessor {
      */
     public static function parseNamedBlock($lines) {
         $name = strtolower(trim($lines[0]));
-        $parsed_tables = self::parseBlockLines($lines);
+        $parsed_tables = self::parseBlockLines($lines, $name);
         return array($name, function() use ($parsed_tables, $name) {
             return self::resolveParsedTables($parsed_tables, $name);
         });
     }
 
-    //This method handles the parsing of block lines, extracting dice notation and managing nested structures.
-    private static function parseBlockLines($lines) {
+    private static function parseBlockLines($lines, $name) {
         $stack = array();
         $current = array();
         $parsed_tables = array();  // Each element: [dice_notation, table]
         $dice_notation = null;
         for ($i = 1; $i < count($lines); $i++) {
             $line = $lines[$i];
-            if (strpos(trim($line), "(") === 0) {//look for opening parenthesis
+            if (strpos(trim($line), "(") === 0) {
                 $stack[] = $current;
                 $current = array();
-            } elseif (strpos(trim($line), ")") === 0) {//look for closing parenthesis
+            } elseif (strpos(trim($line), ")") === 0) {
                 if (!empty($current)) {
                     $first_line = trim($current[0]);
                     $tokens = preg_split('/\s+/', $first_line);
-                    if (!empty($tokens) && preg_match('/^\d+[dD]\d+$/', $tokens[0])) {//look for dice notation
+                    if (!empty($tokens) && preg_match('/^\d+[dD]\d+$/', $tokens[0])) {
                         $dice_notation = $tokens[0];
                         array_shift($tokens);
                         if (!empty($tokens)) {
@@ -231,15 +230,9 @@ class TableProcessor {
                 }
             }
         }
-        /*
-         The $parsed_tables array is used to store the parsed results of the block lines, 
-         including any nested structures and dice notations. This data is then used by the 
-         resolveParsedTables method to perform dice rolls and determine the final output based 
-         on the parsed table entries.
-        */
         return $parsed_tables;
     }
-//This method resolves the parsed tables, including rolling dice and handling composite entries.
+
     private static function resolveParsedTables($parsed_tables, $name) {
         if (empty($parsed_tables)) {
             return "";
@@ -249,7 +242,7 @@ class TableProcessor {
         Logger::debug("Using dice notation '{$roll_notation}' for block '{$name}'");
         $has_composite = false;
         foreach ($outer as $entry) {
-            if (strpos($entry[1], "&") !== false) {//look for composite entries
+            if (strpos($entry[1], "&") !== false) {
                 $has_composite = true;
                 break;
             }
@@ -278,10 +271,10 @@ class TableProcessor {
             $parts = array_map('trim', explode("&", $entry_val));
             $output = array();
             foreach ($parts as $part) {
-                if (strtolower($part) == $name) {//ignore self
+                if (strtolower($part) == $name) {
                     continue;
                 }
-                if (strpos($part, "(") === 0 && count($parsed_tables) > 1) {//look for nested roll
+                if (strpos($part, "(") === 0 && count($parsed_tables) > 1) {
                     list($notation2, $subtable) = $parsed_tables[1];
                     $roll_notation2 = $notation2 !== null ? $notation2 : DEFAULT_DICE;
                     $result2 = DiceRoller::roll($roll_notation2);
