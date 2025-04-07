@@ -34,11 +34,11 @@ class CSVProcessor {
             'level', 'furnish', 'hazard', 'passage', 'end', 'feature', 'length',
             'doors', 'SIZE', 'Good entry for ROLL', 'Rolled', 'on room', 'QUEST ROOM',
             'Stairs Down', 'Quest', 'Matrix', 'Treasure', 'Using dice notation',
-            'for block', 'quest', 'rooms', 'matrix', 'Nested roll in quest', 'rolls',
+            'for block', 'quest', 'rooms', 'matrix', 'rolls',
             'resulting in', "NORMAL ROOM", "HAZARD ROOM", "LAIR ROOM",
-            'Gold Crowns', 'Output', 'treasure', 'chest', 'Nested roll in treasure',
-            'Treasure Chest', 'hidden', 'Nested roll in hidden', 'Hidden Treasure',
-            'Resolving named block',  'Nested roll in gold', 'Hidden'
+            'Gold Crowns', 'Output', 'treasure', 'chest', 
+            'Treasure Chest', 'hidden',  'Hidden Treasure',
+            'Resolving named block', 'Hidden'
         ];
 
         foreach ($unwantedStrings as $unwanted) {
