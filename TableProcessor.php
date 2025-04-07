@@ -8,11 +8,39 @@ require_once 'FileParser.php';
 define('MAX_DEPTH', 50);         // Maximum recursion depth
 define('DEFAULT_DICE', "1D12");   // Global default dice (if no block-specific notation is provided)
 
-// Processes and resolves text by evaluating named blocks and tables
-// Handles recursion with a maximum depth to prevent infinite loops
-// Outputs resolved text or logs debug information
-
+/**
+ * TableProcessor - Core class for processing and resolving text-based game content
+ * 
+ * This class handles three main types of text processing:
+ * 1. Function Calls: Matches text patterns like "Function()" and resolves them
+ * 2. Quoted Text: Processes text enclosed in quotes (e.g. "Room Description")
+ * 3. Nested Tables: Handles text enclosed in [[brackets]] for composite entries
+ * 
+ * Text Processing Flow:
+ * 1. Input text is split into lines
+ * 2. Each line is processed for function calls, quoted text, and nested tables
+ * 3. Results are recursively processed to handle nested content
+ * 4. State is managed via stack to prevent infinite recursion
+ */
 class TableProcessor {
+    /**
+     * Processes and resolves text by evaluating function calls and nested content
+     * 
+     * Text Processing Steps:
+     * 1. Splits input text into lines
+     * 2. For each line:
+     *    - Matches function calls using regex /^([A-Za-z0-9_\-]+)\(\)$/
+     *    - Processes quoted text (text between " ")
+     *    - Handles nested function calls within lines
+     * 3. Uses stack-based tracking to prevent circular references
+     * 
+     * @param string $text The text to process
+     * @param array $tables Available tables for resolution
+     * @param array $named_rules Named block rules to apply
+     * @param int $depth Current recursion depth
+     * @param string|null $parent_table Parent table name if in nested context
+     * @param string|null $current_named Current named block being processed
+     */
     public static function processAndResolveText($text, $tables, $named_rules, $depth, $parent_table = null, $current_named = null) {
         if ($depth > MAX_DEPTH) {
             Logger::debug(str_repeat("  ", $depth) . "[Maximum recursion depth reached]");
@@ -74,10 +102,20 @@ class TableProcessor {
         }
     }
 
-    // Resolves a table by rolling dice and selecting an entry
-    // Handles nested tables and composite entries
-    // Outputs the result or logs debug information
-
+    /**
+     * Resolves a table by rolling dice and processing its entries
+     * 
+     * Text Processing in Table Resolution:
+     * 1. Handles quoted entries (text between " ")
+     * 2. Processes composite entries (text between [[ ]])
+     * 3. Resolves nested tables using & as separator
+     * 4. Maintains depth tracking for nested resolution
+     * 
+     * @param string $name Table name to resolve
+     * @param array $tables Available tables
+     * @param array $named_rules Named rules to apply
+     * @param int $depth Current recursion depth
+     */
     public static function resolveTable($name, $tables, $named_rules = array(), $depth = 0) {
         $indent = str_repeat("  ", $depth);
         $name = strtolower($name);
@@ -125,10 +163,18 @@ class TableProcessor {
         self::processAndResolveText($entry, $tables, $named_rules, $depth, $name, null);
     }
 
-    // Parses a named block into tables with optional dice notation
-    // Returns a closure that resolves the block when called
-    // Handles nested structures and composite entries
-
+    /**
+     * Parses a named block into tables with dice notation
+     * 
+     * Text Processing in Named Blocks:
+     * 1. Extracts dice notation from first line (e.g., "2D12", "1D6")
+     * 2. Processes nested structures using parentheses tracking
+     * 3. Handles composite entries with & separator
+     * 4. Maintains state via stack for nested blocks
+     * 
+     * @param array $lines Lines of text to parse
+     * @return array Tuple of [name, closure] for block resolution
+     */
     public static function parseNamedBlock($lines) {
         $name = strtolower(trim($lines[0]));
         $stack = array();

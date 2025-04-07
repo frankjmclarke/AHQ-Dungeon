@@ -879,6 +879,15 @@ Claws and Fangs (F:1/C:--)
 Fearsome
 *Poisonous Talons +1DD
 C
+Poltergeist
+6 7 5 5 0 11 2 3 3 2
+Cannot be destroyed
+Cannot leave room
+Attacks all in room each turn 
+Invisible
+Missiles hit for 1 DD
+Fearsome
+C
 Skeleton
 (AHQ)
 6 4 5 5 6 10 2 3 3 2
@@ -1062,7 +1071,8 @@ Blade Fury
 Fearsome
 Invulnerable
 E
-Tomb Banshee 6 1 5 5 12 10 5 6 3 6
+Tomb Banshee
+6 1 5 5 12 10 5 6 3 6
 Arming Sword
 Scream*
 (R8/D4/F:-/C:-/Armor Piercing)

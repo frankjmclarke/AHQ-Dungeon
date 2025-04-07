@@ -361,6 +361,7 @@ Plague Monk Champion,7,7,5,6,10,7,5,4*,3,5,Arming Sword,Magic Scroll (Dark Magic
 Plague Priest,8,6,6,7,11,7,7,4,4,10,Arming Sword,Berserker,Spellcaster (Dark Magic),Pinch of Warpstone,Vial of Swamp Gas
 Poisoned Wind Globadier,6,5,5,7,7,5,7,3,3,3,Arming Sword,Poisoned Wind Globe x2,(R12/D6/F:1/C:-/Armor Piercing/,Blast/Cleaving),Chain Coat
 Poisoned Wind Mortar,6,5,5,7,8,5,7,4,3,12,Arming Sword,Poisoned Wind Mortar,(R24/D8/F:1-2/C:--/ArmorPiercin,/Blast/Cleaving/Team),Chain Coat
+Poltergeist,6,7,5,5,0,11,2,3,3,2,Cannot be destroyed,Cannot leave room,Attacks all in room each turn ,Invisible,Missiles hit for 1 DD,Fearsome
 Praznagar Prince of Agony,9,7,8*,8,9,9,9,5,6,--,Chaos Sword (+2ST*/F:--/C:12),Leather Jack,Fearsome,Undead,Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
 Prince Karad (WD 121),10*,3,7*,9,6,10,7,4,5,8,Magic Sword (+1 WS/+1 ST),Fearsome (?)
 Rabid Giant Rat,6,--,4,5,12,5,3,2,2,½,Claws & Fangs (F:1/C:--)
@@ -427,7 +428,7 @@ Strigoi Vampire Lord,10,8,8,7,12,11,11,9,6,19,Claws and Fangs (F:1/C:--),Blade F
 Supreme Sorceress,8,6,5,6,9,9,11,9,3,10,Arming Sword,Leather Jack,Spellcaster (Dark Magic),Enhancing,Pinch of Warpstone,Vial of Swamp Gas
 The Lichemaster,9,6,7,10,9,10,10,8,4,--,Staff/Lugged Spear (R),(R8/D2/EX7/Throw/Swift Shot),Ring of Magic Protection (Lv2),Fate Points x2,Fearsome,Spellcaster (Dark Magic/Necro),Choke/Fireball x2/Flesh Flying,Flight x2/Strengtem Undead/,Inferno of Doom,Greenskinz,Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
 Thulgul Chaos Troll (WD 125),9,1,10,10,8,6,3,10,8,--,Claws & Fangs (F:1/C:--),Blade Fury,Fearsome,Invulnerable,Large,Regeneration,Chaos Dwarves,Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
-Tomb Banshee 6 1 5 5 12 10 5 6 3 6 Arming Sword Scream* (R8/D4/F:-/C:-/Armor Piercing) Fearsome Invulnerable *Use target’s BR (instead of TH) to resolve Damage
+Tomb Banshee,6,1,5,5,12,10,5,6,3,6,Arming Sword,Scream*,(R8/D4/F:-/C:-/Armor Piercing),Fearsome,Invulnerable,*Use target’s BR (instead of TH),to resolve Damage
 Tomb Champion,7,3,6,9,6,10,9,6,4,8,Lash (R),(F:1-2/C:11+/Unreliable),Chain Coat,Heater Shield,Cause Disease,Fearsome,Flammable
 Tomb Emir,8,3,6,9,6,11,10,9,3,10,Lugged Spear (R),(R8/D2/EX7/Throw/Swift Shot),Heater Shield,Chain Coat,Cause Disease,Fearsome,Flammable
 Tomb Guard,7,5,6,8,6,10,3,4,4,4,Scythe (R),(F:1-2/C:11+/Great/Cleaving),Chain Coat,Fearsome

@@ -1,10 +1,33 @@
 <?php
 require_once 'Logger.php';
 
+/**
+ * FileParser - Handles parsing of text files containing game content
+ * 
+ * This class processes three main types of text files:
+ * 1. Inline Tables: Single-line entries with roll ranges and content
+ * 2. Tab Files (.tab): Structured files with roll ranges and associated text
+ * 3. Named Blocks: Multi-line structures with nested content
+ * 
+ * Text Processing Features:
+ * - Case-insensitive processing (names are converted to lowercase)
+ * - Comment handling (lines starting with #)
+ * - Empty line filtering
+ * - Structured content parsing (ranges, blocks, nested structures)
+ */
 class FileParser {
-    // Parses inline table entries from an array of lines
-    // Each line can represent a range of values associated with a content string
-    // Returns an array of entries for the table
+    /**
+     * Parses inline table entries from text lines
+     * 
+     * Text Processing Format:
+     * - Each line: "NUMBER[-NUMBER] CONTENT"
+     * - Example: "1-3 Goblin" creates entries for rolls 1, 2, and 3
+     * - Whitespace is trimmed from content
+     * - Uses regex /^(\d+)(?:-(\d+))?\s+(.+)$/ for matching
+     * 
+     * @param array $lines Array of text lines to parse
+     * @return array Processed table entries
+     */
     public static function parseInlineTable($lines) {
         $table = array();
         foreach ($lines as $line) {
@@ -21,9 +44,21 @@ class FileParser {
         return $table;
     }
 
-    // Parses a .tab file to extract table entries
-    // Ignores empty lines and comments (lines starting with #)
-    // Returns an array of entries for the table
+    /**
+     * Parses a .tab file into table entries
+     * 
+     * Text Processing Steps:
+     * 1. Reads file line by line, skipping:
+     *    - Empty lines
+     *    - Comments (lines starting with #)
+     * 2. Parses each valid line:
+     *    - Matches number ranges using regex
+     *    - Extracts associated content
+     *    - Expands ranges into individual entries
+     * 
+     * @param string $filename Path to the .tab file
+     * @return array Processed table entries
+     */
     public static function parseTabFile($filename) {
         $table = array();
         $lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -44,9 +79,22 @@ class FileParser {
         return $table;
     }
 
-    // Extracts named blocks from files in the top-level and optional subdirectory
-    // Named blocks are identified by a name followed by a block of lines enclosed in parentheses
-    // Returns an associative array of named blocks
+    /**
+     * Extracts named blocks from text files
+     * 
+     * Text Processing Features:
+     * 1. Block Structure:
+     *    - Starts with alphanumeric name
+     *    - Content enclosed in parentheses
+     *    - Supports nested blocks
+     * 2. File Handling:
+     *    - Processes .tab and .txt files
+     *    - Supports subdirectory override
+     *    - Skips comments and empty lines
+     * 
+     * @param string|null $subdir Optional subdirectory path
+     * @return array Named blocks with their content
+     */
     public static function extractNamedBlocks($subdir = null) {
         $blocks = array();
         
@@ -109,9 +157,21 @@ class FileParser {
         return $blocks;
     }
 
-    // Loads tables from .tab files in the top-level and optional subdirectory
-    // Ensures no duplicate tables are loaded from the subdirectory
-    // Returns an associative array of tables
+    /**
+     * Loads and processes table files
+     * 
+     * Text Processing Features:
+     * 1. File Management:
+     *    - Processes .tab files from main and subdirectories
+     *    - Handles file naming conflicts
+     *    - Maintains case-insensitive table names
+     * 2. Content Processing:
+     *    - Parses structured table content
+     *    - Logs table loading for debugging
+     * 
+     * @param string|null $subdir Optional subdirectory path
+     * @return array Processed tables indexed by lowercase names
+     */
     public static function loadTables($subdir = null) {
         $tables = array();
         

@@ -1,10 +1,20 @@
 <?php
+/**
+ * CSVProcessor - Handles processing of output text and CSV data matching
+ * 
+ * This class has two main responsibilities:
+ * 1. Extract and output any text enclosed in double quotes from the input
+ * 2. Search for monster names in the bestiary CSV file and output their stats
+ */
 class CSVProcessor {
-    // Processes the given output to extract names and match them against a CSV file
-    // Reads from 'skaven_bestiary.csv' and attempts to find matches for each name
-    // Handles pluralization by checking singular forms of names ending in 's' or 'men'
-    // Constructs an HTML table with the matched CSV data and returns it as a string
-    // Returns an empty string if no matches are found
+    /**
+     * Processes output text to:
+     * 1. Output any text in double quotes (e.g. "Shrine Altar", "Nothing. GM 1 Dungeon Counter")
+     * 2. Match monster names against the bestiary CSV and output their stats in a table
+     * 
+     * @param string $output The text to process
+     * @return string HTML formatted output containing quoted text and any matched monster stats
+     */
     public static function processCSVOutput($output) {
         $csvOutput = "";
         $cache = []; // Cache to store results of previous searches
@@ -112,7 +122,14 @@ class CSVProcessor {
         return $csvOutput;
     }
 
-    // Binary search function as a static method
+    /**
+     * Performs a binary search on the CSV data array to find a monster name
+     * The CSV data must be sorted alphabetically by monster name (first column)
+     * 
+     * @param array $array The CSV data array to search
+     * @param string $target The monster name to find
+     * @return int The index of the found monster or -1 if not found
+     */
     public static function binarySearch($array, $target) {
         if (empty($array)) {
             return -1; // Return -1 if the array is empty
