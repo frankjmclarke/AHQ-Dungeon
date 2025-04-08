@@ -49,8 +49,9 @@ class TableProcessor {
         $lines = explode("\n", $text);
         foreach ($lines as $line) {
             $line = trim($line);
-            // Check for function calls and resolve them
+            Logger::debug(str_repeat("  ", $depth) . "Processing line: {$line}");
             if (preg_match('/^([A-Za-z0-9_\-]+)\(\)$/', $line, $matches)) {
+                Logger::debug(str_repeat("  ", $depth) . "Function call detected: {$matches[1]}");
                 $name_candidate = strtolower($matches[1]);
                 if (isset($named_rules[$name_candidate])) {
                     Logger::debug(str_repeat("  ", $depth) . "→ Resolving named block: " . $line);
@@ -97,7 +98,9 @@ class TableProcessor {
                         $result = $named_rules[$match_lower]();
                         self::processAndResolveText($result, $tables, $named_rules, $depth + 1, $parent_table, $match_lower);
                     } elseif (isset($tables[$match_lower])) {
-                        self::resolveTable($match_lower, $tables, $named_rules, $depth + 1);
+                        $resolved_output = self::resolveTable($match_lower, $tables, $named_rules, $depth + 1);
+                        Logger::debug(str_repeat("  ", $depth) . "Resolved output for {$match_lower}: {$resolved_output}");
+                        Logger::output(str_repeat("  ", $depth), $resolved_output);
                     }
                     TableManager::popResolvedStack();
                 }
@@ -164,6 +167,13 @@ class TableProcessor {
             return;
         }
         self::processAndResolveText($entry, $tables, $named_rules, $depth, $name, null);
+        if (stripos($name, "Interact-") === 0) {
+            return "[Interact-]\n" . $entry . "\n[/Interact-]";
+        }
+        if ($name == "hidden-treasure") {
+            return "[Hidden-Treasure]\n" . $entry . "\n[/Hidden-Treasure]";
+        }
+        return $entry;
     }
 
     /**
@@ -233,7 +243,8 @@ class TableProcessor {
         return $parsed_tables;
     }
 
-    private static function resolveParsedTables($parsed_tables, $name) {
+    private static function resolveParsedTables($parsed_tables, $name, $depth = 0) {
+        $indent = str_repeat("  ", $depth);
         if (empty($parsed_tables)) {
             return "";
         }
@@ -295,6 +306,11 @@ class TableProcessor {
             $final_output = implode("\n", $output);
         } else {
             $final_output = ($entry_val !== null) ? $entry_val : "";
+        }
+        Logger::debug($indent . "Checking if table name starts with 'Interact': {$name}");
+        if (stripos($name, "Interact") === 0) {
+            Logger::debug($indent . "[Interact] tag will be added to the output for table: {$name}");
+            return "[Hidden-Treasure2]\n" . $final_output . "\n[/Hidden-Treasure2]";
         }
         if ($name == "hidden-treasure") {
             return "[Hidden-Treasure]\n" . $final_output . "\n[/Hidden-Treasure]";

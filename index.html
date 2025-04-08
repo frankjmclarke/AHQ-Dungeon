@@ -108,6 +108,24 @@
             border: 1px solid #ccc;
             border-radius: 3px;
         }
+        .reveal-button2 {
+            display: inline-block;
+            margin: 5px 0;
+            padding: 5px 10px;
+            font-size: 0.9em;
+            cursor: pointer;
+            background: #000;
+            color: #fff;
+            border: 1px solid #aaa;
+            border-radius: 3px;
+        }        
+        .hidden-treasure2 {
+            border: 1px dashed #aaa;
+            padding: 5px;
+            margin-top: 5px;
+            background: #000;
+            color: #fff;
+        }        
 
         .hidden-treasure {
             border: 1px dashed #aaa;
@@ -170,7 +188,10 @@
                     '<div class="hidden-treasure" style="display:none;">' + hiddenContent + '</div>';
             });
 
-
+            text = text.replace(/\[Hidden-Treasure2\]([\s\S]*?)\[\/Hidden-Treasure2\]/g, function (match, hiddenContent) {
+                return '<button class="reveal-button2" onclick="this.nextElementSibling.style.display=\'block\'; this.style.display=\'none\';">Interact with Spooky Thing?</button>' +
+                    '<div class="hidden-treasure2" style="display:none;">' + hiddenContent + '</div>';
+            });
             return text;
         }
 
