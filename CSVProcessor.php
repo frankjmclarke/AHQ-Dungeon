@@ -36,12 +36,9 @@ class CSVProcessor {
     private static function cleanOutput($output) {
         $unwantedStrings = [
             'Loaded table', 'from subdirectory', 'tab', 'br', 'room', 'from top',
-            'level', 'furnish', 'hazard', 'passage', 'end', 'feature', 'length',
-            'doors', 'SIZE', 'Good entry for ROLL', 'Rolled', 'on room', 'QUEST ROOM',
-            'Stairs Down', 'Quest', 'Matrix', 'Using dice notation',
-            'for block', 'quest', 'rooms', 'matrix', 'rolls',
-            'resulting in', "NORMAL ROOM", "HAZARD ROOM", "LAIR ROOM",
-            'Gold Crowns', 'Output',
+            'level', 'furnish', 'hazard', 'passage', 'feature', 'length',
+            'doors', 'for block', 'rooms', 'rolls',
+            'resulting in', 'Gold Crowns', 'Output',
             'Resolving named block'
         ];
         foreach ($unwantedStrings as $unwanted) {
