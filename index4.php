@@ -17,41 +17,43 @@ class Application {
     private $request;
     
     public function __construct() {
+        // Initialize request handler to manage input parameters
         $this->request = new RequestHandler();
     }
     
     public function run() {
         try {
-            // Validate request parameters
+            // Validate request parameters to ensure required inputs are provided
             $this->request->validate();
             
-            // Configure logger
+            // Configure logger based on verbosity setting from request
             Logger::setVerbose($this->request->isVerbose());
             
-            // Start output buffering
+            // Start output buffering to capture generated content for further processing
             ob_start();
             
-            // Process tables
+            // Process tables based on user input and generate output
             $output = $this->processTables();
             
-            // Get and process the final output
+            // Get and process the final output from buffer
             $finalOutput = ob_get_clean();
-            echo $finalOutput;  // This goes to the text box
+            echo $finalOutput;  // Output the processed content to the user
             
-            // Process CSV output for Monsters
+            // Process CSV output for Monsters and display results
             echo CSVProcessor::processCSVOutput($finalOutput);
             
         } catch (Exception $e) {
+            // Handle exceptions and display error messages
             echo $e->getMessage();
         }
     }
     
     private function processTables() {
-        // Load tables and process named blocks
+        // Load tables and process named blocks from specified subdirectory
         $tables = FileParser::loadTables($this->request->getSubdir());
         $namedRules = $this->processNamedBlocks();
         
-        // Process user-specified tables
+        // Process user-specified tables and return the generated output
         return TableManager::processUserTables(
             $this->request->getTables(),
             $tables,
@@ -61,17 +63,19 @@ class Application {
     
     private function processNamedBlocks() {
         $namedRules = [];
+        // Extract and parse named blocks from files for processing
         $rawBlocks = FileParser::extractNamedBlocks($this->request->getSubdir());
         
         foreach ($rawBlocks as $name => $blockLines) {
+            // Parse each named block and store the processing function
             list($key, $fn) = TableProcessor::parseNamedBlock($blockLines);
             $namedRules[$key] = $fn;
         }
         
-        return $namedRules;
+        return $namedRules;  // Return the collection of named rules for table processing
     }
 }
 
-// Create and run the application
+// Create and run the application instance
 $app = new Application();
-$app->run();
+$app->run();  // Execute the main application logic
