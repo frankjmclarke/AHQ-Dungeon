@@ -167,11 +167,15 @@ class TableProcessor {
             return;
         }
         self::processAndResolveText($entry, $tables, $named_rules, $depth, $name, null);
+        //Logger::debug($indent . "[!!!!name {$name}]");
         if (stripos($name, "Interact-") === 0) {
             return "[Interact-]\n" . $entry . "\n[/Interact-]";
         }
         if ($name == "hidden-treasure") {
             return "[Hidden-Treasure]\n" . $entry . "\n[/Hidden-Treasure]";
+        }
+        if ($name == "treasure-chest") {
+            return "[Treasure-Chest]\n" . $entry . "\n[/Treasure-Chest]";
         }
         return $entry;
     }
@@ -310,11 +314,35 @@ class TableProcessor {
         Logger::debug($indent . "Checking if table name starts with 'Interact': {$name}");
         if (stripos($name, "Interact") === 0) {
             Logger::debug($indent . "[Interact] tag will be added to the output for table: {$name}");
-            return "[Hidden-Treasure2]\n" . $final_output . "\n[/Hidden-Treasure2]";
+            return "[Hidden-Treasure2]\n" . $final_output . "\n<strong>" . ucfirst(str_replace('-', ' ', substr($name, 9))) . "</strong>\n[/Hidden-Treasure2]";
         }
         if ($name == "hidden-treasure") {
             return "[Hidden-Treasure]\n" . $final_output . "\n[/Hidden-Treasure]";
         }
+        if ($name == "treasure-chest") {
+            return "[Treasure-Chest]\n" . $final_output . "\n[/Treasure-Chest]";
+        }
         return $final_output;
+    }
+
+    public static function binarySearch($array, $target) {
+        if (empty($array) || $target === null) {
+            return -1; // Return -1 if the array is empty or target is null
+        }
+        $low = 0;
+        $high = count($array) - 1;
+        while ($low <= $high) {
+            $mid = floor(($low + $high) / 2);
+            // Ensure $array[$mid][0] is a string before calling strcasecmp
+            $comparison = strcasecmp((string)$array[$mid][0], (string)$target);
+            if ($comparison < 0) {
+                $low = $mid + 1;
+            } elseif ($comparison > 0) {
+                $high = $mid - 1;
+            } else {
+                return $mid;
+            }
+        }
+        return -1; // Not found
     }
 } 

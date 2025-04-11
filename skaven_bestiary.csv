@@ -1,3 +1,4 @@
+
 Acolyte Liche Priest,6,6,5,5,8,5,11,6,1,8,Quarterstaff (R) (F:1/C:--/Great),Fearsome,Spellcaster (Necromantic),Grave Dust,Miniature Silver Sarcophagus
 Alaric Von Loth Undead Champion (WD 150),8,1,6,8,6,10,3,4,5,6,Magical Sword (White Reaver),(F:--/C:12/+1 Free Attack/turn),(Plate Mail?),Fearsome
 Alaric Von Loth Undead Champion (WD150),8,1,6,8,6,10,3,4,5,6,Magical Sword-White Reaver,(F:--/C:12) (+1 free attack each,turn),Fearsome,Immune to damage for the first,four turns (?)
@@ -189,9 +190,11 @@ Fimir,6,2,5,7,6,8,5,4,3,7*,Axe (Cleaving),Leather Jack,Blade Fury,Large? Fearsom
 Flesh Golem 7 0 7 9 4 9 1 6 5 8 *BERSERKER  *LARGE
 Gargoyle 6 0 7 7 3 9 4 4 3 3
 Ghorgon,6,0,8,8,12,12,11,18,6,20,Claws & Fangs (R) (F:1/C:--),Accurate,Blade Fury,Berserker,Cleaving,Fearsome,Large,Regeneration
+Ghost,4,0,3,6,6,10,4,5,2*,8,Etherial,"Fear: DD attacks Bravery, 1 point for each die >= Bravery for this Adventure*",Fearsome
 Ghoul,6,2,5,6,6,8,2,4,3,2,Morning Star,Fearsome
 Ghoul (WD 159),6,2,5,6,6,8,2,4,4*,2,Claws and Fangs (F:1/C:--),Fearsome,*Poisonous Talons +1DD
 Ghoul Ravenloft 6 2 5 6 6 8 2 4 3 2
+Giant Beetle,5,--,6,8,3,10,2,5,4,3,Claws & Fangs (F:1/C:--),Large Monster,Always Flees from Fire
 Giant Rat,5,--,4*,5,12,5,3,2,2*,½,Claws & Fangs (F:1/C:--),*Optional: ST5/DD3
 Giant Rat(WD 159),5,--,3,5,10,6,6,1,2*,½,Claws & Fangs (F:1/C:--),*Should be DD1 given its ST
 Giant Spider,6,1,5,5,12,4,1,3,3,1,Claws & Fangs (F:1/C:--),Fly
@@ -361,8 +364,8 @@ Plague Monk Champion,7,7,5,6,10,7,5,4*,3,5,Arming Sword,Magic Scroll (Dark Magic
 Plague Priest,8,6,6,7,11,7,7,4,4,10,Arming Sword,Berserker,Spellcaster (Dark Magic),Pinch of Warpstone,Vial of Swamp Gas
 Poisoned Wind Globadier,6,5,5,7,7,5,7,3,3,3,Arming Sword,Poisoned Wind Globe x2,(R12/D6/F:1/C:-/Armor Piercing/,Blast/Cleaving),Chain Coat
 Poisoned Wind Mortar,6,5,5,7,8,5,7,4,3,12,Arming Sword,Poisoned Wind Mortar,(R24/D8/F:1-2/C:--/ArmorPiercin,/Blast/Cleaving/Team),Chain Coat
-Poltergeist,6,7,5,5,0,11,2,3,3,2,Cannot be destroyed,Cannot leave room,Attacks all in room each turn ,Invisible,Missiles hit for 1 DD,Fearsome
-Praznagar Prince of Agony,9,7,8*,8,9,9,9,5,6,--,Chaos Sword (+2ST*/F:--/C:12),Leather Jack,Fearsome,Undead,Type Name WS BS ST T SP BR IN W DD PV Equipment/Notes
+Poltergeist,0,7,5,5,0,11,2,3,3,2,Cannot be destroyed,Cannot leave room,Attacks all in room each turn,Invisible,Missiles hit for 1 DD,Fearsome
+Praznagar Prince of Agony,9,7,8*,8,9,9,9,5,6,--,Chaos Sword (+2ST*/F:--/C:12),Leather Jack,Fearsome,Undead
 Prince Karad (WD 121),10*,3,7*,9,6,10,7,4,5,8,Magic Sword (+1 WS/+1 ST),Fearsome (?)
 Rabid Giant Rat,6,--,4,5,12,5,3,2,2,½,Claws & Fangs (F:1/C:--)
 Rat Ogre,6,3,7,6,11,8,4,9,5,8,Claws and Fangs (F:1/C:--),Blade Fury,Fearsome,Large,Run Amok
@@ -413,6 +416,7 @@ Snotling Swarm,5,0,4,4,6,4,2,12,2,6,Morning Star,Blade Fury
 Sorcerer of Nurgle (WD 121),7,3,5,7,8,9,10,4,3,11,Arming Sword,Spellbook (Jade) with:,The Green Eye,The Pool of Many Places,The Cloack of Dainne,The Emerald Waterfall
 Sorcerer-Prophet,8,7,6,7,5,10,12,9,4,12,Axe (Cleaving),Spellcaster (Dark Magic),Pinch of Warpstone x2,Vial of Swamp Gas x2
 Sorceress,8,6,5,6,9,8,10,6,3,8,Arming Sword,Leather Jack,Spellcaster (Dark Magic),Enhancing,Pinch of Warpstone,Vial of Swamp Gas
+Spectre,6,0,4,7,6,10,4,8,2*,10,Etherial,"Fear: DD attacks Bravery, 1 point for each die >= Bravery for this Adventure*",Fearsome
 Spider 6 0 3 3 7 5 1 2 3 2
 Spirit Host 6 1 5 5 12 9 4 10 3* 8 Arming Sword x2* Blade Fury Cleaving Fearsome Invulnerable
 Squigg Hopper,6,3,6,5,6,5,2,4,4,3,Morning star,Claws and Fangs (F:1/C:--),Blade Fury
@@ -479,7 +483,7 @@ Wight King,7,1,6,10,6,11,10,9,4,9,Arming Sword (Cleaving),Heater Shield,Knight�
 Wight Lord,7,1,6,10,6,11,10,9,4*,9,Arming Sword x2*,Kmight’s Plate,Fearsome,Blade Fury,Cleaving,Strength Drain
 Wolf (WD 159),8,--,4,7,9,8,7,4,3*,3,Claws and Fangs (F:1/C:--),Fearsome (?),*Should be 2DD given its ST
 Wolf Ravenloft 8 0 4 7 9 8 7 4 3 3
-Wraith 6 1 5 5 12 10 4 6 3 6  *INVULNERABLE *FEARSOME
+Wraith,6,1,5,5,12,10,4,6,4,6,Fearsome,Invulnerable
 Wyvern,8,1,8,7,9,11,3,25,6,15,Claws & Fangs (F:1/C:--),Armor Piercing,Blade Fury,Fearsome,Large
 Young Vampire 8 5 7 8 8 7 6 6 5 8 Flight Hypnotize
 Zombie (*),5,1,5,4,6,11,1,3,3,1,Morning Star,Fearsome

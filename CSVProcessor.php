@@ -18,7 +18,7 @@ class CSVProcessor {
     public static function processCSVOutput($output) {
         $csvData = self::loadCSVData();
         $output = self::cleanOutput($output);
-        $csvResults = self::matchAndSearchNames($output, $csvData);
+        $csvResults = self::matchAndSearchNames($output, $csvData);       
         return self::generateHTMLTable($csvResults);
     }
 
@@ -38,12 +38,11 @@ class CSVProcessor {
             'Loaded table', 'from subdirectory', 'tab', 'br', 'room', 'from top',
             'level', 'furnish', 'hazard', 'passage', 'end', 'feature', 'length',
             'doors', 'SIZE', 'Good entry for ROLL', 'Rolled', 'on room', 'QUEST ROOM',
-            'Stairs Down', 'Quest', 'Matrix', 'Treasure', 'Using dice notation',
+            'Stairs Down', 'Quest', 'Matrix', 'Using dice notation',
             'for block', 'quest', 'rooms', 'matrix', 'rolls',
             'resulting in', "NORMAL ROOM", "HAZARD ROOM", "LAIR ROOM",
-            'Gold Crowns', 'Output', 'treasure', 'chest', 
-            'Treasure Chest', 'hidden',  'Hidden Treasure',
-            'Resolving named block', 'Hidden'
+            'Gold Crowns', 'Output',
+            'Resolving named block'
         ];
         foreach ($unwantedStrings as $unwanted) {
             $output = str_ireplace($unwanted, '', $output);
@@ -116,7 +115,7 @@ class CSVProcessor {
                 foreach ($rows as $row) {
                     $csvOutput .= "<tr>";
                     foreach ($row as $field) {
-                        $csvOutput .= "<td>" . htmlspecialchars($field) . "</td>";
+                        $csvOutput .= "<td>" . htmlspecialchars($field ?? '') . "</td>";
                     }
                     $csvOutput .= "</tr>";
                 }
@@ -135,14 +134,14 @@ class CSVProcessor {
      * @return int The index of the found monster or -1 if not found
      */
     public static function binarySearch($array, $target) {
-        if (empty($array)) {
-            return -1; // Return -1 if the array is empty
+        if (empty($array) || $target === null) {
+            return -1; // Return -1 if the array is empty or target is null
         }
         $low = 0;
         $high = count($array) - 1;
         while ($low <= $high) {
             $mid = floor(($low + $high) / 2);
-            $comparison = strcasecmp($array[$mid][0], $target);
+            $comparison = strcasecmp($array[$mid][0] ?? '', $target);
             if ($comparison < 0) {
                 $low = $mid + 1;
             } elseif ($comparison > 0) {
