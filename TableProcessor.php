@@ -4,7 +4,7 @@ require_once 'TableManager.php';
 require_once 'DiceRoller.php';
 require_once 'FileParser.php';
 require_once 'CSVProcessor.php';
-require_once 'CacheManager.php';
+require_once 'TabFileHandler.php';
 
 // Global constants
 define('MAX_DEPTH', 50);         // Maximum recursion depth
@@ -30,14 +30,14 @@ class TableProcessor {
     private $tabFiles = [];
     private $subDirTabFiles = [];
     private static $instance = null;
-    private $cacheManager;
+    private $tabFileHandler;
 
     private function __construct($directory = ".", $subDirectory = "dungeon") {
         $this->directory = $directory;
         $this->subDirectory = $subDirectory;
-        $this->cacheManager = new CacheManager();
+        $this->tabFileHandler = new TabFileHandler($directory, $subDirectory);
         // Load root tab files using cache
-        $this->tabFiles = $this->cacheManager->loadTabFiles($directory);
+        $this->tabFiles = CSVProcessor::loadTabFiles($directory);
         $this->loadSubDirectoryFiles();
     }
 
@@ -67,7 +67,7 @@ class TableProcessor {
                 Logger::debug("Error: Subdirectory not readable: {$fullPath}");
                 throw new Exception("Cannot read from subdirectory: {$this->subDirectory}");
             }
-            $this->subDirTabFiles = $this->cacheManager->loadTabFiles($fullPath, true);
+            $this->subDirTabFiles = CSVProcessor::loadTabFiles($fullPath, true);
         } catch (Exception $e) {
             Logger::debug("Error loading subdirectory files: " . $e->getMessage());
             $this->subDirTabFiles = []; // Reset on error
@@ -91,7 +91,7 @@ class TableProcessor {
             
             try {
                 // Invalidate old subdirectory cache
-                $this->cacheManager->invalidateTabCache(false, true);
+                CSVProcessor::invalidateTabCache(false, true);
                 // Load new subdirectory files
                 $this->loadSubDirectoryFiles();
             } catch (Exception $e) {
@@ -101,24 +101,11 @@ class TableProcessor {
                 throw new Exception("Failed to switch to subdirectory '{$subDirectory}': " . $e->getMessage());
             }
         }
+        $this->tabFileHandler->setSubDirectory($subDirectory);
     }
 
     private function getTabContent($name) {
-        // First check root directory cache
-        foreach ($this->tabFiles as $filename => $content) {
-            if (strcasecmp(basename($filename, '.tab'), $name) === 0) {
-                return $content;
-            }
-        }
-
-        // Then check subdirectory cache
-        foreach ($this->subDirTabFiles as $filename => $content) {
-            if (strcasecmp(basename($filename, '.tab'), $name) === 0) {
-                return $content;
-            }
-        }
-
-        return null;
+        return $this->tabFileHandler->getTabContent($name);
     }
 
     /**
@@ -457,11 +444,11 @@ class TableProcessor {
     }
 
     public function invalidateCache($isSubDir = false) {
-        $this->cacheManager->invalidateTabCache(false, $isSubDir);
+        $this->tabFileHandler->invalidateCache($isSubDir);
         if ($isSubDir) {
             $this->loadSubDirectoryFiles();
         } else {
-            $this->tabFiles = $this->cacheManager->loadTabFiles($this->directory);
+            $this->tabFiles = CSVProcessor::loadTabFiles($this->directory);
         }
     }
 } 

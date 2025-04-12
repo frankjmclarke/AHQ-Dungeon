@@ -11,7 +11,7 @@ class CSVProcessor {
     private static $notFoundCacheFile = 'not_found_cache.dat';
     private static $tabCacheFile = 'tab_cache.dat';
     private static $subDirTabCacheFile = 'subdir_tab_cache.dat';
-    private static $cacheDuration = 7200; // 2 hours in seconds
+    private static $cacheDuration = 3600; // 1 hour in seconds
     private static $csvFile = 'skaven_bestiary.csv';
 
     /**
@@ -47,8 +47,6 @@ class CSVProcessor {
      * @param bool $isSubDir If false and $invalidateAll is false, only invalidates root cache
      */
     public static function invalidateTabCache($invalidateAll = false, $isSubDir = false) {
-//the cache is rebuilt based on the first interaction after the 60-minute timeout, regardless of the number of users. 
-//If users are accessing the system continuously, the cache will be rebuilt approximately once every 60 minutes.        
         if ($invalidateAll) {
             @unlink(self::$tabCacheFile);
             @unlink(self::$subDirTabCacheFile);
