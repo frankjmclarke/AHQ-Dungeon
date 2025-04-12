@@ -177,6 +177,9 @@ class TableProcessor {
         if ($name == "treasure-chest") {
             return "[Treasure-Chest]\n" . $entry . "\n[/Treasure-Chest]";
         }
+        if ($name == "treasure-chest-trap") {//Zorin Faces of Tzeentch
+            return "[Treasure-Chest]\n" . $entry . "\n[/Treasure-Chest]";
+        }        
         return $entry;
     }
 

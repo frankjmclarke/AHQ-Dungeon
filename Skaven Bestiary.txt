@@ -253,7 +253,7 @@ Arming Sword
 Heater Shield
 Chain Coat
 C
-Nightrunner
+Night Runner
 Champion
 7 7 5 5 12 6 7 4 3 3
 Arming Sword
@@ -261,7 +261,7 @@ Herdsman’s Sling
 (R12/D1/Swift Shot/Unreliable)
 Alert
 C
-Nightrunner
+Night Runner
 Champion
 (*)
 7 5 5 7 11 6 7 4 3 3
@@ -399,16 +399,14 @@ Lash (M)
 Leather Jack
 Slavemaster
 E
-Deathrunner
-7 7 5 5 12 8 7 3 4* 4
+Death Runner 7 7 5 5 12 8 7 3 4* 4
 Arming Sword (BladeFury/Blade
 Venom +1DD*)
 Herdsman’s Sling
 (R12/D1/Swift Shot/Unreliable)
 Alert
 E
-Deathrunner
-(*)
+Death Runner(*)
 7 6 5 7 11 8 7 3 4* 4
 Arming Sword (BladeFury/Blade
 Venom: +1DD*)
@@ -452,8 +450,7 @@ Arming Sword
 Magic Scroll (Dark Magic)
 Berserker
 E
-Deathrunner
-Champion
+Death Runner Champion
 8 8 5 5 12 8 7 4 4* 5
 Arming Sword (Blade Venom:
 +1DD*)
@@ -462,8 +459,7 @@ Herdsman’s Sling
 Alert
 Blade Fury (w/sword)
 E
-Deathrunner
-Champion
+Death Runner Champion
 (*)
 8 7 5 7 11 8 7 4 4* 5
 Arming Sword (Blade Venom:

@@ -11,13 +11,6 @@ class CSVProcessor {
     private static $notFoundCacheFile = 'not_found_cache.dat';
     private static $cacheDuration = 3600; // 1 hour in seconds
     private static $csvFile = 'skaven_bestiary.csv';
-/*
-Cache Check: Before reading the CSV file, the code checks if the cache file exists and if it's less than 30 minutes old.
-Cache Hit: If the cache is valid, it returns the cached data directly from the file.
-Cache Miss: If the cache is expired or doesn't exist, it reads the CSV file and creates a new cache.
-Shared Cache: The cache file is shared among all users, reducing server load. 
-notFoundCache: This cache is used to store names that were not found in the CSV file. This prevents duplicate searches for the same name.
-*/
 
     /**
      * Processes output text to:
@@ -29,7 +22,7 @@ notFoundCache: This cache is used to store names that were not found in the CSV 
      */
     public static function processCSVOutput($output) {
         $csvData = self::loadCSVData();
-        $csvResults = self::matchAndSearchNames($output, $csvData);       
+        $csvResults = self::matchAndSearchNames($output, $csvData);
         return self::generateHTMLTable($csvResults);
     }
 
@@ -58,11 +51,16 @@ notFoundCache: This cache is used to store names that were not found in the CSV 
 
     /**
      * Load the not-found cache from file if valid, otherwise create new cache
+     * Returns cache as associative array for O(1) lookups
      */
     private static function loadNotFoundCache() {
         if (file_exists(self::$notFoundCacheFile) && 
             (time() - filemtime(self::$notFoundCacheFile) < self::$cacheDuration)) {
             $cache = unserialize(file_get_contents(self::$notFoundCacheFile));
+            // Convert to associative array if it's not already
+            if (is_array($cache) && !empty($cache) && isset($cache[0])) {
+                return array_flip($cache); // Convert indexed array to associative
+            }
             return is_array($cache) ? $cache : [];
         }
         return [];
@@ -70,13 +68,13 @@ notFoundCache: This cache is used to store names that were not found in the CSV 
 
     /**
      * Save the not-found cache to file
-     * Ensures the cache is sorted before saving
+     * Stores only unique values
      */
     private static function saveNotFoundCache($notFoundCache) {
-        // Remove duplicates and sort
-        $notFoundCache = array_unique($notFoundCache, SORT_STRING);
-        sort($notFoundCache, SORT_STRING);
-        file_put_contents(self::$notFoundCacheFile, serialize($notFoundCache));
+        // Convert associative array keys to values for storage
+        $uniqueValues = array_keys($notFoundCache);
+        sort($uniqueValues, SORT_STRING); // Keep sorted for readability
+        file_put_contents(self::$notFoundCacheFile, serialize($uniqueValues));
     }
 
     /**
@@ -118,15 +116,16 @@ notFoundCache: This cache is used to store names that were not found in the CSV 
     private static function matchAndSearchNames($output, $csvData) {
         $notFoundCache = self::loadNotFoundCache();
         $csvResults = [];
-        $newNotFoundItems = [];
+        $cacheModified = false;
 
         if (preg_match_all('/([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) {
             $names = array_map('trim', $matches[1]);
             $names = array_filter($names, function($n) { return $n !== ""; });
             foreach ($names as $name) {
-                if (self::isInNotFoundCache($name, $notFoundCache)) {
+                if (isset($notFoundCache[$name])) { // O(1) lookup
                     continue;
                 }
+                
                 $index = self::binarySearch($csvData, $name, true);
                 if ($index !== -1) {
                     $csvResults[$name][] = $csvData[$index];
@@ -155,17 +154,15 @@ notFoundCache: This cache is used to store names that were not found in the CSV 
                             $found = true;
                         }
                     }
-                    if (!$found && !in_array($name, $newNotFoundItems)) {
-                        $newNotFoundItems[] = $name;
+                    if (!$found) {
+                        $notFoundCache[$name] = true;
+                        $cacheModified = true;
                     }
                 }
             }
         }
 
-        // Only save the cache if new items were added
-        if (!empty($newNotFoundItems)) {
-            // Merge new items, remove duplicates, and maintain sorting
-            $notFoundCache = array_unique(array_merge($notFoundCache, $newNotFoundItems), SORT_STRING);
+        if ($cacheModified) {
             self::saveNotFoundCache($notFoundCache);
         }
 
