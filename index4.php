@@ -114,3 +114,39 @@ class Application {
 // Create and run the application instance
 $app = new Application();
 $app->run();  // Execute the main application logic
+
+
+/*
+Application
+└── RequestHandler
+    ├── Handles input parameters
+    └── Validates requests
+
+TableProcessor
+├── Uses:
+│   ├── Logger
+│   ├── TableManager
+│   ├── DiceRoller
+│   ├── FileParser
+│   ├── CSVProcessor
+│   └── CacheManager
+└── Core class for processing text-based game content
+
+CacheManager
+└── Manages caching for .tab files
+
+DiceRoller
+└── Provides dice rolling functionality
+
+Logger
+└── Handles debug and output messages
+
+TableManager
+└── Manages table processing logic
+
+FileParser
+└── Parses files for table data
+
+CSVProcessor
+└── Processes CSV data for the application
+*/
