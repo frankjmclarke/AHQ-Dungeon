@@ -9,6 +9,7 @@ require_once 'TableProcessor.php';
 require_once 'TableManager.php';
 require_once 'DiceRoller.php';
 require_once 'config.php';
+require_once 'RequestHandler.php';
 Config::init();
 
 // Main application class

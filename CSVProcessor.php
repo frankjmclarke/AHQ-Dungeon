@@ -17,7 +17,7 @@ class CSVProcessor {
      */
     public static function processCSVOutput($output) {
         $csvData = self::loadCSVData();
-        $output = self::cleanOutput($output);
+        //$output = self::cleanOutput($output);
         $csvResults = self::matchAndSearchNames($output, $csvData);       
         return self::generateHTMLTable($csvResults);
     }
@@ -33,56 +33,46 @@ class CSVProcessor {
         return $csvData;
     }
 
-    private static function cleanOutput($output) {
-        $unwantedStrings = [
-            'Loaded table', 'from subdirectory', 'tab', 'br', 'room', 'from top',
-            'level', 'furnish', 'hazard', 'passage', 'feature', 'length',
-            'doors', 'for block', 'rooms', 'rolls',
-            'resulting in', 'Gold Crowns', 'Output',
-            'Resolving named block'
-        ];
-        foreach ($unwantedStrings as $unwanted) {
-            $output = str_ireplace($unwanted, '', $output);
-        }
-        return $output;
-    }
-
     private static function matchAndSearchNames($output, $csvData) {
-        $cache = [];
+        $notFoundCache = [];
         $csvResults = [];
         if (preg_match_all('/([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) {
             $names = array_map('trim', $matches[1]);
             $names = array_filter($names, function($n) { return $n !== ""; });
             foreach ($names as $name) {
-                if (isset($cache[$name])) {
-                    $csvResults[$name] = $cache[$name];
+                if (isset($notFoundCache[$name])) {
+                    // Skip search if the name is in the not-found cache
                     continue;
                 }
                 $index = self::binarySearch($csvData, $name);
                 if ($index !== -1) {
                     $csvResults[$name][] = $csvData[$index];
-                    $cache[$name] = $csvResults[$name];
                 } else if (substr($name, -1) === "s") {
                     $singular = substr($name, 0, -1);
                     $index = self::binarySearch($csvData, $singular);
                     if ($index !== -1) {
                         $csvResults[$name][] = $csvData[$index];
-                        $cache[$name] = $csvResults[$name];
+                    } else {
+                        $notFoundCache[$name] = true;  // Add to not-found cache
                     }
                 } else if (substr($name, -3) === "men") {
                     $singular = substr($name, 0, -3) . "man";
                     $index = self::binarySearch($csvData, $singular);
                     if ($index !== -1) {
                         $csvResults[$name][] = $csvData[$index];
-                        $cache[$name] = $csvResults[$name];
+                    } else {
+                        $notFoundCache[$name] = true;  // Add to not-found cache
                     }
                 } else if (substr($name, -3) === "ies") {
                     $singular = substr($name, 0, -3) . "y";
                     $index = self::binarySearch($csvData, $singular);
                     if ($index !== -1) {
                         $csvResults[$name][] = $csvData[$index];
-                        $cache[$name] = $csvResults[$name];
+                    } else {
+                        $notFoundCache[$name] = true;  // Add to not-found cache
                     }
+                } else {
+                    $notFoundCache[$name] = true;  // Add to not-found cache
                 }
             }
         }
