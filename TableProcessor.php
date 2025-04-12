@@ -4,7 +4,7 @@ require_once 'TableManager.php';
 require_once 'DiceRoller.php';
 require_once 'FileParser.php';
 require_once 'CSVProcessor.php';
-require_once 'TabFileHandler.php';
+require_once 'TabFileManager.php';
 
 // Global constants
 define('MAX_DEPTH', 50);         // Maximum recursion depth
@@ -25,87 +25,10 @@ define('DEFAULT_DICE', "1D12");   // Global default dice (if no block-specific n
  * 4. State is managed via stack to prevent infinite recursion
  */
 class TableProcessor {
-    private $directory;
-    private $subDirectory;
-    private $tabFiles = [];
-    private $subDirTabFiles = [];
-    private static $instance = null;
-    private $tabFileHandler;
+    private $fileManager;
 
-    private function __construct($directory = ".", $subDirectory = "dungeon") {
-        $this->directory = $directory;
-        $this->subDirectory = $subDirectory;
-        $this->tabFileHandler = new TabFileHandler($directory, $subDirectory);
-        // Load root tab files using cache
-        $this->tabFiles = CSVProcessor::loadTabFiles($directory);
-        $this->loadSubDirectoryFiles();
-    }
-
-    public static function getInstance($directory = ".", $subDirectory = null) {
-        try {
-            if (self::$instance === null) {
-                self::$instance = new self($directory, $subDirectory ?? "dungeon");
-            } else if ($subDirectory !== null && self::$instance->subDirectory !== $subDirectory) {
-                self::$instance->setSubDirectory($subDirectory);
-            }
-            return self::$instance;
-        } catch (Exception $e) {
-            Logger::debug("Error in TableProcessor::getInstance: " . $e->getMessage());
-            throw new Exception("Failed to initialize TableProcessor: " . $e->getMessage());
-        }
-    }
-
-    private function loadSubDirectoryFiles() {
-        $fullPath = $this->directory . "/" . $this->subDirectory;
-        try {
-            if (!is_dir($fullPath)) {
-                Logger::debug("Warning: Subdirectory not found: {$fullPath}");
-                $this->subDirTabFiles = []; // Reset if directory doesn't exist
-                return;
-            }
-            if (!is_readable($fullPath)) {
-                Logger::debug("Error: Subdirectory not readable: {$fullPath}");
-                throw new Exception("Cannot read from subdirectory: {$this->subDirectory}");
-            }
-            $this->subDirTabFiles = CSVProcessor::loadTabFiles($fullPath, true);
-        } catch (Exception $e) {
-            Logger::debug("Error loading subdirectory files: " . $e->getMessage());
-            $this->subDirTabFiles = []; // Reset on error
-            throw $e; // Re-throw to be handled by caller
-        }
-    }
-
-    public function setSubDirectory($subDirectory) {
-        if (empty($subDirectory)) {
-            Logger::debug("Warning: Empty subdirectory specified, using default");
-            $subDirectory = "dungeon"; // Use default
-        }
-
-        // Sanitize subdirectory name to prevent directory traversal
-        $subDirectory = str_replace(['..', '/', '\\'], '', $subDirectory);
-        
-        if ($this->subDirectory !== $subDirectory) {
-            Logger::debug("Changing subdirectory from {$this->subDirectory} to {$subDirectory}");
-            $oldSubDirectory = $this->subDirectory;
-            $this->subDirectory = $subDirectory;
-            
-            try {
-                // Invalidate old subdirectory cache
-                CSVProcessor::invalidateTabCache(false, true);
-                // Load new subdirectory files
-                $this->loadSubDirectoryFiles();
-            } catch (Exception $e) {
-                // Rollback to previous subdirectory on error
-                $this->subDirectory = $oldSubDirectory;
-                $this->loadSubDirectoryFiles(); // Reload old subdirectory
-                throw new Exception("Failed to switch to subdirectory '{$subDirectory}': " . $e->getMessage());
-            }
-        }
-        $this->tabFileHandler->setSubDirectory($subDirectory);
-    }
-
-    private function getTabContent($name) {
-        return $this->tabFileHandler->getTabContent($name);
+    public function __construct($directory = ".", $subDirectory = "dungeon") {
+        $this->fileManager = new TabFileManager($directory, $subDirectory);
     }
 
     /**
@@ -435,7 +358,7 @@ class TableProcessor {
     }
 
     private function processTable($name, $entry = "") {
-        $content = $this->getTabContent($name);
+        $content = $this->fileManager->getTabContent($name);
         if ($content === null) {
             return "Table not found: " . $name;
         }
@@ -443,12 +366,11 @@ class TableProcessor {
         // ... rest of existing processTable code ...
     }
 
+    public function setSubDirectory($subDirectory) {
+        $this->fileManager->setSubDirectory($subDirectory);
+    }
+
     public function invalidateCache($isSubDir = false) {
-        $this->tabFileHandler->invalidateCache($isSubDir);
-        if ($isSubDir) {
-            $this->loadSubDirectoryFiles();
-        } else {
-            $this->tabFiles = CSVProcessor::loadTabFiles($this->directory);
-        }
+        $this->fileManager->invalidateCache($isSubDir);
     }
 } 

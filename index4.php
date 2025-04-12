@@ -55,12 +55,7 @@ class Application {
             $subdir = $this->request->getSubdir();
             
             // Initialize TableProcessor with current subdirectory
-            try {
-                $processor = TableProcessor::getInstance(".", $subdir);
-            } catch (Exception $e) {
-                Logger::debug("Error initializing TableProcessor: " . $e->getMessage());
-                throw new Exception("Failed to initialize with subdirectory '{$subdir}': " . $e->getMessage());
-            }
+            $processor = new TableProcessor(".", $subdir);
             
             // Load tables and process named blocks from specified subdirectory
             try {
