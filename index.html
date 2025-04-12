@@ -228,12 +228,27 @@
             if (subdir !== "") {
                 url += "&subdir=" + encodeURIComponent(subdir);
             }
+            
+            // Show loading state
+            document.getElementById('result-area').innerHTML = "Loading...";
+            document.getElementById('csv-area').innerHTML = "";
+            
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error('Server returned error: ' + response.status);
                 }
                 let fullText = await response.text();
+                
+                // Check if the response starts with "Error:"
+                if (fullText.trim().startsWith("Error:")) {
+                    document.getElementById('result-area').innerHTML = 
+                        '<div style="color: red; padding: 10px; border: 1px solid red; margin: 10px 0;">' + 
+                        fullText + '</div>';
+                    document.getElementById('csv-area').innerHTML = "";
+                    return;
+                }
+                
                 // Process the text to handle Hidden-Treasure, Monster Stats, etc.
                 fullText = processOutputText(fullText);
 
@@ -251,7 +266,10 @@
                 // Reattach event listeners after updating the content
                 attachButtonListeners();
             } catch (error) {
-                document.getElementById('result-area').innerHTML = "Error: " + error.message;
+                document.getElementById('result-area').innerHTML = 
+                    '<div style="color: red; padding: 10px; border: 1px solid red; margin: 10px 0;">' +
+                    'Error: ' + error.message + '</div>';
+                document.getElementById('csv-area').innerHTML = "";
             }
         }
 
@@ -270,13 +288,19 @@
         });
 
         async function fetchSubdirectories() {
+            const dropdown = document.getElementById('subdir-dropdown');
+            dropdown.innerHTML = '<option value="">Loading...</option>';
+            
             try {
                 const response = await fetch('list_dirs.php');
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error('Failed to fetch directories');
                 }
                 const subdirs = await response.json();
-                const dropdown = document.getElementById('subdir-dropdown');
+                
+                // Clear loading message
+                dropdown.innerHTML = '<option value="">Select Directory</option>';
+                
                 subdirs.forEach(dir => {
                     // Skip the "src" directory as it has no data
                     if (dir !== "src") {
@@ -286,10 +310,29 @@
                         dropdown.appendChild(option);
                     }
                 });
+                
+                // Restore previous selection if it exists
+                const savedSubdir = localStorage.getItem('selectedSubdir');
+                if (savedSubdir && subdirs.includes(savedSubdir)) {
+                    dropdown.value = savedSubdir;
+                }
+                
             } catch (error) {
+                dropdown.innerHTML = '<option value="">Error loading directories</option>';
                 console.error("Error fetching subdirectories:", error);
             }
         }
+
+        // Add event listener for subdirectory changes
+        document.getElementById('subdir-dropdown').addEventListener('change', function(e) {
+            // Save selection to localStorage
+            if (e.target.value) {
+                localStorage.setItem('selectedSubdir', e.target.value);
+            } else {
+                localStorage.removeItem('selectedSubdir');
+            }
+        });
+
         fetchSubdirectories();
     </script>
 </body>

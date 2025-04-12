@@ -9,8 +9,51 @@
 class CSVProcessor {
     private static $cacheFile = 'csv_cache.dat';
     private static $notFoundCacheFile = 'not_found_cache.dat';
-    private static $cacheDuration = 3600; // 1 hour in seconds
+    private static $tabCacheFile = 'tab_cache.dat';
+    private static $subDirTabCacheFile = 'subdir_tab_cache.dat';
+    private static $cacheDuration = 7200; // 2 hours in seconds
     private static $csvFile = 'skaven_bestiary.csv';
+
+    /**
+     * Load .tab files from cache if valid, otherwise read from filesystem
+     * @param string $directory Directory to scan for .tab files
+     * @param bool $isSubDir Whether this is a subdirectory scan
+     * @return array Array of tab file contents
+     */
+    public static function loadTabFiles($directory, $isSubDir = false) {
+        $cacheFile = $isSubDir ? self::$subDirTabCacheFile : self::$tabCacheFile;
+        
+        // Check if cache exists and is still valid
+        if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < self::$cacheDuration)) {
+            return unserialize(file_get_contents($cacheFile));
+        }
+
+        // Cache doesn't exist or is expired, load .tab files
+        $tabData = [];
+        foreach (glob($directory . "/*.tab") as $tabFile) {
+            $fileName = basename($tabFile);
+            $tabData[$fileName] = file_get_contents($tabFile);
+        }
+
+        // Write to cache file
+        file_put_contents($cacheFile, serialize($tabData));
+        
+        return $tabData;
+    }
+
+    /**
+     * Invalidate tab file caches
+     * @param bool $invalidateAll If true, invalidates both root and subdir caches
+     * @param bool $isSubDir If false and $invalidateAll is false, only invalidates root cache
+     */
+    public static function invalidateTabCache($invalidateAll = false, $isSubDir = false) {
+        if ($invalidateAll) {
+            @unlink(self::$tabCacheFile);
+            @unlink(self::$subDirTabCacheFile);
+        } else {
+            @unlink($isSubDir ? self::$subDirTabCacheFile : self::$tabCacheFile);
+        }
+    }
 
     /**
      * Processes output text to:

@@ -50,30 +50,64 @@ class Application {
     }
     
     private function processTables() {
-        // Load tables and process named blocks from specified subdirectory
-        $tables = FileParser::loadTables($this->request->getSubdir());
-        $namedRules = $this->processNamedBlocks();
-        
-        // Process user-specified tables and return the generated output
-        return TableManager::processUserTables(
-            $this->request->getTables(),
-            $tables,
-            $namedRules
-        );
+        try {
+            // Get the current subdirectory from the request
+            $subdir = $this->request->getSubdir();
+            
+            // Initialize TableProcessor with current subdirectory
+            try {
+                $processor = TableProcessor::getInstance(".", $subdir);
+            } catch (Exception $e) {
+                Logger::debug("Error initializing TableProcessor: " . $e->getMessage());
+                throw new Exception("Failed to initialize with subdirectory '{$subdir}': " . $e->getMessage());
+            }
+            
+            // Load tables and process named blocks from specified subdirectory
+            try {
+                $tables = FileParser::loadTables($subdir);
+            } catch (Exception $e) {
+                Logger::debug("Error loading tables: " . $e->getMessage());
+                throw new Exception("Failed to load tables from subdirectory '{$subdir}': " . $e->getMessage());
+            }
+
+            $namedRules = $this->processNamedBlocks();
+            
+            // Process user-specified tables and return the generated output
+            return TableManager::processUserTables(
+                $this->request->getTables(),
+                $tables,
+                $namedRules
+            );
+        } catch (Exception $e) {
+            // Log the error and return an error message that will be displayed to the user
+            Logger::debug("Error in processTables: " . $e->getMessage());
+            return "Error: Unable to process tables. " . $e->getMessage();
+        }
     }
     
     private function processNamedBlocks() {
-        $namedRules = [];
-        // Extract and parse named blocks from files for processing
-        $rawBlocks = FileParser::extractNamedBlocks($this->request->getSubdir());
-        
-        foreach ($rawBlocks as $name => $blockLines) {
-            // Parse each named block and store the processing function
-            list($key, $fn) = TableProcessor::parseNamedBlock($blockLines);
-            $namedRules[$key] = $fn;
+        try {
+            $namedRules = [];
+            // Extract and parse named blocks from files for processing
+            $rawBlocks = FileParser::extractNamedBlocks($this->request->getSubdir());
+            
+            foreach ($rawBlocks as $name => $blockLines) {
+                try {
+                    // Parse each named block and store the processing function
+                    list($key, $fn) = TableProcessor::parseNamedBlock($blockLines);
+                    $namedRules[$key] = $fn;
+                } catch (Exception $e) {
+                    Logger::debug("Error parsing named block '{$name}': " . $e->getMessage());
+                    // Continue processing other blocks even if one fails
+                    continue;
+                }
+            }
+            
+            return $namedRules;
+        } catch (Exception $e) {
+            Logger::debug("Error processing named blocks: " . $e->getMessage());
+            throw new Exception("Failed to process named blocks: " . $e->getMessage());
         }
-        
-        return $namedRules;  // Return the collection of named rules for table processing
     }
 }
 
