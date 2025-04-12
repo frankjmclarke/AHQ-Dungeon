@@ -8,7 +8,8 @@
  */
 class CSVProcessor {
     private static $cacheFile = 'csv_cache.dat';
-    private static $cacheDuration = 1800; // 30 minutes in seconds
+    private static $notFoundCacheFile = 'not_found_cache.dat';
+    private static $cacheDuration = 3600; // 1 hour in seconds
     private static $csvFile = 'skaven_bestiary.csv';
 /*
 Cache Check: Before reading the CSV file, the code checks if the cache file exists and if it's less than 30 minutes old.
@@ -55,9 +56,29 @@ notFoundCache: This cache is used to store names that were not found in the CSV 
         return $csvData;
     }
 
+    /**
+     * Load the not-found cache from file if valid, otherwise create new cache
+     */
+    private static function loadNotFoundCache() {
+        if (file_exists(self::$notFoundCacheFile) && 
+            (time() - filemtime(self::$notFoundCacheFile) < self::$cacheDuration)) {
+            return unserialize(file_get_contents(self::$notFoundCacheFile));
+        }
+        return [];
+    }
+
+    /**
+     * Save the not-found cache to file
+     */
+    private static function saveNotFoundCache($notFoundCache) {
+        file_put_contents(self::$notFoundCacheFile, serialize($notFoundCache));
+    }
+
     private static function matchAndSearchNames($output, $csvData) {
-        $notFoundCache = [];//don't search for non-monster text twice
+        $notFoundCache = self::loadNotFoundCache();
         $csvResults = [];
+        $cacheModified = false;
+
         if (preg_match_all('/([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) {
             $names = array_map('trim', $matches[1]);
             $names = array_filter($names, function($n) { return $n !== ""; });
@@ -95,10 +116,17 @@ notFoundCache: This cache is used to store names that were not found in the CSV 
                     }
                     if (!$found) {
                         $notFoundCache[$name] = true;
+                        $cacheModified = true;
                     }
                 }
             }
         }
+
+        // Only save the cache if it was modified
+        if ($cacheModified) {
+            self::saveNotFoundCache($notFoundCache);
+        }
+
         return $csvResults;
     }
 
