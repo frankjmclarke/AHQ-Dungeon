@@ -7,6 +7,17 @@
  * 2. Search for monster names in the bestiary CSV file and output their stats
  */
 class CSVProcessor {
+    private static $cacheFile = 'csv_cache.dat';
+    private static $cacheDuration = 1800; // 30 minutes in seconds
+    private static $csvFile = 'skaven_bestiary.csv';
+/*
+Cache Check: Before reading the CSV file, the code checks if the cache file exists and if it's less than 30 minutes old.
+Cache Hit: If the cache is valid, it returns the cached data directly from the file.
+Cache Miss: If the cache is expired or doesn't exist, it reads the CSV file and creates a new cache.
+Shared Cache: The cache file is shared among all users, reducing server load. 
+notFoundCache: This cache is used to store names that were not found in the CSV file. This prevents duplicate searches for the same name.
+*/
+
     /**
      * Processes output text to:
      * 1. Output any text in double quotes (e.g. "Shrine Altar", "Nothing. GM 1 Dungeon Counter")
@@ -17,62 +28,74 @@ class CSVProcessor {
      */
     public static function processCSVOutput($output) {
         $csvData = self::loadCSVData();
-        //$output = self::cleanOutput($output);
         $csvResults = self::matchAndSearchNames($output, $csvData);       
         return self::generateHTMLTable($csvResults);
     }
 
+    /**
+     * Load CSV data from cache if valid, otherwise read from CSV file
+     */
     private static function loadCSVData() {
+        // Check if cache exists and is still valid
+        if (file_exists(self::$cacheFile) && (time() - filemtime(self::$cacheFile) < self::$cacheDuration)) {
+            return unserialize(file_get_contents(self::$cacheFile));
+        }
+
+        // Cache doesn't exist or is expired, load from CSV
         $csvData = [];
-        if (($handle = fopen("skaven_bestiary.csv", "r")) !== false) {
+        if (($handle = fopen(self::$csvFile, "r")) !== false) {
             while (($data = fgetcsv($handle)) !== false) {
                 $csvData[] = $data;
             }
             fclose($handle);
+            
+            // Write to cache file
+            file_put_contents(self::$cacheFile, serialize($csvData));
         }
         return $csvData;
     }
 
     private static function matchAndSearchNames($output, $csvData) {
-        $notFoundCache = [];
+        $notFoundCache = [];//don't search for non-monster text twice
         $csvResults = [];
         if (preg_match_all('/([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) {
             $names = array_map('trim', $matches[1]);
             $names = array_filter($names, function($n) { return $n !== ""; });
             foreach ($names as $name) {
                 if (isset($notFoundCache[$name])) {
-                    // Skip search if the name is in the not-found cache
                     continue;
                 }
                 $index = self::binarySearch($csvData, $name);
                 if ($index !== -1) {
                     $csvResults[$name][] = $csvData[$index];
-                } else if (substr($name, -1) === "s") {
-                    $singular = substr($name, 0, -1);
-                    $index = self::binarySearch($csvData, $singular);
-                    if ($index !== -1) {
-                        $csvResults[$name][] = $csvData[$index];
-                    } else {
-                        $notFoundCache[$name] = true;  // Add to not-found cache
-                    }
-                } else if (substr($name, -3) === "men") {
-                    $singular = substr($name, 0, -3) . "man";
-                    $index = self::binarySearch($csvData, $singular);
-                    if ($index !== -1) {
-                        $csvResults[$name][] = $csvData[$index];
-                    } else {
-                        $notFoundCache[$name] = true;  // Add to not-found cache
-                    }
-                } else if (substr($name, -3) === "ies") {
-                    $singular = substr($name, 0, -3) . "y";
-                    $index = self::binarySearch($csvData, $singular);
-                    if ($index !== -1) {
-                        $csvResults[$name][] = $csvData[$index];
-                    } else {
-                        $notFoundCache[$name] = true;  // Add to not-found cache
-                    }
                 } else {
-                    $notFoundCache[$name] = true;  // Add to not-found cache
+                    // Try variations of the name
+                    $found = false;
+                    if (substr($name, -1) === "s") {
+                        $singular = substr($name, 0, -1);
+                        $index = self::binarySearch($csvData, $singular);
+                        if ($index !== -1) {
+                            $csvResults[$name][] = $csvData[$index];
+                            $found = true;
+                        }
+                    } else if (substr($name, -3) === "men") {
+                        $singular = substr($name, 0, -3) . "man";
+                        $index = self::binarySearch($csvData, $singular);
+                        if ($index !== -1) {
+                            $csvResults[$name][] = $csvData[$index];
+                            $found = true;
+                        }
+                    } else if (substr($name, -3) === "ies") {
+                        $singular = substr($name, 0, -3) . "y";
+                        $index = self::binarySearch($csvData, $singular);
+                        if ($index !== -1) {
+                            $csvResults[$name][] = $csvData[$index];
+                            $found = true;
+                        }
+                    }
+                    if (!$found) {
+                        $notFoundCache[$name] = true;
+                    }
                 }
             }
         }
