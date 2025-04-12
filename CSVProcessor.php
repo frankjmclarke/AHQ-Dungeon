@@ -62,31 +62,72 @@ notFoundCache: This cache is used to store names that were not found in the CSV 
     private static function loadNotFoundCache() {
         if (file_exists(self::$notFoundCacheFile) && 
             (time() - filemtime(self::$notFoundCacheFile) < self::$cacheDuration)) {
-            return unserialize(file_get_contents(self::$notFoundCacheFile));
+            $cache = unserialize(file_get_contents(self::$notFoundCacheFile));
+            return is_array($cache) ? $cache : [];
         }
         return [];
     }
 
     /**
      * Save the not-found cache to file
+     * Ensures the cache is sorted before saving
      */
     private static function saveNotFoundCache($notFoundCache) {
+        // Remove duplicates and sort
+        $notFoundCache = array_unique($notFoundCache, SORT_STRING);
+        sort($notFoundCache, SORT_STRING);
         file_put_contents(self::$notFoundCacheFile, serialize($notFoundCache));
+    }
+
+    /**
+     * Generic binary search method that can handle both CSV data and notFoundCache
+     * 
+     * @param array $array The array to search in
+     * @param string $target The target string to find
+     * @param bool $isCSVMode If true, searches CSV data array (first column), if false searches simple string array
+     * @return int|bool Returns int index if $isCSVMode is true, boolean if $isCSVMode is false
+     */
+    private static function binarySearch($array, $target, $isCSVMode = true) {
+        if (empty($array) || $target === null) {
+            return $isCSVMode ? -1 : false;
+        }
+
+        $low = 0;
+        $high = count($array) - 1;
+
+        while ($low <= $high) {
+            $mid = floor(($low + $high) / 2);
+            $compareValue = $isCSVMode ? ($array[$mid][0] ?? '') : $array[$mid];
+            $comparison = strcasecmp($compareValue, $target);
+            
+            if ($comparison < 0) {
+                $low = $mid + 1;
+            } elseif ($comparison > 0) {
+                $high = $mid - 1;
+            } else {
+                return $isCSVMode ? $mid : true;
+            }
+        }
+        return $isCSVMode ? -1 : false;
+    }
+
+    private static function isInNotFoundCache($name, $notFoundCache) {
+        return self::binarySearch($notFoundCache, $name, false);
     }
 
     private static function matchAndSearchNames($output, $csvData) {
         $notFoundCache = self::loadNotFoundCache();
         $csvResults = [];
-        $cacheModified = false;
+        $newNotFoundItems = [];
 
         if (preg_match_all('/([A-Za-z ]+?)(?=[^A-Za-z ]|$)/', $output, $matches)) {
             $names = array_map('trim', $matches[1]);
             $names = array_filter($names, function($n) { return $n !== ""; });
             foreach ($names as $name) {
-                if (isset($notFoundCache[$name])) {
+                if (self::isInNotFoundCache($name, $notFoundCache)) {
                     continue;
                 }
-                $index = self::binarySearch($csvData, $name);
+                $index = self::binarySearch($csvData, $name, true);
                 if ($index !== -1) {
                     $csvResults[$name][] = $csvData[$index];
                 } else {
@@ -94,36 +135,37 @@ notFoundCache: This cache is used to store names that were not found in the CSV 
                     $found = false;
                     if (substr($name, -1) === "s") {
                         $singular = substr($name, 0, -1);
-                        $index = self::binarySearch($csvData, $singular);
+                        $index = self::binarySearch($csvData, $singular, true);
                         if ($index !== -1) {
                             $csvResults[$name][] = $csvData[$index];
                             $found = true;
                         }
                     } else if (substr($name, -3) === "men") {
                         $singular = substr($name, 0, -3) . "man";
-                        $index = self::binarySearch($csvData, $singular);
+                        $index = self::binarySearch($csvData, $singular, true);
                         if ($index !== -1) {
                             $csvResults[$name][] = $csvData[$index];
                             $found = true;
                         }
                     } else if (substr($name, -3) === "ies") {
                         $singular = substr($name, 0, -3) . "y";
-                        $index = self::binarySearch($csvData, $singular);
+                        $index = self::binarySearch($csvData, $singular, true);
                         if ($index !== -1) {
                             $csvResults[$name][] = $csvData[$index];
                             $found = true;
                         }
                     }
-                    if (!$found) {
-                        $notFoundCache[$name] = true;
-                        $cacheModified = true;
+                    if (!$found && !in_array($name, $newNotFoundItems)) {
+                        $newNotFoundItems[] = $name;
                     }
                 }
             }
         }
 
-        // Only save the cache if it was modified
-        if ($cacheModified) {
+        // Only save the cache if new items were added
+        if (!empty($newNotFoundItems)) {
+            // Merge new items, remove duplicates, and maintain sorting
+            $notFoundCache = array_unique(array_merge($notFoundCache, $newNotFoundItems), SORT_STRING);
             self::saveNotFoundCache($notFoundCache);
         }
 
@@ -162,32 +204,4 @@ notFoundCache: This cache is used to store names that were not found in the CSV 
         }
         return $csvOutput;
     }
-
-    /**
-     * Performs a binary search on the CSV data array to find a monster name
-     * The CSV data must be sorted alphabetically by monster name (first column)
-     * 
-     * @param array $array The CSV data array to search
-     * @param string $target The monster name to find
-     * @return int The index of the found monster or -1 if not found
-     */
-    public static function binarySearch($array, $target) {
-        if (empty($array) || $target === null) {
-            return -1; // Return -1 if the array is empty or target is null
-        }
-        $low = 0;
-        $high = count($array) - 1;
-        while ($low <= $high) {
-            $mid = floor(($low + $high) / 2);
-            $comparison = strcasecmp($array[$mid][0] ?? '', $target);
-            if ($comparison < 0) {
-                $low = $mid + 1;
-            } elseif ($comparison > 0) {
-                $high = $mid - 1;
-            } else {
-                return $mid;
-            }
-        }
-        return -1; // Not found
-    }
-} 
+}
